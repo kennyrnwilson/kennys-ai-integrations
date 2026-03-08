@@ -33,7 +33,7 @@ Features:
 ```
 kennys-ai-integrations/
 ├── .claude-plugin/
-│   └── plugin.json          # Plugin manifest
+│   └── marketplace.json     # Marketplace manifest
 ├── skills/
 │   └── mermaid/
 │       └── SKILL.md          # Mermaid diagram skill

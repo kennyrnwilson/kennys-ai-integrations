@@ -10,7 +10,7 @@
 
 1. Create a directory under `skills/` with the skill name
 2. Add a `SKILL.md` file with YAML frontmatter and markdown instructions
-3. Register the skill in `.claude-plugin/plugin.json`
+3. Register the skill in `.claude-plugin/marketplace.json`
 4. Update this index
 
 ---
