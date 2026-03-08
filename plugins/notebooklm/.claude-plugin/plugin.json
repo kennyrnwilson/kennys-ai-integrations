@@ -1,0 +1,11 @@
+{
+  "name": "notebooklm",
+  "version": "1.0.0",
+  "description": "Automate Google NotebookLM — create notebooks, upload sources, generate briefings, study guides, FAQs, and presentations",
+  "author": {
+    "name": "kennyrnwilson"
+  },
+  "repository": "https://github.com/kennyrnwilson/kennys-ai-integrations",
+  "license": "MIT",
+  "keywords": ["notebooklm", "research", "presentations", "browser-automation"]
+}

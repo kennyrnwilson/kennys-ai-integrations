@@ -16,6 +16,11 @@
       "name": "image-gen",
       "source": "./plugins/image-gen",
       "description": "Generate images using AI chat interfaces via browser automation"
+    },
+    {
+      "name": "notebooklm",
+      "source": "./plugins/notebooklm",
+      "description": "Automate Google NotebookLM — create notebooks, upload sources, generate briefings and presentations"
     }
   ]
 }

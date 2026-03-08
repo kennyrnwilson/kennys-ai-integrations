@@ -76,6 +76,34 @@ Generate images from text descriptions or files via browser automation. Supports
 
 **First-run setup:** On first use of each provider, a browser window opens. Log into your account once — credentials persist for all future sessions.
 
+### `notebooklm` — Google NotebookLM Automation
+
+Create notebooks, upload sources, and generate outputs from Google NotebookLM via browser automation.
+
+**`notebooklm-create`** — Create a notebook and upload source files/URLs.
+
+```bash
+/notebooklm:notebooklm-create "My Research" --sources paper.pdf notes.md https://example.com/article
+```
+
+**`notebooklm-generate`** — Generate outputs from an existing notebook.
+
+```bash
+/notebooklm:notebooklm-generate https://notebooklm.google.com/notebook/abc123 --type briefing
+/notebooklm:notebooklm-generate https://notebooklm.google.com/notebook/abc123 --type presentation --prompt "10 slides, executive audience"
+/notebooklm:notebooklm-generate https://notebooklm.google.com/notebook/abc123 --type study-guide --output guide.md
+```
+
+Output types: `briefing`, `study-guide`, `faq`, `presentation`
+
+Features:
+- Create notebooks and upload local files (PDF, text, markdown) or URLs
+- Generate briefing docs, study guides, FAQs, and presentations
+- Custom instructions via `--prompt` to control output focus and style
+- Persistent browser profile (log in to Google once, stays authenticated)
+
+**First-run setup:** On first use, a browser window opens. Log into your Google account once — credentials persist for all future sessions.
+
 ## Marketplace Structure
 
 ```
@@ -102,6 +130,15 @@ kennys-ai-integrations/
 │           │   └── SKILL.md      # Base ChatGPT image generation
 │           └── infographic-chatgpt/
 │               └── SKILL.md      # ChatGPT infographic styling
+│   └── notebooklm/
+│       ├── .claude-plugin/
+│       │   └── plugin.json       # Plugin manifest
+│       ├── .mcp.json             # Playwright MCP config
+│       └── skills/
+│           ├── notebooklm-create/
+│           │   └── SKILL.md      # Create notebook + upload sources
+│           └── notebooklm-generate/
+│               └── SKILL.md      # Generate outputs (briefing, FAQ, etc.)
 ├── docs/
 │   └── README.md                 # Documentation index
 └── README.md                     # This file
