@@ -1,7 +1,7 @@
 ---
 name: notebooklm-generate
 description: Generate outputs from a Google NotebookLM notebook — slide decks, reports, mind maps, quizzes, and more. Use when the user wants to generate content from an existing NotebookLM notebook.
-argument-hint: <notebook-url> [--type slide-deck|reports|mind-map|flashcards|quiz|infographic|data-table|audio|video] [--prompt "custom instructions"] [--output file.md]
+argument-hint: <notebook-url> [--type slide-deck|reports|mind-map|flashcards|quiz|infographic|data-table|audio|video] [--prompt "custom instructions"] [--output file.md] [--format pdf|pptx]
 user-invocable: true
 ---
 
@@ -14,7 +14,8 @@ Generate outputs from an existing Google NotebookLM notebook via Playwright brow
 - `$0` — Notebook URL (from `notebooklm-create` output, e.g., `https://notebooklm.google.com/notebook/abc123`)
 - `--type` — Output type (default: `reports`). See Output Type Mapping below.
 - `--prompt` — Custom instructions for the generation (e.g., `"Focus on economic arguments. 10 slides max. Executive audience."`)
-- `--output` — Output file path (default: `notebooklm_{type}.md` in the current working directory)
+- `--output` — Output file path (default: auto-generated based on type and format)
+- `--format` — Download format for slide decks: `pdf` or `pptx` (default: `pdf`). Only applies to `slide-deck` type.
 
 If no arguments are provided, ask the user for a notebook URL.
 
@@ -44,10 +45,13 @@ Use exact button label matching from the accessibility tree. Each button in the 
 
 Some output types have a "Customize" button (pencil/edit icon) next to them. When `--prompt` is provided:
 
-1. First click the **"Customize {Type}"** button (e.g., "Customize Slide Deck") to open the customization panel.
-2. Look for a text input or textarea in the customization area.
-3. Enter the `--prompt` text.
-4. Then click the main output type button to generate.
+1. First click the **"Customize {Type}"** button (e.g., "Customize Slide Deck") to open a customization dialog.
+2. The dialog contains options specific to each type. For slide decks, this includes:
+   - **Format**: "Detailed Deck" (comprehensive, standalone) or "Presenter Slides" (clean, with talking points)
+   - **Language**: Dropdown to choose output language
+   - **Length**: Short / Default
+   - **Description textbox**: "Describe the slide deck you want to create" — enter `--prompt` text here
+3. After filling in options, click the **"Generate"** button inside the dialog.
 
 Output types with customization support (have an edit button): Audio Overview, Slide Deck, Flashcards, Quiz, Infographic, Data Table.
 
@@ -77,51 +81,76 @@ Follow these steps exactly, in order.
 2. The Studio panel contains all output type buttons. Verify you can see the output type buttons (Audio Overview, Slide Deck, etc.).
 3. If the Studio panel is collapsed, look for a button to expand it (may have a `dock_to_left` icon) and click it.
 
-### Step 4: Enter Custom Instructions (if provided)
+### Step 4: Enter Custom Instructions and Generate
 
-If `--prompt` was specified and the target output type supports customization:
+**If `--prompt` was specified** and the target output type supports customization:
 
 1. Look for a **"Customize {Type}"** button next to the output type button (it has an edit/pencil icon).
-2. If found, click it to open the customization panel.
-3. Use `browser_snapshot` to find the text input in the customization area.
-4. Use `browser_fill_form` to enter the `--prompt` text.
-5. Wait 1 second for the UI to update.
-6. If no customization button is found, proceed anyway — tell the user: "This output type does not support customization — generating with default settings."
+2. Click it to open a customization **dialog** overlay.
+3. Use `browser_snapshot` to examine the dialog. It will contain type-specific options and a description textbox.
+4. Find the description textbox (look for a textbox with placeholder text about describing the output).
+5. Use `browser_fill_form` to enter the `--prompt` text into the description textbox.
+6. Click the **"Generate"** button inside the dialog.
+7. Tell the user: "Generating {type}..."
 
-### Step 5: Select Output Type and Generate
+**If `--prompt` was NOT specified** or the output type does not support customization:
 
 1. Use `browser_snapshot` to find the button matching the target output type in the Studio panel (see Output Type Mapping table).
 2. Use `browser_click` with the matching button's `ref`.
 3. Tell the user: "Generating {type}..."
 
-### Step 6: Wait for Generation
+### Step 5: Wait for Generation
 
-1. Wait 5 seconds initially.
-2. Poll with `browser_snapshot` every 10 seconds, for up to 5 minutes (approximately 30 attempts).
+1. Wait 10 seconds initially.
+2. Poll with `browser_snapshot` every 30 seconds, for up to 10 minutes (approximately 20 attempts).
 3. On each poll, look for:
-   - **Generation complete indicators**: New content appearing in the Studio output area (below the output type buttons), a "Copy", "Download", "Share", or "Open in Docs" button, or generated text/content itself.
-   - **Still generating indicators**: Spinners, "Generating..." text, loading animations — continue polling.
+   - **Generation complete indicators**: The generated output appears in the Studio output area as a clickable item with a title, source count, and timestamp (e.g., "Mastering Biological Time 1 source · 5m ago"). For slide decks, you will see slide thumbnail images.
+   - **Still generating indicators**: A disabled button showing "Generating {Type}... based on N source(s)" with a sync icon — continue polling.
    - **Error indicators**: Error messages, "Failed", "Try again" — report to user and stop.
-4. When generation appears complete, proceed to Step 7.
-5. If generation does not complete after 5 minutes:
+4. When generation appears complete, proceed to Step 6.
+5. If generation does not complete after 10 minutes:
    - Use `browser_take_screenshot` to capture a debug screenshot. Save it as `notebooklm_debug.png` in the current working directory.
-   - Tell the user: "Generation timed out after 5 minutes. A debug screenshot has been saved. Please check the browser window."
+   - Tell the user: "Generation timed out after 10 minutes. A debug screenshot has been saved. Please check the browser window."
    - Stop.
+
+### Step 6: Open the Generated Output
+
+1. Use `browser_snapshot` to find the generated output item in the Studio panel — it will be a clickable button with the output title.
+2. Click on it to open the full output view.
+3. Use `browser_snapshot` to verify the output is displayed — you should see the content along with action buttons (Share, More options, etc.).
 
 ### Step 7: Save the Output
 
+**For slide decks (`--type slide-deck`):**
+
+Slide decks can be downloaded as PDF or PowerPoint:
+
+1. Use `browser_snapshot` to find the **"More options"** button (three dots / `more_horiz` icon) in the output header.
+2. Click it to open the context menu.
+3. The menu contains:
+   - **"Download PDF Document (.pdf)"** — for PDF format
+   - **"Download PowerPoint (.pptx)"** — for PowerPoint format
+   - **"Show prompt"** — to view the generation prompt
+4. Based on the `--format` argument (default `pdf`):
+   - For `pdf`: Click **"Download PDF Document (.pdf)"**
+   - For `pptx`: Click **"Download PowerPoint (.pptx)"**
+5. The file will download automatically to `.playwright-mcp/` in the current working directory.
+6. Use Bash to find the downloaded file: `ls -t .playwright-mcp/*.pdf .playwright-mcp/*.pptx 2>/dev/null | head -1`
+7. Move the downloaded file to the `--output` path, or to the current working directory if no output specified: `mv .playwright-mcp/Title-Name.pdf ./`
+8. The downloaded filename uses the slide deck title with hyphens (e.g., `Mastering-Biological-Time.pdf`).
+
 **For text-based outputs (reports, flashcards, quiz, data-table):**
 
-1. Use `browser_snapshot` to examine the generated content in the Studio output area.
+1. Use `browser_snapshot` to examine the generated content in the output view.
 2. Look for the generated text content directly in the accessibility tree — NotebookLM displays output as readable text.
 3. Extract the text content from the accessibility tree elements.
 4. If the text content is accessible, use the `Write` tool to save it to the output path.
-5. If the text is not directly accessible, look for a "Copy" button and click it, then fall back to `browser_take_screenshot`.
+5. If the text is not directly accessible, check the "More options" menu for download options, or fall back to `browser_take_screenshot`.
 
-**For visual outputs (slide-deck, mind-map, infographic):**
+**For visual outputs (mind-map, infographic):**
 
-1. Use `browser_snapshot` to look for a "Download", "Open in Slides", "Open in Docs", or "Export" button.
-2. If a download/open option is found, click it.
+1. Check the "More options" menu for download options (PDF, etc.).
+2. If a download option is found, use it.
 3. If no download option is available, use `browser_take_screenshot` to capture a screenshot of the output.
 4. Save to the output path.
 
@@ -133,15 +162,19 @@ If `--prompt` was specified and the target output type supports customization:
 
 **Determine output path:**
 1. If `--output` was specified, use that path.
-2. Otherwise: `notebooklm_{type}.md` for text outputs, `notebooklm_{type}.png` for screenshots, in the current working directory.
+2. Otherwise, use the auto-downloaded filename in the current working directory. Default patterns:
+   - Slide decks: `{title}.pdf` or `{title}.pptx`
+   - Text outputs: `notebooklm_{type}.md`
+   - Screenshots: `notebooklm_{type}.png`
 
 ### Step 8: Report to User
 
 Tell the user:
 - The output was generated and saved successfully.
 - The full output file path.
-- The output type that was generated.
-- Any relevant details (e.g., whether text was extracted or a screenshot was captured as fallback).
+- The output type and format that was generated.
+- The title NotebookLM gave the output.
+- Any relevant details (e.g., number of slides, whether text was extracted or a screenshot was captured as fallback).
 
 ## Error Handling
 
@@ -155,7 +188,10 @@ If navigating to the notebook URL shows an error page or "not found" message, te
 If the requested output type button cannot be found in the UI, list the available options visible in the accessibility tree and ask the user which one to use.
 
 ### Generation Timeout
-If generation does not complete after 5 minutes, capture a debug screenshot, inform the user, and suggest checking the browser window.
+If generation does not complete after 10 minutes, capture a debug screenshot, inform the user, and suggest checking the browser window.
+
+### Download Failed
+If the download menu item is not found or the download does not complete, fall back to `browser_take_screenshot` and inform the user: "Could not download the file. A screenshot of the output has been saved instead."
 
 ### Cannot Extract Text
 If the generated text content cannot be extracted from the accessibility tree, fall back to taking a screenshot and inform the user: "Could not extract the text content. A screenshot of the output has been saved instead."
