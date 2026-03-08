@@ -30,11 +30,12 @@ Features:
 - Deep navy subgraph backgrounds with subtle borders
 - Design rules for readable, professional layouts
 
-### `infographics` — AI-Powered Infographic Generator
+### `infographics` — AI-Powered Image Generator
 
-Generate infographic images from text summaries using AI chat interfaces via browser automation.
+Generate images from text descriptions or files using AI chat interfaces via browser automation.
 
 ```bash
+/infographics:infographic-gemini "image of a dancing dog"
 /infographics:infographic-gemini path/to/summary.md
 /infographics:infographic-gemini path/to/summary.md --output infographic.png --style minimal
 ```

@@ -1,30 +1,34 @@
 ---
 name: infographic-gemini
-description: Generate infographic images from text using Google Gemini's web interface. Use when the user asks to create an infographic, visual summary, or image from text using Gemini.
-argument-hint: [source-file] [--output output.png] [--style modern|minimal|abstract|illustrated|tech]
+description: Generate images from text using Google Gemini's web interface. Use when the user asks to create an infographic, visual summary, or any image from a text description or file using Gemini.
+argument-hint: <source-file-or-text> [--output output.png] [--style modern|minimal|abstract|illustrated|tech]
 user-invocable: true
 allowed-tools: Read, Glob, Grep, mcp__plugin_playwright_playwright__browser_navigate, mcp__plugin_playwright_playwright__browser_snapshot, mcp__plugin_playwright_playwright__browser_click, mcp__plugin_playwright_playwright__browser_fill_form, mcp__plugin_playwright_playwright__browser_press_key, mcp__plugin_playwright_playwright__browser_take_screenshot, mcp__plugin_playwright_playwright__browser_wait_for, mcp__plugin_playwright_playwright__browser_tabs
 ---
 
 # Gemini Web Infographic Generator
 
-Generate infographic images from text content using Google Gemini's web interface via Playwright browser automation.
+Generate images from text content or short descriptions using Google Gemini's web interface via Playwright browser automation. Works with both markdown/text files and inline text prompts.
 
 ## Arguments
 
-- `$0` — Source file path (markdown or text file to summarize as an infographic)
-- `--output` — Output image path (default: `{source_stem}_infographic_gemini.png` in the same directory as the source file)
+- `$0` — Either a file path (markdown or text file) OR inline text describing what to generate (e.g., `"image of dancing dog"`)
+- `--output` — Output image path (default: see Step 2 for how this is derived)
 - `--style` — Visual style: `modern` (default), `minimal`, `abstract`, `illustrated`, `tech`
 
-If no arguments are provided, ask the user for a source file path.
+If no arguments are provided, ask the user what they'd like to generate.
 
 ## First-Run Setup
 
 On the very first use, a browser window will open and you will need to log into your Google account. After that first login, credentials are persisted automatically in the Playwright browser profile and subsequent runs will not require login.
 
-## Prompt Template
+## Prompt Templates
 
-Use this exact prompt template when submitting to Gemini. Replace `{style}` with the chosen style and `{text_content}` with the first 3000 characters of the source file:
+Use the appropriate template based on whether the input is a file or inline text.
+
+### Template A: File-based (long-form content)
+
+Use when the input was read from a file. Replace `{style}` with the chosen style and `{text_content}` with the first 3000 characters of the source file:
 
 ```
 Create an infographic image that summarizes this text.
@@ -41,28 +45,58 @@ Text to summarize:
 Make it visually engaging with icons, clear typography, and a good information hierarchy.
 ```
 
+### Template B: Inline text (short descriptions)
+
+Use when the input is inline text (not a file). Replace `{style}` with the chosen style and `{description}` with the user's text:
+
+```
+Create an image: {description}
+
+Style: {style}, professional, and clean design
+Background: Dark navy/blue background
+Colors: Bright, vibrant colors that work well on dark backgrounds
+Important: Do not depict any specific real people or public figures. Use abstract icons, symbols, and conceptual imagery to represent all ideas and people.
+
+Make it visually engaging and high quality.
+```
+
 ## Workflow
 
 Follow these steps exactly, in order.
 
-### Step 1: Read the Source Text
+### Step 1: Determine Input Mode
 
+Examine `$0` to decide if it is a **file path** or **inline text**:
+
+- **File path**: If `$0` looks like a file path (contains `/` or `\`, ends with a common extension like `.md`, `.txt`, `.html`, etc., or points to an existing file), treat it as a file.
+- **Inline text**: Otherwise, treat `$0` as a direct text description.
+
+**If file path:**
 1. Use the `Read` tool to load the file at the path provided in `$0`.
 2. If the file does not exist, tell the user and stop.
 3. Record the total character count of the file content.
 4. Truncate the content to the first 3000 characters for use in the prompt.
 5. Tell the user: "Read source file ({total_length} characters). Using first {truncated_length} characters for the Gemini prompt."
+6. Set `input_mode` to `file`.
+
+**If inline text:**
+1. Use `$0` directly as the text content.
+2. Tell the user: "Using inline text for the Gemini prompt."
+3. Set `input_mode` to `text`.
 
 ### Step 2: Determine Output Path
 
 1. If `--output` was specified, use that path.
-2. Otherwise, derive the output path: same directory as the source file, with filename `{source_stem}_infographic_gemini.png` (e.g., `chapter1.md` becomes `chapter1_infographic_gemini.png`).
+2. Otherwise:
+   - **File mode**: Derive from the source file — same directory, filename `{source_stem}_infographic_gemini.png` (e.g., `chapter1.md` → `chapter1_infographic_gemini.png`).
+   - **Inline text mode**: Use `infographic_gemini.png` in the current working directory.
 3. Tell the user the output path that will be used.
 
 ### Step 3: Construct the Prompt
 
 1. Determine the style from `--style` (default to `modern` if not specified).
-2. Fill in the prompt template above with the style and the truncated text content.
+2. Use **Template A** (file-based) if `input_mode` is `file`, or **Template B** (inline text) if `input_mode` is `text`.
+3. Fill in the chosen template with the style and the text content.
 
 ### Step 4: Navigate to Gemini
 
