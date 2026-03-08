@@ -2,16 +2,17 @@
 
 ← [Back to Project Root](../README.md)
 
-## Skills
+## Plugins
 
-- [Mermaid Diagram Skill](../skills/mermaid/SKILL.md) — Professional dark-mode Mermaid diagram generator
+- [Mermaid Diagram Skill](../plugins/mermaid-diagrams/skills/mermaid/SKILL.md) — Professional dark-mode Mermaid diagram generator
 
-## Adding New Skills
+## Adding New Plugins
 
-1. Create a directory under `skills/` with the skill name
-2. Add a `SKILL.md` file with YAML frontmatter and markdown instructions
-3. Register the skill in `.claude-plugin/marketplace.json`
-4. Update this index
+1. Create a directory under `plugins/` with the plugin name
+2. Add `.claude-plugin/plugin.json` with name, description, version
+3. Add skills under `plugins/<name>/skills/<skill-name>/SKILL.md`
+4. Register the plugin in `.claude-plugin/marketplace.json`
+5. Update this index
 
 ---
 

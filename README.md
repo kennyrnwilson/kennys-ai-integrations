@@ -1,25 +1,27 @@
 # Kenny's AI Integrations
 
-Claude Code plugin collection with professional skills for everyday development workflows.
+Claude Code plugin marketplace with professional skills for everyday development workflows.
 
 ## Installation
 
 ```bash
-claude plugin install /path/to/kennys-ai-integrations
-# or from GitHub:
-claude plugin install kennyrnwilson/kennys-ai-integrations
+# Add the marketplace
+/plugin marketplace add kennyrnwilson/kennys-ai-integrations
+
+# Install a plugin
+/plugin install mermaid-diagrams@kennys-ai-integrations
 ```
 
-## Skills
+## Plugins
 
-### `/mermaid` — Professional Dark-Mode Diagrams
+### `mermaid-diagrams` — Professional Dark-Mode Diagrams
 
 Generate beautiful Mermaid diagrams optimised for dark-mode editors (VS Code, Obsidian).
 
 ```bash
-/mermaid flowchart data pipeline from API to database with caching layer
-/mermaid sequence user authentication flow with OAuth
-/mermaid class handler hierarchy with factory pattern
+/mermaid-diagrams:mermaid flowchart data pipeline from API to database with caching layer
+/mermaid-diagrams:mermaid sequence user authentication flow with OAuth
+/mermaid-diagrams:mermaid class handler hierarchy with factory pattern
 ```
 
 Features:
@@ -28,18 +30,22 @@ Features:
 - Deep navy subgraph backgrounds with subtle borders
 - Design rules for readable, professional layouts
 
-## Plugin Structure
+## Marketplace Structure
 
 ```
 kennys-ai-integrations/
 ├── .claude-plugin/
-│   └── marketplace.json     # Marketplace manifest
-├── skills/
-│   └── mermaid/
-│       └── SKILL.md          # Mermaid diagram skill
+│   └── marketplace.json          # Marketplace catalog
+├── plugins/
+│   └── mermaid-diagrams/
+│       ├── .claude-plugin/
+│       │   └── plugin.json       # Plugin manifest
+│       └── skills/
+│           └── mermaid/
+│               └── SKILL.md      # Mermaid diagram skill
 ├── docs/
-│   └── README.md             # Documentation index
-└── README.md                 # This file
+│   └── README.md                 # Documentation index
+└── README.md                     # This file
 ```
 
 ## Colour Palette Reference
