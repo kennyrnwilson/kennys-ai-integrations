@@ -32,30 +32,49 @@ Features:
 
 ### `image-gen` — AI-Powered Image Generator
 
-Generate images from text descriptions or files using Google Gemini via browser automation. Two skills:
+Generate images from text descriptions or files via browser automation. Supports both Google Gemini and ChatGPT, each with a base skill and a professional infographic wrapper.
 
-**`gemini-image`** — Base image generation. Pass any prompt directly to Gemini.
+#### Gemini
+
+**`gemini-image`** — Base image generation via Gemini.
 
 ```bash
 /image-gen:gemini-image "a dancing dog in a park"
 /image-gen:gemini-image path/to/prompt.txt --output result.png
 ```
 
-**`infographic-gemini`** — Professional infographic generation. Wraps `gemini-image` with dark-theme styling, layout rules, and infographic-specific instructions.
+**`infographic-gemini`** — Professional infographic styling on top of `gemini-image`.
 
 ```bash
 /image-gen:infographic-gemini "benefits of remote work"
 /image-gen:infographic-gemini path/to/summary.md --style minimal
 ```
 
-Features:
+#### ChatGPT
+
+**`chatgpt-image`** — Base image generation via ChatGPT (DALL-E).
+
+```bash
+/image-gen:chatgpt-image "a dancing dog in a park"
+/image-gen:chatgpt-image path/to/prompt.txt --output result.png
+```
+
+**`infographic-chatgpt`** — Professional infographic styling on top of `chatgpt-image`.
+
+```bash
+/image-gen:infographic-chatgpt "benefits of remote work"
+/image-gen:infographic-chatgpt path/to/summary.md --style minimal
+```
+
+#### Features
+
 - Browser automation via Playwright MCP (no Python scripts needed)
-- Persistent browser profile (log in to Google once, stays authenticated)
+- Persistent browser profile (log in once per provider, stays authenticated)
 - Works with file paths or inline text descriptions
-- Infographic skill adds dark navy background, vibrant colours, professional layout
+- Infographic skills add dark navy background, vibrant colours, professional layout
 - Multiple style options (modern, minimal, abstract, illustrated, tech)
 
-**First-run setup:** On first use, a browser window opens. Log into your Google account once — credentials persist for all future sessions.
+**First-run setup:** On first use of each provider, a browser window opens. Log into your account once — credentials persist for all future sessions.
 
 ## Marketplace Structure
 
@@ -77,8 +96,12 @@ kennys-ai-integrations/
 │       └── skills/
 │           ├── gemini-image/
 │           │   └── SKILL.md      # Base Gemini image generation
-│           └── infographic-gemini/
-│               └── SKILL.md      # Professional infographic styling
+│           ├── infographic-gemini/
+│           │   └── SKILL.md      # Gemini infographic styling
+│           ├── chatgpt-image/
+│           │   └── SKILL.md      # Base ChatGPT image generation
+│           └── infographic-chatgpt/
+│               └── SKILL.md      # ChatGPT infographic styling
 ├── docs/
 │   └── README.md                 # Documentation index
 └── README.md                     # This file
