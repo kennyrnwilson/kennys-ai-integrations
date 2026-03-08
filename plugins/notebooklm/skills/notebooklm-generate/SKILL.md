@@ -1,21 +1,20 @@
 ---
 name: notebooklm-generate
-description: Generate outputs from a Google NotebookLM notebook — briefing docs, study guides, FAQs, or presentations. Use when the user wants to generate content from an existing NotebookLM notebook.
-argument-hint: <notebook-url> [--type briefing|study-guide|faq|presentation] [--prompt "custom instructions"] [--output file.md]
+description: Generate outputs from a Google NotebookLM notebook — slide decks, reports, mind maps, quizzes, and more. Use when the user wants to generate content from an existing NotebookLM notebook.
+argument-hint: <notebook-url> [--type slide-deck|reports|mind-map|flashcards|quiz|infographic|data-table|audio|video] [--prompt "custom instructions"] [--output file.md]
 user-invocable: true
-allowed-tools: Read, Write, Glob, Grep, mcp__plugin_playwright_playwright__browser_navigate, mcp__plugin_playwright_playwright__browser_snapshot, mcp__plugin_playwright_playwright__browser_click, mcp__plugin_playwright_playwright__browser_fill_form, mcp__plugin_playwright_playwright__browser_press_key, mcp__plugin_playwright_playwright__browser_take_screenshot, mcp__plugin_playwright_playwright__browser_wait_for, mcp__plugin_playwright_playwright__browser_tabs
 ---
 
 # NotebookLM Output Generator
 
-Generate outputs (briefing docs, study guides, FAQs, presentations) from an existing Google NotebookLM notebook via Playwright browser automation.
+Generate outputs from an existing Google NotebookLM notebook via Playwright browser automation. The Studio panel offers multiple output types including slide decks, reports, mind maps, quizzes, and more.
 
 ## Arguments
 
 - `$0` — Notebook URL (from `notebooklm-create` output, e.g., `https://notebooklm.google.com/notebook/abc123`)
-- `--type` — Output type: `briefing` (default), `study-guide`, `faq`, `presentation`
+- `--type` — Output type (default: `reports`). See Output Type Mapping below.
 - `--prompt` — Custom instructions for the generation (e.g., `"Focus on economic arguments. 10 slides max. Executive audience."`)
-- `--output` — Output file path (default: `notebooklm_{type}.md` in the current working directory, or `.pptx`/`.pdf` for presentations)
+- `--output` — Output file path (default: `notebooklm_{type}.md` in the current working directory)
 
 If no arguments are provided, ask the user for a notebook URL.
 
@@ -25,16 +24,32 @@ On the very first use, a browser window will open and you will need to log into 
 
 ## Output Type Mapping
 
-NotebookLM's interface uses specific labels for its output types. Map the `--type` argument to the UI labels:
+NotebookLM's Studio panel has these output types. Map the `--type` argument to the UI button labels:
 
-| `--type` value | Look for in UI |
-|----------------|----------------|
-| `briefing` | "Briefing Doc", "Briefing", "Document" |
-| `study-guide` | "Study Guide", "Study guide" |
-| `faq` | "FAQ", "Frequently Asked Questions" |
-| `presentation` | "Presentation", "Slides" |
+| `--type` value | UI Button Label | Icon | Notes |
+|----------------|----------------|------|-------|
+| `audio` | "Audio Overview" | `audio_magic_eraser` | Generates a podcast-style audio overview |
+| `slide-deck` | "Slide Deck" | `tablet` | Generates a presentation / slides |
+| `video` | "Video Overview" | `subscriptions` | Generates a video overview |
+| `mind-map` | "Mind Map" | `flowchart` | Generates a visual mind map |
+| `reports` | "Reports" | `auto_tab_group` | Generates text reports (briefings, study guides, FAQs) |
+| `flashcards` | "Flashcards" | `cards_star` | Generates study flashcards |
+| `quiz` | "Quiz" | `quiz` | Generates a quiz |
+| `infographic` | "Infographic" | `stacked_bar_chart` | Generates a visual infographic |
+| `data-table` | "Data Table" | `table_view` | Generates a structured data table |
 
-Use flexible matching — look for buttons, links, or options whose accessible name contains any of the listed terms (case-insensitive).
+Use exact button label matching from the accessibility tree. Each button in the Studio panel has the label as its accessible name.
+
+## Customization
+
+Some output types have a "Customize" button (pencil/edit icon) next to them. When `--prompt` is provided:
+
+1. First click the **"Customize {Type}"** button (e.g., "Customize Slide Deck") to open the customization panel.
+2. Look for a text input or textarea in the customization area.
+3. Enter the `--prompt` text.
+4. Then click the main output type button to generate.
+
+Output types with customization support (have an edit button): Audio Overview, Slide Deck, Flashcards, Quiz, Infographic, Data Table.
 
 ## Workflow
 
@@ -48,7 +63,7 @@ Follow these steps exactly, in order.
 ### Step 2: Check Login Status
 
 1. Use `browser_snapshot` to get the accessibility tree of the page.
-2. Look for elements indicating the notebook is loaded — source list, chat input, or notebook guide panel.
+2. Look for elements indicating the notebook is loaded — Sources panel, Chat panel, and Studio panel should all be visible.
 3. If the notebook is loaded, proceed to Step 3.
 4. If not logged in (you see a "Sign in" button or login page):
    - Tell the user: "Please log in to your Google account in the browser window that just opened. I'll wait for you to complete login."
@@ -56,35 +71,35 @@ Follow these steps exactly, in order.
    - If login succeeds, the page should redirect to the notebook. Proceed to Step 3.
    - If login does not succeed after 60 seconds, tell the user: "Login timed out after 60 seconds. Please try again." and stop.
 
-### Step 3: Open the Notebook Guide
+### Step 3: Locate the Studio Panel
 
-1. Use `browser_snapshot` to look for a "Notebook guide" button, tab, or panel in the accessibility tree.
-2. If it's a button/tab that needs to be clicked to open, click it.
-3. Wait 1-2 seconds for the panel to load.
-4. Use `browser_snapshot` to verify the notebook guide panel is visible with output generation options.
+1. Use `browser_snapshot` to find the **Studio** panel — look for a heading with text "Studio" on the right side of the page.
+2. The Studio panel contains all output type buttons. Verify you can see the output type buttons (Audio Overview, Slide Deck, etc.).
+3. If the Studio panel is collapsed, look for a button to expand it (may have a `dock_to_left` icon) and click it.
 
 ### Step 4: Enter Custom Instructions (if provided)
 
-If `--prompt` was specified:
+If `--prompt` was specified and the target output type supports customization:
 
-1. Use `browser_snapshot` to look for a text input, textarea, or "Customize" field in the notebook guide panel. Look for elements with accessible names like "Customize", "Instructions", "Describe", or a generic textbox/textarea within the guide panel.
-2. If found, use `browser_click` on the input to focus it, then use `browser_fill_form` to enter the `--prompt` text.
-3. Wait 1 second for the UI to update.
-4. If no customization input is found, proceed anyway — the output will use NotebookLM's defaults. Tell the user: "Could not find a customization field — generating with default settings."
+1. Look for a **"Customize {Type}"** button next to the output type button (it has an edit/pencil icon).
+2. If found, click it to open the customization panel.
+3. Use `browser_snapshot` to find the text input in the customization area.
+4. Use `browser_fill_form` to enter the `--prompt` text.
+5. Wait 1 second for the UI to update.
+6. If no customization button is found, proceed anyway — tell the user: "This output type does not support customization — generating with default settings."
 
-### Step 5: Select Output Type
+### Step 5: Select Output Type and Generate
 
-1. Use `browser_snapshot` to examine the notebook guide panel for output type options.
-2. Look for a button, link, or option whose accessible name matches the target output type (see Output Type Mapping table above). Use case-insensitive, partial matching.
-3. Use `browser_click` with the matching element's `ref` to select the output type.
-4. Tell the user: "Generating {type}..."
+1. Use `browser_snapshot` to find the button matching the target output type in the Studio panel (see Output Type Mapping table).
+2. Use `browser_click` with the matching button's `ref`.
+3. Tell the user: "Generating {type}..."
 
 ### Step 6: Wait for Generation
 
 1. Wait 5 seconds initially.
 2. Poll with `browser_snapshot` every 10 seconds, for up to 5 minutes (approximately 30 attempts).
 3. On each poll, look for:
-   - **Generation complete indicators**: New content appearing in the response area, a "Copy", "Download", "Share", or "Open in Docs" button, or the generated text/content itself.
+   - **Generation complete indicators**: New content appearing in the Studio output area (below the output type buttons), a "Copy", "Download", "Share", or "Open in Docs" button, or generated text/content itself.
    - **Still generating indicators**: Spinners, "Generating..." text, loading animations — continue polling.
    - **Error indicators**: Error messages, "Failed", "Try again" — report to user and stop.
 4. When generation appears complete, proceed to Step 7.
@@ -95,27 +110,30 @@ If `--prompt` was specified:
 
 ### Step 7: Save the Output
 
-**For text outputs (briefing, study-guide, faq):**
+**For text-based outputs (reports, flashcards, quiz, data-table):**
 
-1. Use `browser_snapshot` to examine the generated content area.
-2. Look for a "Copy" button in the accessibility tree. If found:
-   - Click it to copy the content to clipboard.
-   - The content should now be available. However, since we can't directly access clipboard, instead:
-3. Look for the generated text content directly in the accessibility tree. NotebookLM typically displays the output as readable text in the response area.
-4. Extract the text content from the accessibility tree elements.
-5. If the text content is accessible, use the `Write` tool to save it to the output path.
-6. If the text is not directly accessible from the snapshot, fall back to `browser_take_screenshot` to capture a screenshot of the output area.
+1. Use `browser_snapshot` to examine the generated content in the Studio output area.
+2. Look for the generated text content directly in the accessibility tree — NotebookLM displays output as readable text.
+3. Extract the text content from the accessibility tree elements.
+4. If the text content is accessible, use the `Write` tool to save it to the output path.
+5. If the text is not directly accessible, look for a "Copy" button and click it, then fall back to `browser_take_screenshot`.
 
-**For presentations:**
+**For visual outputs (slide-deck, mind-map, infographic):**
 
-1. Use `browser_snapshot` to look for a "Download", "Open in Slides", or "Export" button.
-2. If a download option is found, click it and wait for the download to complete.
-3. If no download option is available, use `browser_take_screenshot` to capture screenshots of each visible slide.
+1. Use `browser_snapshot` to look for a "Download", "Open in Slides", "Open in Docs", or "Export" button.
+2. If a download/open option is found, click it.
+3. If no download option is available, use `browser_take_screenshot` to capture a screenshot of the output.
 4. Save to the output path.
+
+**For media outputs (audio, video):**
+
+1. Use `browser_snapshot` to look for a "Download" or playback controls.
+2. If download is available, click it.
+3. Otherwise, tell the user the media was generated and is available in the browser.
 
 **Determine output path:**
 1. If `--output` was specified, use that path.
-2. Otherwise: `notebooklm_{type}.md` for text outputs, `notebooklm_presentation.png` for presentation screenshots, in the current working directory.
+2. Otherwise: `notebooklm_{type}.md` for text outputs, `notebooklm_{type}.png` for screenshots, in the current working directory.
 
 ### Step 8: Report to User
 

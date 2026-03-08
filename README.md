@@ -89,16 +89,16 @@ Create notebooks, upload sources, and generate outputs from Google NotebookLM vi
 **`notebooklm-generate`** — Generate outputs from an existing notebook.
 
 ```bash
-/notebooklm:notebooklm-generate https://notebooklm.google.com/notebook/abc123 --type briefing
-/notebooklm:notebooklm-generate https://notebooklm.google.com/notebook/abc123 --type presentation --prompt "10 slides, executive audience"
-/notebooklm:notebooklm-generate https://notebooklm.google.com/notebook/abc123 --type study-guide --output guide.md
+/notebooklm:notebooklm-generate https://notebooklm.google.com/notebook/abc123 --type reports
+/notebooklm:notebooklm-generate https://notebooklm.google.com/notebook/abc123 --type slide-deck --prompt "10 slides, executive audience"
+/notebooklm:notebooklm-generate https://notebooklm.google.com/notebook/abc123 --type mind-map --output mindmap.md
 ```
 
-Output types: `briefing`, `study-guide`, `faq`, `presentation`
+Output types: `audio`, `slide-deck`, `video`, `mind-map`, `reports`, `flashcards`, `quiz`, `infographic`, `data-table`
 
 Features:
 - Create notebooks and upload local files (PDF, text, markdown) or URLs
-- Generate briefing docs, study guides, FAQs, and presentations
+- Generate slide decks, reports, mind maps, quizzes, flashcards, and more
 - Custom instructions via `--prompt` to control output focus and style
 - Persistent browser profile (log in to Google once, stays authenticated)
 
