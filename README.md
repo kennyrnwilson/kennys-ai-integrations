@@ -32,20 +32,28 @@ Features:
 
 ### `infographics` — AI-Powered Image Generator
 
-Generate images from text descriptions or files using AI chat interfaces via browser automation.
+Generate images from text descriptions or files using Google Gemini via browser automation. Two skills:
+
+**`gemini-image`** — Base image generation. Pass any prompt directly to Gemini.
 
 ```bash
-/infographics:infographic-gemini "image of a dancing dog"
-/infographics:infographic-gemini path/to/summary.md
-/infographics:infographic-gemini path/to/summary.md --output infographic.png --style minimal
+/infographics:gemini-image "a dancing dog in a park"
+/infographics:gemini-image path/to/prompt.txt --output result.png
+```
+
+**`infographic-gemini`** — Professional infographic generation. Wraps `gemini-image` with dark-theme styling, layout rules, and infographic-specific instructions.
+
+```bash
+/infographics:infographic-gemini "benefits of remote work"
+/infographics:infographic-gemini path/to/summary.md --style minimal
 ```
 
 Features:
 - Browser automation via Playwright MCP (no Python scripts needed)
 - Persistent browser profile (log in to Google once, stays authenticated)
-- Dark-theme infographics with vibrant colors
+- Works with file paths or inline text descriptions
+- Infographic skill adds dark navy background, vibrant colours, professional layout
 - Multiple style options (modern, minimal, abstract, illustrated, tech)
-- Gemini web interface for free image generation
 
 **First-run setup:** On first use, a browser window opens. Log into your Google account once — credentials persist for all future sessions.
 
@@ -67,8 +75,10 @@ kennys-ai-integrations/
 │       │   └── plugin.json       # Plugin manifest
 │       ├── .mcp.json             # Playwright MCP config
 │       └── skills/
+│           ├── gemini-image/
+│           │   └── SKILL.md      # Base Gemini image generation
 │           └── infographic-gemini/
-│               └── SKILL.md      # Gemini infographic skill
+│               └── SKILL.md      # Professional infographic styling
 ├── docs/
 │   └── README.md                 # Documentation index
 └── README.md                     # This file
