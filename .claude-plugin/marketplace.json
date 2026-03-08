@@ -4,13 +4,18 @@
     "name": "kennyrnwilson"
   },
   "metadata": {
-    "description": "Kenny's Claude Code plugin collection: professional Mermaid diagrams, markdown utilities, and more."
+    "description": "Kenny's Claude Code plugin collection: professional Mermaid diagrams, AI-powered infographics, and more."
   },
   "plugins": [
     {
       "name": "mermaid-diagrams",
       "source": "./plugins/mermaid-diagrams",
       "description": "Professional dark-mode Mermaid diagram generator for VS Code and local editors"
+    },
+    {
+      "name": "infographics",
+      "source": "./plugins/infographics",
+      "description": "Generate infographic images from text using AI chat interfaces via browser automation"
     }
   ]
 }

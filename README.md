@@ -30,6 +30,24 @@ Features:
 - Deep navy subgraph backgrounds with subtle borders
 - Design rules for readable, professional layouts
 
+### `infographics` — AI-Powered Infographic Generator
+
+Generate infographic images from text summaries using AI chat interfaces via browser automation.
+
+```bash
+/infographics:infographic-gemini path/to/summary.md
+/infographics:infographic-gemini path/to/summary.md --output infographic.png --style minimal
+```
+
+Features:
+- Browser automation via Playwright MCP (no Python scripts needed)
+- Persistent browser profile (log in to Google once, stays authenticated)
+- Dark-theme infographics with vibrant colors
+- Multiple style options (modern, minimal, abstract, illustrated, tech)
+- Gemini web interface for free image generation
+
+**First-run setup:** On first use, a browser window opens. Log into your Google account once — credentials persist for all future sessions.
+
 ## Marketplace Structure
 
 ```
@@ -37,12 +55,19 @@ kennys-ai-integrations/
 ├── .claude-plugin/
 │   └── marketplace.json          # Marketplace catalog
 ├── plugins/
-│   └── mermaid-diagrams/
+│   ├── mermaid-diagrams/
+│   │   ├── .claude-plugin/
+│   │   │   └── plugin.json       # Plugin manifest
+│   │   └── skills/
+│   │       └── mermaid/
+│   │           └── SKILL.md      # Mermaid diagram skill
+│   └── infographics/
 │       ├── .claude-plugin/
 │       │   └── plugin.json       # Plugin manifest
+│       ├── .mcp.json             # Playwright MCP config
 │       └── skills/
-│           └── mermaid/
-│               └── SKILL.md      # Mermaid diagram skill
+│           └── infographic-gemini/
+│               └── SKILL.md      # Gemini infographic skill
 ├── docs/
 │   └── README.md                 # Documentation index
 └── README.md                     # This file
