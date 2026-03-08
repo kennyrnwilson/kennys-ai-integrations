@@ -30,22 +30,22 @@ Features:
 - Deep navy subgraph backgrounds with subtle borders
 - Design rules for readable, professional layouts
 
-### `infographics` — AI-Powered Image Generator
+### `image-gen` — AI-Powered Image Generator
 
 Generate images from text descriptions or files using Google Gemini via browser automation. Two skills:
 
 **`gemini-image`** — Base image generation. Pass any prompt directly to Gemini.
 
 ```bash
-/infographics:gemini-image "a dancing dog in a park"
-/infographics:gemini-image path/to/prompt.txt --output result.png
+/image-gen:gemini-image "a dancing dog in a park"
+/image-gen:gemini-image path/to/prompt.txt --output result.png
 ```
 
 **`infographic-gemini`** — Professional infographic generation. Wraps `gemini-image` with dark-theme styling, layout rules, and infographic-specific instructions.
 
 ```bash
-/infographics:infographic-gemini "benefits of remote work"
-/infographics:infographic-gemini path/to/summary.md --style minimal
+/image-gen:infographic-gemini "benefits of remote work"
+/image-gen:infographic-gemini path/to/summary.md --style minimal
 ```
 
 Features:
@@ -70,7 +70,7 @@ kennys-ai-integrations/
 │   │   └── skills/
 │   │       └── mermaid/
 │   │           └── SKILL.md      # Mermaid diagram skill
-│   └── infographics/
+│   └── image-gen/
 │       ├── .claude-plugin/
 │       │   └── plugin.json       # Plugin manifest
 │       ├── .mcp.json             # Playwright MCP config

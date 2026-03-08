@@ -13,9 +13,9 @@
       "description": "Professional dark-mode Mermaid diagram generator for VS Code and local editors"
     },
     {
-      "name": "infographics",
-      "source": "./plugins/infographics",
-      "description": "Generate infographic images from text using AI chat interfaces via browser automation"
+      "name": "image-gen",
+      "source": "./plugins/image-gen",
+      "description": "Generate images using AI chat interfaces via browser automation"
     }
   ]
 }

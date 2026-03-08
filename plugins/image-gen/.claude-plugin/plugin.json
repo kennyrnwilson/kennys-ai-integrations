@@ -1,0 +1,11 @@
+{
+  "name": "image-gen",
+  "version": "1.0.0",
+  "description": "Generate images using AI chat interfaces via browser automation",
+  "author": {
+    "name": "kennyrnwilson"
+  },
+  "repository": "https://github.com/kennyrnwilson/kennys-ai-integrations",
+  "license": "MIT",
+  "keywords": ["image-generation", "infographic", "gemini", "browser-automation"]
+}
