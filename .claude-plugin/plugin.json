@@ -1,0 +1,10 @@
+{
+  "name": "kennys-ai-integrations",
+  "version": "1.0.0",
+  "description": "Kenny's Claude Code plugin collection: professional Mermaid diagrams, markdown utilities, and more.",
+  "author": "kennyrnwilson",
+  "repository": "https://github.com/kennyrnwilson/kennys-ai-integrations",
+  "skills": [
+    "skills/mermaid"
+  ]
+}
