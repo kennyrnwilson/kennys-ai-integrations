@@ -1,0 +1,11 @@
+{
+  "name": "ebook-processing",
+  "version": "1.0.0",
+  "description": "Process ebooks into organized, AI-enriched library folders with summaries, chapter breakdowns, infographics, critical reviews, and index pages.",
+  "author": {
+    "name": "kennyrnwilson"
+  },
+  "repository": "https://github.com/kennyrnwilson/kennys-ai-integrations",
+  "license": "MIT",
+  "keywords": ["ebook", "book-processing", "summarization", "infographic", "critical-review"]
+}
