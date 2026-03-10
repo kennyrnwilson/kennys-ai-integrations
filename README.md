@@ -104,6 +104,70 @@ Features:
 
 **First-run setup:** On first use, a browser window opens. Log into your Google account once — credentials persist for all future sessions.
 
+### `ebook-processing` — AI-Enriched Book Library Builder
+
+Process ebooks into organized, AI-enriched library folders with summaries, chapter breakdowns, infographics, critical reviews, and index pages. Entirely prompt-driven — no Python code required.
+
+**`process-book`** — Run the full pipeline end-to-end.
+
+```bash
+/ebook-processing:process-book ~/Downloads/my-book.epub
+/ebook-processing:process-book ~/electronic-books/designing-data-intensive-applications/
+/ebook-processing:process-book ~/Downloads/my-book.epub --skip infographics,critical-review
+```
+
+**`convert-book`** — Convert ebook files (EPUB, PDF, ACSM) into multiple formats using Calibre.
+
+```bash
+/ebook-processing:convert-book ~/Downloads/my-book.epub --output-dir ~/electronic-books/my-book/
+```
+
+**`summarize-book`** — Generate a comprehensive structured summary using Claude.
+
+```bash
+/ebook-processing:summarize-book ~/electronic-books/my-book/
+```
+
+**`chapter-summaries`** — Extract and summarize individual chapters.
+
+```bash
+/ebook-processing:chapter-summaries ~/electronic-books/my-book/
+```
+
+**`critical-review`** — Evidence-based critical review of key claims using web research.
+
+```bash
+/ebook-processing:critical-review ~/electronic-books/my-book/
+```
+
+**`book-infographics`** — Generate book-level infographics via ChatGPT and Gemini.
+
+```bash
+/ebook-processing:book-infographics ~/electronic-books/my-book/
+```
+
+**`chapter-infographics`** — Generate infographics for each chapter summary.
+
+```bash
+/ebook-processing:chapter-infographics ~/electronic-books/my-book/
+```
+
+**`book-index`** — Generate README index page, action items, and metadata.
+
+```bash
+/ebook-processing:book-index ~/electronic-books/my-book/
+```
+
+Features:
+- Full pipeline or individual stage execution
+- Built-in resume logic — re-run safely without duplicating work
+- Rich summary templates with executive summaries, frameworks, and action items
+- Cross-plugin integration with `image-gen` for infographics
+- PDF generation via pandoc/weasyprint
+- `--force` flag to regenerate, `--skip` to skip stages
+
+**Prerequisites:** Calibre (for book conversion), pandoc/weasyprint (for PDF output), `image-gen` plugin (for infographics).
+
 ## Marketplace Structure
 
 ```
@@ -130,15 +194,35 @@ kennys-ai-integrations/
 │           │   └── SKILL.md      # Base ChatGPT image generation
 │           └── infographic-chatgpt/
 │               └── SKILL.md      # ChatGPT infographic styling
-│   └── notebooklm/
+│   ├── notebooklm/
+│   │   ├── .claude-plugin/
+│   │   │   └── plugin.json       # Plugin manifest
+│   │   ├── .mcp.json             # Playwright MCP config
+│   │   └── skills/
+│   │       ├── notebooklm-create/
+│   │       │   └── SKILL.md      # Create notebook + upload sources
+│   │       └── notebooklm-generate/
+│   │           └── SKILL.md      # Generate outputs (briefing, FAQ, etc.)
+│   └── ebook-processing/
 │       ├── .claude-plugin/
 │       │   └── plugin.json       # Plugin manifest
-│       ├── .mcp.json             # Playwright MCP config
 │       └── skills/
-│           ├── notebooklm-create/
-│           │   └── SKILL.md      # Create notebook + upload sources
-│           └── notebooklm-generate/
-│               └── SKILL.md      # Generate outputs (briefing, FAQ, etc.)
+│           ├── process-book/
+│           │   └── SKILL.md      # Full pipeline orchestrator
+│           ├── convert-book/
+│           │   └── SKILL.md      # Calibre format conversion
+│           ├── summarize-book/
+│           │   └── SKILL.md      # Comprehensive book summary
+│           ├── chapter-summaries/
+│           │   └── SKILL.md      # Per-chapter summaries
+│           ├── critical-review/
+│           │   └── SKILL.md      # Evidence-based claim review
+│           ├── book-infographics/
+│           │   └── SKILL.md      # Book-level infographics
+│           ├── chapter-infographics/
+│           │   └── SKILL.md      # Per-chapter infographics
+│           └── book-index/
+│               └── SKILL.md      # README index + metadata
 ├── docs/
 │   └── README.md                 # Documentation index
 └── README.md                     # This file
