@@ -116,7 +116,13 @@ Process ebooks into organized, AI-enriched library folders with summaries, chapt
 /ebook-processing:process-book ~/Downloads/my-book.epub --skip infographics,critical-review
 ```
 
-**`convert-book`** — Convert ebook files (EPUB, PDF, ACSM) into multiple formats using Calibre.
+**`download-acsm`** — Download and unlock ACSM files using Adobe Digital Editions.
+
+```bash
+/ebook-processing:download-acsm ~/Downloads/URLLink.acsm --output-dir ~/electronic-books/my-book/
+```
+
+**`convert-book`** — Convert ebook files (EPUB, PDF) into multiple formats using Calibre.
 
 ```bash
 /ebook-processing:convert-book ~/Downloads/my-book.epub --output-dir ~/electronic-books/my-book/
@@ -209,6 +215,8 @@ kennys-ai-integrations/
 │       └── skills/
 │           ├── process-book/
 │           │   └── SKILL.md      # Full pipeline orchestrator
+│           ├── download-acsm/
+│           │   └── SKILL.md      # ACSM download via Adobe Digital Editions
 │           ├── convert-book/
 │           │   └── SKILL.md      # Calibre format conversion
 │           ├── summarize-book/

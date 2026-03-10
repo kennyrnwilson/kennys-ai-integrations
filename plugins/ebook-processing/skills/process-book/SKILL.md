@@ -7,13 +7,13 @@ user-invocable: true
 
 # Book Processing Pipeline
 
-Run the full ebook processing pipeline end-to-end. Orchestrates all stage skills in sequence: convert, summarize, chapter summaries, chapter infographics, book infographics, critical review, and index generation.
+Run the full ebook processing pipeline end-to-end. Orchestrates all stage skills in sequence: ACSM download (if needed), convert, summarize, chapter summaries, chapter infographics, book infographics, critical review, and index generation.
 
 ## Arguments
 
-- `$0` — Either a **book file** (`.epub`, `.pdf`, `.acsm`) for full pipeline, or a **book directory** for enrichment-only mode (assumes `book-formats/` already exists).
+- `$0` — Either a **book file** (`.epub`, `.pdf`) for full pipeline, an **ACSM file** (`.acsm`) which triggers download first, or a **book directory** for enrichment-only mode (assumes `book-formats/` already exists).
 - `--force` — Pass through to all stage skills to regenerate everything, bypassing resume checks.
-- `--skip <stages>` — Comma-separated list of stage names to skip. Valid values: `convert`, `summarize`, `chapters`, `chapter-infographics`, `infographics`, `critical-review`, `index`.
+- `--skip <stages>` — Comma-separated list of stage names to skip. Valid values: `download-acsm`, `convert`, `summarize`, `chapters`, `chapter-infographics`, `infographics`, `critical-review`, `index`.
 
 If no arguments are provided, ask the user for the book file or directory path.
 
@@ -22,16 +22,17 @@ If no arguments are provided, ask the user for the book file or directory path.
 ### Step 1: Determine Input Type
 
 1. Examine `$0` to determine if it is a file or directory:
-   - **File** (ends with `.epub`, `.pdf`, or `.acsm`): Set mode to **full pipeline** — starts with conversion.
+   - **ACSM file** (ends with `.acsm`): Set mode to **full pipeline with ACSM download** — starts with `download-acsm`, then conversion.
+   - **EPUB/PDF file** (ends with `.epub` or `.pdf`): Set mode to **full pipeline** — starts with conversion.
    - **Directory** (exists as a directory): Set mode to **enrichment only** — assumes `book-formats/` exists with a `*_book.md` file.
 2. If the path doesn't exist, tell the user and stop.
-3. Report the mode: "Running in {full pipeline / enrichment only} mode."
+3. Report the mode: "Running in {full pipeline / full pipeline with ACSM download / enrichment only} mode."
 
 ### Step 2: Parse Flags
 
 1. Check for `--force` flag. If present, it will be passed through to every stage skill.
 2. Check for `--skip` flag. Parse the comma-separated list of stage names to skip.
-3. Valid skip values: `convert`, `summarize`, `chapters`, `chapter-infographics`, `infographics`, `critical-review`, `index`.
+3. Valid skip values: `download-acsm`, `convert`, `summarize`, `chapters`, `chapter-infographics`, `infographics`, `critical-review`, `index`.
 4. If invalid skip values are provided, warn the user and ignore the invalid ones.
 
 ### Step 3: Determine Book Directory
@@ -46,40 +47,46 @@ Execute stages in order. For each stage, invoke the corresponding skill with the
 
 **If a stage fails, log the error and continue with the next stage.** Do not abort the entire pipeline for a single stage failure.
 
-#### Stage 1: Convert Book
+#### Stage 1: Download ACSM
+- **Skip if**: Input is NOT an ACSM file OR `download-acsm` is in skip list
+- **Invoke**: `/ebook-processing:download-acsm {acsm-file} --output-dir {book-directory}`
+- **On success**: Use the downloaded EPUB/PDF as the input for Stage 2
+- **Report**: "Stage 1/8: Download ACSM — {result}"
+
+#### Stage 2: Convert Book
 - **Skip if**: Input is a directory (enrichment mode) OR `convert` is in skip list
 - **Invoke**: `/ebook-processing:convert-book {book-file} --output-dir {book-directory}` (add `--force` if applicable)
-- **Report**: "Stage 1/7: Convert Book — {result}"
+- **Report**: "Stage 2/8: Convert Book — {result}"
 
-#### Stage 2: Summarize Book
+#### Stage 3: Summarize Book
 - **Skip if**: `summarize` is in skip list
 - **Invoke**: `/ebook-processing:summarize-book {book-directory}` (add `--force` if applicable)
-- **Report**: "Stage 2/7: Summarize Book — {result}"
+- **Report**: "Stage 3/8: Summarize Book — {result}"
 
-#### Stage 3: Chapter Summaries
+#### Stage 4: Chapter Summaries
 - **Skip if**: `chapters` is in skip list
 - **Invoke**: `/ebook-processing:chapter-summaries {book-directory}` (add `--force` if applicable)
-- **Report**: "Stage 3/7: Chapter Summaries — {result}"
+- **Report**: "Stage 4/8: Chapter Summaries — {result}"
 
-#### Stage 4: Chapter Infographics
+#### Stage 5: Chapter Infographics
 - **Skip if**: `chapter-infographics` is in skip list
 - **Invoke**: `/ebook-processing:chapter-infographics {book-directory}` (add `--force` if applicable)
-- **Report**: "Stage 4/7: Chapter Infographics — {result}"
+- **Report**: "Stage 5/8: Chapter Infographics — {result}"
 
-#### Stage 5: Book Infographics
+#### Stage 6: Book Infographics
 - **Skip if**: `infographics` is in skip list
 - **Invoke**: `/ebook-processing:book-infographics {book-directory}` (add `--force` if applicable)
-- **Report**: "Stage 5/7: Book Infographics — {result}"
+- **Report**: "Stage 6/8: Book Infographics — {result}"
 
-#### Stage 6: Critical Review
+#### Stage 7: Critical Review
 - **Skip if**: `critical-review` is in skip list
 - **Invoke**: `/ebook-processing:critical-review {book-directory}` (add `--force` if applicable)
-- **Report**: "Stage 6/7: Critical Review — {result}"
+- **Report**: "Stage 7/8: Critical Review — {result}"
 
-#### Stage 7: Book Index
+#### Stage 8: Book Index
 - **Skip if**: `index` is in skip list (but this should rarely be skipped)
 - **Invoke**: `/ebook-processing:book-index {book-directory}` (add `--force` if applicable)
-- **Report**: "Stage 7/7: Book Index — {result}"
+- **Report**: "Stage 8/8: Book Index — {result}"
 
 ### Step 5: Final Report
 
@@ -89,15 +96,16 @@ Provide a summary of the entire pipeline run:
 Pipeline Complete: {book-name}
 ─────────────────────────────
 
-Stage              Status
-─────              ──────
-Convert Book       ✅ Completed / ⏭️ Skipped / ❌ Failed
-Summarize Book     ✅ Completed / ⏭️ Skipped / ❌ Failed
-Chapter Summaries  ✅ Completed / ⏭️ Skipped / ❌ Failed
+Stage                Status
+─────                ──────
+Download ACSM        ✅ Completed / ⏭️ Skipped / ❌ Failed
+Convert Book         ✅ Completed / ⏭️ Skipped / ❌ Failed
+Summarize Book       ✅ Completed / ⏭️ Skipped / ❌ Failed
+Chapter Summaries    ✅ Completed / ⏭️ Skipped / ❌ Failed
 Chapter Infographics ✅ Completed / ⏭️ Skipped / ❌ Failed
-Book Infographics  ✅ Completed / ⏭️ Skipped / ❌ Failed
-Critical Review    ✅ Completed / ⏭️ Skipped / ❌ Failed
-Book Index         ✅ Completed / ⏭️ Skipped / ❌ Failed
+Book Infographics    ✅ Completed / ⏭️ Skipped / ❌ Failed
+Critical Review      ✅ Completed / ⏭️ Skipped / ❌ Failed
+Book Index           ✅ Completed / ⏭️ Skipped / ❌ Failed
 
 Book directory: {directory}
 ```
