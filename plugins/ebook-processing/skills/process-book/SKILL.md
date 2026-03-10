@@ -11,7 +11,11 @@ Run the full ebook processing pipeline end-to-end. Orchestrates all stage skills
 
 ## Arguments
 
-- `$0` — Either a **book file** (`.epub`, `.pdf`) for full pipeline, an **ACSM file** (`.acsm`) which triggers download first, or a **book directory** for enrichment-only mode (assumes `book-formats/` already exists).
+- `$0` — A book file, book directory path, or bare book name:
+  - **Book file** (`.epub`, `.pdf`) — full pipeline starting with conversion
+  - **ACSM file** (`.acsm`) — full pipeline starting with ACSM download
+  - **Directory path** (e.g., `~/electronic-books/my-book/`) — enrichment only
+  - **Bare book name** (e.g., `designing-data-intensive-applications`) — resolved against `$EBOOK_LIBRARY_PATH`, enrichment only
 - `--force` — Pass through to all stage skills to regenerate everything, bypassing resume checks.
 - `--skip <stages>` — Comma-separated list of stage names to skip. Valid values: `download-acsm`, `convert`, `summarize`, `chapters`, `chapter-infographics`, `infographics`, `critical-review`, `index`.
 
@@ -21,11 +25,12 @@ If no arguments are provided, ask the user for the book file or directory path.
 
 ### Step 1: Determine Input Type
 
-1. Examine `$0` to determine if it is a file or directory:
-   - **ACSM file** (ends with `.acsm`): Set mode to **full pipeline with ACSM download** — starts with `download-acsm`, then conversion.
-   - **EPUB/PDF file** (ends with `.epub` or `.pdf`): Set mode to **full pipeline** — starts with conversion.
-   - **Directory** (exists as a directory): Set mode to **enrichment only** — assumes `book-formats/` exists with a `*_book.md` file.
-2. If the path doesn't exist, tell the user and stop.
+1. Examine `$0` to determine what it is:
+   - **ACSM file** (ends with `.acsm`): Set mode to **full pipeline with ACSM download**.
+   - **EPUB/PDF file** (ends with `.epub` or `.pdf`): Set mode to **full pipeline**.
+   - **Existing directory** (path exists as a directory): Set mode to **enrichment only**.
+   - **Bare name** (no path separators, no file extension): Resolve against `$EBOOK_LIBRARY_PATH` (check via Bash: `echo $EBOOK_LIBRARY_PATH`). If set, resolve to `$EBOOK_LIBRARY_PATH/{name}/`. If not set, resolve to `./{name}/`. Set mode to **enrichment only**.
+2. If the resolved path doesn't exist, tell the user and stop.
 3. Report the mode: "Running in {full pipeline / full pipeline with ACSM download / enrichment only} mode."
 
 ### Step 2: Parse Flags
@@ -37,8 +42,8 @@ If no arguments are provided, ask the user for the book file or directory path.
 
 ### Step 3: Determine Book Directory
 
-1. **For files**: Derive the book name from the filename (kebab-case, remove extension). Create the directory under the current working directory if it doesn't exist.
-2. **For directories**: Use the provided directory as-is.
+1. **For files**: Derive the book name from the filename (kebab-case, remove extension). Check `$EBOOK_LIBRARY_PATH` — if set, create directory under `$EBOOK_LIBRARY_PATH/{book-name}/`. Otherwise, create under the current working directory.
+2. **For directories / bare names**: Use the resolved directory from Step 1.
 3. Report: "Book directory: `{directory}`"
 
 ### Step 4: Run Pipeline

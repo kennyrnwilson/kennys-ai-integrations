@@ -108,11 +108,21 @@ Features:
 
 Process ebooks into organized, AI-enriched library folders with summaries, chapter breakdowns, infographics, critical reviews, and index pages. Entirely prompt-driven — no Python code required.
 
+#### Configuration
+
+Set `EBOOK_LIBRARY_PATH` to your book library root to use short book names instead of full paths:
+
+```bash
+export EBOOK_LIBRARY_PATH=~/electronic-books
+```
+
+With this set, all skills accept bare book names: `designing-data-intensive-applications` resolves to `~/electronic-books/designing-data-intensive-applications/`. Full paths always override.
+
 **`process-book`** — Run the full pipeline end-to-end.
 
 ```bash
 /ebook-processing:process-book ~/Downloads/my-book.epub
-/ebook-processing:process-book ~/electronic-books/designing-data-intensive-applications/
+/ebook-processing:process-book designing-data-intensive-applications
 /ebook-processing:process-book ~/Downloads/my-book.epub --skip infographics,critical-review
 ```
 
@@ -131,37 +141,38 @@ Process ebooks into organized, AI-enriched library folders with summaries, chapt
 **`summarize-book`** — Generate a comprehensive structured summary using Claude.
 
 ```bash
+/ebook-processing:summarize-book my-book
 /ebook-processing:summarize-book ~/electronic-books/my-book/
 ```
 
 **`chapter-summaries`** — Extract and summarize individual chapters.
 
 ```bash
-/ebook-processing:chapter-summaries ~/electronic-books/my-book/
+/ebook-processing:chapter-summaries my-book
 ```
 
 **`critical-review`** — Evidence-based critical review of key claims using web research.
 
 ```bash
-/ebook-processing:critical-review ~/electronic-books/my-book/
+/ebook-processing:critical-review my-book
 ```
 
 **`book-infographics`** — Generate book-level infographics via ChatGPT and Gemini.
 
 ```bash
-/ebook-processing:book-infographics ~/electronic-books/my-book/
+/ebook-processing:book-infographics my-book
 ```
 
 **`chapter-infographics`** — Generate infographics for each chapter summary.
 
 ```bash
-/ebook-processing:chapter-infographics ~/electronic-books/my-book/
+/ebook-processing:chapter-infographics my-book
 ```
 
 **`book-index`** — Generate README index page, action items, and metadata.
 
 ```bash
-/ebook-processing:book-index ~/electronic-books/my-book/
+/ebook-processing:book-index my-book
 ```
 
 Features:

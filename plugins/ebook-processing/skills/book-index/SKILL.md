@@ -11,10 +11,18 @@ Generate a comprehensive README index page, action items checklist, and metadata
 
 ## Arguments
 
-- `$0` — The book directory path (e.g., `~/electronic-books/designing-data-intensive-applications/`).
+- `$0` — The book directory path or book name. Can be:
+  - A full/relative path (e.g., `~/electronic-books/designing-data-intensive-applications/`)
+  - A bare book name (e.g., `designing-data-intensive-applications`) — resolved against `$EBOOK_LIBRARY_PATH`
 - `--force` — Bypass resume check and regenerate all index files even if they already exist.
 
 If no arguments are provided, ask the user for the book directory path.
+
+## Path Resolution
+
+Resolve `$0` to a book directory path:
+1. If `$0` is an absolute path or starts with `~`, `./`, or `../` — use it directly
+2. If `$0` is a bare name (no path separators): check the `EBOOK_LIBRARY_PATH` environment variable (via Bash: `echo $EBOOK_LIBRARY_PATH`). If set, resolve to `$EBOOK_LIBRARY_PATH/{name}/`. If not set, resolve to `./{name}/`
 
 ## Workflow
 

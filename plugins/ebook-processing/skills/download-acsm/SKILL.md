@@ -17,7 +17,9 @@ Download and unlock ACSM ebook files using Adobe Digital Editions. ACSM files ar
 ## Arguments
 
 - `$0` — The ACSM file path (e.g., `~/Downloads/URLLink.acsm`).
-- `--output-dir` — Directory to copy the downloaded file to. If not specified, the file remains in Adobe Digital Editions' default location (`~/Documents/Digital Editions/`).
+- `--output-dir` — Directory to copy the downloaded file to. If not specified, resolved in this order:
+  1. If `$EBOOK_LIBRARY_PATH` is set, use `$EBOOK_LIBRARY_PATH/{book-name}/`
+  2. Otherwise, the file remains in Adobe Digital Editions' default location (`~/Documents/Digital Editions/`)
 
 If no arguments are provided, ask the user for the ACSM file path.
 

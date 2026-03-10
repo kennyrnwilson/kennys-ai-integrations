@@ -19,7 +19,9 @@ For ACSM files, use the `download-acsm` skill first to obtain a DRM-free EPUB/PD
 ## Arguments
 
 - `$0` — The input ebook file path (e.g., `~/Downloads/my-book.epub`). Supported formats: `.epub`, `.pdf`.
-- `--output-dir` — Output directory path. If not specified, a directory is created from the book filename in kebab-case under the current working directory.
+- `--output-dir` — Output directory path. If not specified, resolved in this order:
+  1. If `$EBOOK_LIBRARY_PATH` is set, use `$EBOOK_LIBRARY_PATH/{book-name}/`
+  2. Otherwise, create `{book-name}/` under the current working directory
 - `--force` — Bypass resume check and reconvert even if outputs already exist.
 
 If no arguments are provided, ask the user for the book file path.
@@ -37,10 +39,10 @@ If no arguments are provided, ask the user for the book file path.
 ### Step 2: Determine Output Directory
 
 1. If `--output-dir` was specified, use that directory.
-2. Otherwise, derive the book name from the filename:
-   - Remove the file extension
-   - Convert to kebab-case (lowercase, hyphens for spaces/special characters)
-   - Create a directory with that name under the current working directory
+2. Otherwise, derive the book name from the filename (remove extension, convert to kebab-case):
+   - Check `EBOOK_LIBRARY_PATH` environment variable (via Bash: `echo $EBOOK_LIBRARY_PATH`)
+   - If set, use `$EBOOK_LIBRARY_PATH/{book-name}/`
+   - If not set, create `{book-name}/` under the current working directory
 3. Create the output directory if it doesn't exist.
 
 ### Step 3: Resume Check

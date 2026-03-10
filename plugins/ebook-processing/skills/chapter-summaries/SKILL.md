@@ -11,16 +11,26 @@ Extract and summarize individual chapters from a book's markdown, producing a se
 
 ## Arguments
 
-- `$0` — The book directory path (e.g., `~/electronic-books/designing-data-intensive-applications/`). Must contain a `book-formats/` subdirectory with a `*_book.md` file.
+- `$0` — The book directory path or book name. Can be:
+  - A full/relative path (e.g., `~/electronic-books/designing-data-intensive-applications/`)
+  - A bare book name (e.g., `designing-data-intensive-applications`) — resolved against `$EBOOK_LIBRARY_PATH`
+  Must contain a `book-formats/` subdirectory with a `*_book.md` file.
 - `--force` — Bypass resume checks and regenerate all chapter summaries, even if they already exist.
 
 If no arguments are provided, ask the user for the book directory path.
+
+## Path Resolution
+
+Resolve `$0` to a book directory path:
+1. If `$0` is an absolute path or starts with `~`, `./`, or `../` — use it directly
+2. If `$0` is a bare name (no path separators): check the `EBOOK_LIBRARY_PATH` environment variable (via Bash: `echo $EBOOK_LIBRARY_PATH`). If set, resolve to `$EBOOK_LIBRARY_PATH/{name}/`. If not set, resolve to `./{name}/`
 
 ## Workflow
 
 ### Step 1: Locate Book Content
 
-1. Use Glob to find `book-formats/*_book.md` in the provided book directory (`$0`).
+1. Resolve the book directory path using Path Resolution above.
+2. Use Glob to find `book-formats/*_book.md` in the resolved book directory.
 2. Extract the book name from the directory name (kebab-case).
 3. If no markdown file is found, tell the user: "No book markdown found in `{directory}/book-formats/`. Please run `convert-book` first." and stop.
 
