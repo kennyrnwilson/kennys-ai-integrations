@@ -21,6 +21,11 @@
       "name": "notebooklm",
       "source": "./plugins/notebooklm",
       "description": "Automate Google NotebookLM — create notebooks, upload sources, generate briefings and presentations"
+    },
+    {
+      "name": "ebook-processing",
+      "source": "./plugins/ebook-processing",
+      "description": "Process ebooks into organized, AI-enriched library folders with summaries, chapter breakdowns, infographics, critical reviews, and index pages"
     }
   ]
 }
