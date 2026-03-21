@@ -92,8 +92,16 @@ Examine `$0` to decide if it is a **file path** or **inline text**:
 
 ### Step 5: Enter the Prompt
 
+**IMPORTANT — Prompt wording**: Gemini frequently responds with a text description of what an image *would* look like rather than generating an actual image. To force image generation, always wrap the user's prompt with explicit image generation instructions:
+
+```
+Generate an image. {user_prompt}
+
+IMPORTANT: I need you to GENERATE AN ACTUAL IMAGE, not describe one in text. Do not write a description of what the image would look like — create and output the image directly.
+```
+
 1. Use `browser_snapshot` to find the chat input field. Look for an element with a role like `textbox`, `textarea`, or a contenteditable element in the accessibility tree. Note its `ref` attribute.
-2. Use `browser_fill_form` with the ref of that input element to enter the prompt text.
+2. Use `browser_fill_form` with the ref of that input element to enter the wrapped prompt text.
 3. Wait **2-3 seconds** for the UI to update after filling the form (use `sleep 3` via Bash). This simulates a real user reviewing their prompt before sending.
 
 ### Step 6: Submit the Prompt
@@ -106,22 +114,34 @@ Examine `$0` to decide if it is a **file path** or **inline text**:
 ### Step 7: Wait for Image Generation
 
 1. Wait **25 seconds** initially before starting to poll (use `sleep 25` via Bash).
-2. Then poll with `browser_snapshot` every **15-20 seconds**, for up to 5 minutes (approximately 15 attempts).
+2. Then poll with `browser_snapshot` every **15-20 seconds**, for up to ~90 seconds (approximately 6 attempts).
 3. On each poll, examine the accessibility tree for image elements. Look for:
    - Elements with role `img` or `image`
    - Elements whose accessible name or description contains "Generated" or "image"
    - Any new image elements that were not present before the prompt was submitted
 4. **Important**: Ignore small UI icons and profile avatars. The generated image will typically be a large, prominent image in the response area.
 5. When a candidate image element is found, note its `ref` attribute and proceed to Step 8.
-6. If no image appears after 15 polling attempts (approximately 5 minutes):
-   - Use `browser_take_screenshot` to capture a full viewport screenshot for debugging. Save it as `{output_path_stem}_debug.png` alongside the intended output.
-   - Tell the user: "No generated image found after 5 minutes. Gemini may have produced a text response instead of an image. A debug screenshot has been saved. Please check the browser window and consider retrying."
-   - Stop.
+6. If no image appears after ~90 seconds, check whether Gemini has finished responding with text instead:
+   - Use `browser_snapshot` to inspect the response area for text content.
+   - If a text response is present (Gemini described the image instead of generating it), proceed to **Step 7a: Retry with Follow-up Prompt**.
+   - If Gemini is still generating (loading indicator visible), continue polling up to 5 minutes total.
+   - If 5 minutes elapsed with no image and no text response, take a debug screenshot, tell the user, and stop.
+
+#### Step 7a: Retry with Follow-up Prompt
+
+Gemini sometimes produces a text description instead of an image on the first attempt. Send one follow-up to force image generation:
+
+1. Use `browser_snapshot` to find the chat input field.
+2. Enter this follow-up prompt: `"Please generate the infographic as an actual image, not as text. Create the image now."`
+3. Submit it (send button or Enter).
+4. Wait **10 seconds**, then resume polling for an image (Steps 7.1–7.5 above) for up to 90 more seconds.
+5. If still no image after the retry, capture a debug screenshot, tell the user Gemini returned text both times, and stop.
 
 ### Step 8: Save the Image
 
-1. Use `browser_take_screenshot` with the `ref` of the generated image element to capture just that image. Save it to the output path determined in Step 2.
-2. If the element-level screenshot fails for any reason, fall back to `browser_take_screenshot` without a ref to capture the full viewport, and save that instead. Tell the user that a viewport screenshot was captured as a fallback.
+1. Use `browser_take_screenshot` with the `ref` of the generated image element to capture **just that image element** — this crops to the image only and avoids capturing the surrounding browser chrome. Save it to the output path determined in Step 2.
+2. Note: the saved image will be at the element's rendered screen size (typically 900–1100px wide), which is the full resolution Gemini provides in the browser.
+3. If the element-level screenshot fails for any reason, fall back to `browser_take_screenshot` without a ref to capture the full viewport. Tell the user that a full-viewport screenshot was used as a fallback (this will include surrounding browser UI).
 
 ### Step 9: Clean Up
 

@@ -4,7 +4,11 @@
       "command": "npx",
       "args": [
         "@playwright/mcp@latest",
-        "--user-data-dir", "~/Library/Caches/ms-playwright/mcp-infographics-profile"
+        "--browser", "chrome",
+        "--user-data-dir", "~/Library/Caches/ms-playwright/mcp-infographics-profile",
+        "--init-script", "~/Library/Caches/ms-playwright/stealth.js",
+        "--viewport-size", "1920x1080",
+        "--user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
       ]
     }
   }

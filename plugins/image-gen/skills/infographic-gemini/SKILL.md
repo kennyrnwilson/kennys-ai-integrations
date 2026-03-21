@@ -3,7 +3,7 @@ name: infographic-gemini
 description: Generate professional dark-themed infographic images using Google Gemini. Use when the user asks to create an infographic or visual summary from text or a file. Adds professional styling on top of the base gemini-image skill.
 argument-hint: <source-file-or-text> [--output output.png] [--style modern|minimal|abstract|illustrated|tech]
 user-invocable: true
-allowed-tools: Read, Glob, Grep, mcp__plugin_playwright_playwright__browser_navigate, mcp__plugin_playwright_playwright__browser_snapshot, mcp__plugin_playwright_playwright__browser_click, mcp__plugin_playwright_playwright__browser_fill_form, mcp__plugin_playwright_playwright__browser_press_key, mcp__plugin_playwright_playwright__browser_take_screenshot, mcp__plugin_playwright_playwright__browser_wait_for, mcp__plugin_playwright_playwright__browser_tabs
+allowed-tools: Read, Glob, Grep, Bash, mcp__plugin_playwright_playwright__browser_navigate, mcp__plugin_playwright_playwright__browser_snapshot, mcp__plugin_playwright_playwright__browser_click, mcp__plugin_playwright_playwright__browser_fill_form, mcp__plugin_playwright_playwright__browser_press_key, mcp__plugin_playwright_playwright__browser_take_screenshot, mcp__plugin_playwright_playwright__browser_wait_for, mcp__plugin_playwright_playwright__browser_tabs
 ---
 
 # Gemini Professional Infographic Generator
@@ -79,6 +79,8 @@ Make it visually engaging with icons, clear typography, and a good information h
 ```
 
 ### Step 4: Generate the Image
+
+**IMPORTANT**: Follow all rate limit avoidance rules from the `gemini-image` skill — wait 3-5 seconds after navigation, 2-3 seconds after filling the prompt, 25 seconds before first poll, and 45 seconds between batch generations.
 
 Now follow the `gemini-image` skill workflow **starting from Step 3** (Navigate to Gemini), using:
 - The styled prompt constructed in Step 3 above as the prompt text
