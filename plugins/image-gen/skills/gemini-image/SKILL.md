@@ -3,7 +3,7 @@ name: gemini-image
 description: Generate images using Google Gemini's web interface. Use when the user asks to create any image, picture, or visual using Gemini. This is the base image generation skill — pass any prompt directly to Gemini.
 argument-hint: <prompt-text-or-file> [--output output.png]
 user-invocable: true
-allowed-tools: Read, Glob, Grep, mcp__plugin_playwright_playwright__browser_navigate, mcp__plugin_playwright_playwright__browser_snapshot, mcp__plugin_playwright_playwright__browser_click, mcp__plugin_playwright_playwright__browser_fill_form, mcp__plugin_playwright_playwright__browser_press_key, mcp__plugin_playwright_playwright__browser_take_screenshot, mcp__plugin_playwright_playwright__browser_wait_for, mcp__plugin_playwright_playwright__browser_tabs
+allowed-tools: Read, Glob, Grep, Bash, mcp__plugin_playwright_playwright__browser_navigate, mcp__plugin_playwright_playwright__browser_snapshot, mcp__plugin_playwright_playwright__browser_click, mcp__plugin_playwright_playwright__browser_fill_form, mcp__plugin_playwright_playwright__browser_press_key, mcp__plugin_playwright_playwright__browser_take_screenshot, mcp__plugin_playwright_playwright__browser_wait_for, mcp__plugin_playwright_playwright__browser_tabs
 ---
 
 # Gemini Web Image Generator
@@ -20,6 +20,27 @@ If no arguments are provided, ask the user what they'd like to generate.
 ## First-Run Setup
 
 On the very first use, a browser window will open and you will need to log into your Google account. After that first login, credentials are persisted automatically in the Playwright browser profile and subsequent runs will not require login.
+
+## Browser Reuse (CRITICAL — READ FIRST)
+
+**NEVER kill an existing Chrome process and relaunch it.** Google detects the relaunch as automated traffic and blocks you with an "unusual traffic" page. This block lasts 10-15 minutes and is triggered reliably by kill-and-relaunch.
+
+When `browser_navigate` fails with "Opening in existing browser session":
+1. **First**: Try `browser_close` to reset the Playwright session, then retry `browser_navigate`.
+2. **If that fails**: Tell the user their existing Chrome is blocking Playwright. Ask them to **manually close Chrome** (Cmd+Q / Alt+F4) so Playwright can launch cleanly. Do NOT use `kill`, `pkill`, or any process-killing commands on Chrome.
+3. **NEVER** run `kill`, `pkill`, or `ps | grep | kill` against Chrome processes. This is what triggers Google's bot detection on the subsequent relaunch.
+
+The Playwright debug Chrome that is already running IS your working browser — it has the user's Google login and session cookies. Killing it destroys that session and forces a fresh launch that Google flags as suspicious.
+
+## Rate Limit Avoidance (CRITICAL)
+
+Google actively detects automated traffic. To avoid being blocked:
+
+1. **Pace requests**: Wait at least **45 seconds** between consecutive image generations. When generating multiple images in a batch, use `sleep 45` between each generation cycle.
+2. **Batch limit**: Generate no more than **4 images per session** before suggesting the user take a break (5-10 minutes). After 4 images, tell the user: "We've generated 4 images this session. To avoid Google rate-limiting, I recommend taking a 5-10 minute break before generating more."
+3. **After navigating to Gemini**: Wait **3-5 seconds** before interacting with the page (simulates a real user reading the page).
+4. **After filling the prompt**: Wait **2-3 seconds** before clicking Send (simulates a real user reviewing their prompt).
+5. **If you encounter an "unusual traffic" block**: Stop immediately. Tell the user: "Google has temporarily blocked this session. Wait 10-15 minutes before trying again." Do NOT retry immediately — rapid retries make the block last longer.
 
 ## Workflow
 
@@ -54,7 +75,7 @@ Examine `$0` to decide if it is a **file path** or **inline text**:
 ### Step 3: Navigate to Gemini
 
 1. Use `browser_navigate` to go to `https://gemini.google.com/`.
-2. Wait a moment for the page to load.
+2. Wait **3-5 seconds** for the page to load (use `sleep 4` via Bash). This simulates a real user arriving at the page.
 
 ### Step 4: Check Login Status
 
@@ -67,12 +88,13 @@ Examine `$0` to decide if it is a **file path** or **inline text**:
    - On each poll, check if a text input area has appeared.
    - If login succeeds (text input appears), proceed to Step 5.
    - If login does not succeed after 60 seconds, tell the user: "Login timed out after 60 seconds. Please try again." and stop.
+5. **If you see an "unusual traffic" or "sorry" page**: Stop immediately. Tell the user: "Google has temporarily blocked automated access. Wait 10-15 minutes before trying again."
 
 ### Step 5: Enter the Prompt
 
 1. Use `browser_snapshot` to find the chat input field. Look for an element with a role like `textbox`, `textarea`, or a contenteditable element in the accessibility tree. Note its `ref` attribute.
 2. Use `browser_fill_form` with the ref of that input element to enter the prompt text.
-3. Wait 1-2 seconds for the UI to update after filling the form.
+3. Wait **2-3 seconds** for the UI to update after filling the form (use `sleep 3` via Bash). This simulates a real user reviewing their prompt before sending.
 
 ### Step 6: Submit the Prompt
 
@@ -83,15 +105,15 @@ Examine `$0` to decide if it is a **file path** or **inline text**:
 
 ### Step 7: Wait for Image Generation
 
-1. Wait 15 seconds initially before starting to poll.
-2. Then poll with `browser_snapshot` every 10-15 seconds, for up to 5 minutes (approximately 20 attempts).
+1. Wait **25 seconds** initially before starting to poll (use `sleep 25` via Bash).
+2. Then poll with `browser_snapshot` every **15-20 seconds**, for up to 5 minutes (approximately 15 attempts).
 3. On each poll, examine the accessibility tree for image elements. Look for:
    - Elements with role `img` or `image`
    - Elements whose accessible name or description contains "Generated" or "image"
    - Any new image elements that were not present before the prompt was submitted
 4. **Important**: Ignore small UI icons and profile avatars. The generated image will typically be a large, prominent image in the response area.
 5. When a candidate image element is found, note its `ref` attribute and proceed to Step 8.
-6. If no image appears after 20 polling attempts (approximately 5 minutes):
+6. If no image appears after 15 polling attempts (approximately 5 minutes):
    - Use `browser_take_screenshot` to capture a full viewport screenshot for debugging. Save it as `{output_path_stem}_debug.png` alongside the intended output.
    - Tell the user: "No generated image found after 5 minutes. Gemini may have produced a text response instead of an image. A debug screenshot has been saved. Please check the browser window and consider retrying."
    - Stop.
@@ -106,6 +128,7 @@ Examine `$0` to decide if it is a **file path** or **inline text**:
 1. Use `browser_snapshot` to look for a "New chat" button or link in the accessibility tree.
 2. If found, use `browser_click` with its ref to start a fresh chat session.
 3. If not found, that is fine -- just proceed. The chat history will not affect future use.
+4. **If generating multiple images in a batch**: Wait **45 seconds** (use `sleep 45` via Bash) before starting the next generation cycle. Tell the user: "Waiting 45 seconds between generations to avoid rate limiting..."
 
 ### Step 10: Report to User
 
@@ -127,5 +150,15 @@ If no image appears after 5 minutes of polling in Step 7, capture a debug screen
 ### Cannot Find Chat Input
 If `browser_snapshot` does not reveal a recognizable text input in Step 5, capture a snapshot for debugging, tell the user: "Could not find the chat input field. Gemini's UI may have changed. Please check the browser window." and stop.
 
-### Browser Not Available
-If any Playwright MCP tool call fails with a connection or browser error, tell the user: "The Playwright browser does not appear to be available. Please ensure the Playwright MCP server is configured and the browser is installed. You may need to run the browser_install tool first."
+### Browser Not Available / "Opening in existing browser session"
+If `browser_navigate` fails because Chrome is already running:
+1. Try `browser_close` first, then retry `browser_navigate`.
+2. If still failing, ask the user to manually quit Chrome (Cmd+Q). **NEVER use kill/pkill on Chrome processes** — this triggers Google's bot detection on relaunch.
+3. If no browser tools work at all, tell the user: "The Playwright browser does not appear to be available. Please ensure the Playwright MCP server is configured and the browser is installed. You may need to run the browser_install tool first."
+
+### Rate Limited / Unusual Traffic
+If you see a Google "unusual traffic" or "sorry" page at any point:
+1. **Do NOT retry immediately** — this makes the block last longer.
+2. **Do NOT kill and relaunch Chrome** — this is what causes the block in the first place.
+3. Tell the user: "Google has temporarily blocked automated access. This usually clears within 10-15 minutes. Please wait before trying again."
+4. Stop the current workflow.
