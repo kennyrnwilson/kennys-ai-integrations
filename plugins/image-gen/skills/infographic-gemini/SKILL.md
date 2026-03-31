@@ -47,35 +47,37 @@ Examine `$0` to decide if it is a **file path** or **inline text**:
 
 Determine the style from `--style` (default to `modern` if not specified).
 
+**IMPORTANT — Prompt wording**: Gemini frequently responds with a text description of what an infographic *would* look like instead of generating an actual image. The prompt must lead with an explicit image generation instruction and end with a reminder. Do not omit these — they are the difference between getting an image and getting text.
+
 **For file-based input**, construct this prompt:
 
 ```
-Create an infographic image that summarizes this text.
+Generate an image. Create a single infographic image summarizing this text.
 
-Style: {style}, professional, and clean design
-Background: Dark navy/blue background
-Colors: Bright, vibrant colors that work well on dark backgrounds
+IMPORTANT: I need you to GENERATE AN ACTUAL IMAGE, not describe one in text.
+
+Style: {style}, professional, dark navy/blue background with bright vibrant colors
 Layout: Clear sections with icons and visual elements
-Important: Do not depict any specific real people or public figures. Use abstract icons, symbols, and conceptual imagery to represent all ideas and people.
+Important: Do not depict any specific real people or public figures. Use abstract icons, symbols, and conceptual imagery.
 
 Text to summarize:
 {text_content}
 
-Make it visually engaging with icons, clear typography, and a good information hierarchy.
+Remember: Generate the image directly, do not write text describing what an infographic would look like.
 ```
 
 **For inline text input**, construct this prompt:
 
 ```
-Create an infographic image about: {description}
+Generate an image. Create a single infographic image about: {description}
 
-Style: {style}, professional, and clean design
-Background: Dark navy/blue background
-Colors: Bright, vibrant colors that work well on dark backgrounds
+IMPORTANT: I need you to GENERATE AN ACTUAL IMAGE, not describe one in text.
+
+Style: {style}, professional, dark navy/blue background with bright vibrant colors
 Layout: Clear sections with icons and visual elements
-Important: Do not depict any specific real people or public figures. Use abstract icons, symbols, and conceptual imagery to represent all ideas and people.
+Important: Do not depict any specific real people or public figures. Use abstract icons, symbols, and conceptual imagery.
 
-Make it visually engaging with icons, clear typography, and a good information hierarchy.
+Remember: Generate the image directly, do not write text describing what an infographic would look like.
 ```
 
 ### Step 4: Generate the Image
@@ -83,7 +85,7 @@ Make it visually engaging with icons, clear typography, and a good information h
 **IMPORTANT**: Follow all rate limit avoidance rules from the `gemini-image` skill — wait 3-5 seconds after navigation, 2-3 seconds after filling the prompt, 25 seconds before first poll, and 45 seconds between batch generations.
 
 Now follow the `gemini-image` skill workflow **starting from Step 3** (Navigate to Gemini), using:
-- The styled prompt constructed in Step 3 above as the prompt text
+- The styled prompt constructed in Step 3 above as the prompt text (do NOT wrap it again — it already includes the explicit image generation instructions)
 - The output path determined in Step 2 above
 
-This means: navigate to Gemini, check login, enter the styled prompt, submit, wait for image generation, save, clean up, and report — exactly as described in the `gemini-image` skill Steps 3-10.
+This means: navigate to Gemini, check login, enter the styled prompt, submit, wait for image generation (including the retry logic in Step 7a if Gemini returns text), save, clean up, and report — exactly as described in the `gemini-image` skill Steps 3-10.
