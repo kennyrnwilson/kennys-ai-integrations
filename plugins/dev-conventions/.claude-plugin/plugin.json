@@ -1,0 +1,11 @@
+{
+  "name": "dev-conventions",
+  "version": "1.0.0",
+  "description": "Kenny's personal authoring conventions as on-demand skills — professional Python project scaffolding, and the markdown file conventions used across the knowledge library, book library and portal.",
+  "author": {
+    "name": "kennyrnwilson"
+  },
+  "repository": "https://github.com/kennyrnwilson/kennys-ai-integrations",
+  "license": "MIT",
+  "keywords": ["python", "project-setup", "scaffolding", "conventions", "markdown", "documentation", "venv", "ruff", "pytest"]
+}

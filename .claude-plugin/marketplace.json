@@ -26,6 +26,11 @@
       "name": "ebook-processing",
       "source": "./plugins/ebook-processing",
       "description": "Process ebooks into organized, AI-enriched library folders with summaries, chapter breakdowns, infographics, critical reviews, and index pages"
+    },
+    {
+      "name": "dev-conventions",
+      "source": "./plugins/dev-conventions",
+      "description": "Personal authoring conventions as on-demand skills — Python project scaffolding and markdown file conventions"
     }
   ]
 }
