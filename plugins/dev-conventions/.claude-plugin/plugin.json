@@ -1,6 +1,6 @@
 {
   "name": "dev-conventions",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Kenny's personal authoring conventions as on-demand skills — professional Python project scaffolding, and the markdown file conventions used across the knowledge library, book library and portal.",
   "author": {
     "name": "kennyrnwilson"
