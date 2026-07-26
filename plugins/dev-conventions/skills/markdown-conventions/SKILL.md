@@ -230,9 +230,9 @@ Before completing a markdown file creation task, verify:
 - [ ] **Title present** - File starts with `# Title`
 - [ ] **Description added** - Brief description after the backlink
 - [ ] **Sections organized** - Content is in logical sections with `##` headings
-- [ ] **Related links added** - Include links to related topics
-- [ ] **Tags added** - Relevant tags for searchability
-- [ ] **Metadata added** - Created and Last Updated dates at bottom
+- [ ] **Footer present where required** - Related links, Tags, and Created/Last
+      Updated dates, per "The Related / Tags / dates footer" above: required in
+      `knowledge-library` and `book-library`, optional elsewhere, never retrofitted
 - [ ] **Relative paths used** - All links use `./` or `../` notation
 - [ ] **Links tested** - All internal links point to valid files
 
