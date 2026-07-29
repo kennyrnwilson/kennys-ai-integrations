@@ -13,8 +13,10 @@ For ACSM files, use the `download-acsm` skill first to obtain a DRM-free EPUB/PD
 
 ## Prerequisites
 
-- **Calibre** must be installed with command-line tools available (`calibredb`, `ebook-convert`)
-- **DeDRM plugin** should be installed in Calibre for DRM-protected books
+- **Calibre** must be installed with `ebook-convert` on PATH
+- **DeDRM plugin** should be installed in Calibre so `ebook-convert` can read
+  DRM-protected input directly — this skill converts the file in place via
+  `ebook-convert` and never adds it to a Calibre library
 
 ## Arguments
 
@@ -52,7 +54,7 @@ stop; do not attempt to convert by other means.
 ## Error Handling
 
 - **File not found**: Report the exact path that was tried.
-- **Calibre not installed**: Tell the user to install Calibre and ensure `calibredb` and `ebook-convert` are on PATH.
+- **Calibre not installed**: Tell the user to install Calibre and ensure `ebook-convert` is on PATH.
 - **DRM removal fails**: The DeDRM plugin may need configuration. Tell the user to check their Calibre DeDRM plugin setup.
 - **ACSM file provided**: Redirect the user to the `download-acsm` skill.
 - **Single format conversion fails**: Report the error, continue with remaining formats.

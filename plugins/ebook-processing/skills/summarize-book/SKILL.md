@@ -62,13 +62,12 @@ Important style rules:
 
 1. Determine the model short name from the current Claude model. Use `opus-4.6` for Claude Opus 4.6, `sonnet-4.6` for Sonnet 4.6, etc.
 2. Create the `summaries/` directory in the book directory if it doesn't exist.
-3. Write the generated summary to: `summaries/{book-name}_summary_anthropic_{model-short}.md`
+3. Write the generated summary to: `summaries/{book-name}_book_summary_anthropic_{model-short}.md`
 
 ### Step 6: Convert to PDF
 
 1. Run via Bash: `pandoc "summaries/{filename}.md" -o "summaries/{filename}.pdf" --pdf-engine=weasyprint`
-2. If pandoc is not available, try: `python3 -c "import weasyprint; weasyprint.HTML(filename='summaries/{filename}.md').write_pdf('summaries/{filename}.pdf')"`
-3. If neither works, skip PDF conversion and inform the user: "PDF conversion skipped — install pandoc or weasyprint for PDF output."
+2. If pandoc is not available, skip PDF conversion and inform the user: "PDF conversion skipped — install pandoc for PDF output."
 
 ### Step 7: Report
 

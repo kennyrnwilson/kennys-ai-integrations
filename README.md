@@ -53,11 +53,11 @@ Set `EBOOK_LIBRARY_PATH` to your book library root to use short book names
 instead of full paths:
 
 ```bash
-export EBOOK_LIBRARY_PATH=~/electronic-books
+export EBOOK_LIBRARY_PATH=/Users/kenne/code/book-library
 ```
 
 With this set, all skills accept bare book names — `designing-data-intensive-applications`
-resolves to `~/electronic-books/designing-data-intensive-applications/`. Full
+resolves to `/Users/kenne/code/book-library/designing-data-intensive-applications/`. Full
 paths always override.
 
 | Skill | Purpose |
@@ -82,8 +82,8 @@ paths always override.
 - `uv` on PATH.
 - `GEMINI_API_KEY` set on a funded Gemini API billing account, for `image-gen`
   (directly, and indirectly for `ebook-processing`'s infographic stages).
-- Calibre CLI (`calibredb`, `ebook-convert`) and WeasyPrint, for
-  `ebook-processing`'s conversion and PDF-rendering stages.
+- Calibre CLI (`ebook-convert`) and WeasyPrint, for `ebook-processing`'s
+  conversion and PDF-rendering stages.
 - `pandoc` is not installed on this machine and is not required. Several
   `ebook-processing` skills reference it as a preferred PDF-conversion route
   but fall back to WeasyPrint, or skip PDF generation entirely, when it is

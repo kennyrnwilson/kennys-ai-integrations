@@ -241,24 +241,24 @@ Use this template as the output format for README.md. Only include sections for 
 [Only include providers whose files actually exist]
 
 ### Anthropic Summary
-- [Markdown Version](summaries/{book-name}_summary_anthropic_{model}.md)
-- [PDF Version](summaries/{book-name}_summary_anthropic_{model}.pdf)
+- [Markdown Version](summaries/{book-name}_book_summary_anthropic_{model}.md)
+- [PDF Version](summaries/{book-name}_book_summary_anthropic_{model}.pdf)
 
 ### Claude Summary (legacy naming)
-- [Markdown Version](summaries/{book-name}_summary_claude_{model}.md)
-- [PDF Version](summaries/{book-name}_summary_claude_{model}.pdf)
+- [Markdown Version](summaries/{book-name}_book_summary_claude_{model}.md)
+- [PDF Version](summaries/{book-name}_book_summary_claude_{model}.pdf)
 
 ### OpenAI Summary
-- [Markdown Version](summaries/{book-name}_summary_openai_{model}.md)
-- [PDF Version](summaries/{book-name}_summary_openai_{model}.pdf)
+- [Markdown Version](summaries/{book-name}_book_summary_openai_{model}.md)
+- [PDF Version](summaries/{book-name}_book_summary_openai_{model}.pdf)
 
 ### Gemini Web Summary
-- [Markdown Version](summaries/{book-name}_summary_gemini_web.md)
-- [PDF Version](summaries/{book-name}_summary_gemini_web.pdf)
+- [Markdown Version](summaries/{book-name}_book_summary_gemini_web.md)
+- [PDF Version](summaries/{book-name}_book_summary_gemini_web.pdf)
 
 ### Shortform Summary
-- [Markdown Version](summaries/{book-name}_summary_shortform.md)
-- [PDF Version](summaries/{book-name}_summary_shortform.pdf)
+- [Markdown Version](summaries/{book-name}_book_summary_shortform.md)
+- [PDF Version](summaries/{book-name}_book_summary_shortform.pdf)
 
 ---
 
