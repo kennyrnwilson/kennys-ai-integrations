@@ -1,7 +1,7 @@
 ---
 name: mermaid
 description: Generate professional dark-mode Mermaid diagrams optimised for VS Code and local editors. Use when the user asks for a diagram, flowchart, sequence diagram, class diagram, or any visual representation of architecture, data flow, or processes.
-argument-hint: [diagram-type] [description]
+argument-hint: "[diagram-type] [description]"
 user-invocable: true
 allowed-tools: Read, Edit, Write, Grep, Glob
 ---

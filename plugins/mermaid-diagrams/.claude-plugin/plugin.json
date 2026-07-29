@@ -1,8 +1,11 @@
 {
   "name": "mermaid-diagrams",
-  "description": "Professional dark-mode Mermaid diagram generator for VS Code and local editors",
   "version": "1.0.0",
+  "description": "Professional dark-mode Mermaid diagram generator for VS Code and local editors",
   "author": {
     "name": "kennyrnwilson"
-  }
+  },
+  "repository": "https://github.com/kennyrnwilson/kennys-ai-integrations",
+  "license": "MIT",
+  "keywords": ["mermaid", "diagrams", "flowchart", "dark-mode", "documentation"]
 }

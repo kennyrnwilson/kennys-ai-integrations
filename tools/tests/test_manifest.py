@@ -1,9 +1,9 @@
 import json
 from pathlib import Path
 
-from marketplace_validator.manifest import validate_plugin_manifest
-
 from conftest import write_plugin
+
+from marketplace_validator.manifest import validate_marketplace, validate_plugin_manifest
 
 
 def levels(findings) -> list[str]:
@@ -84,9 +84,6 @@ def test_malformed_json_is_an_error(repo: Path):
     manifest.write_text("{ not json")
     findings = validate_plugin_manifest(manifest, repo)
     assert "error" in levels(findings)
-
-
-from marketplace_validator.manifest import validate_marketplace
 
 
 def write_marketplace(repo: Path, plugin_names: list[str]) -> None:

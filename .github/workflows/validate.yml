@@ -1,0 +1,29 @@
+name: validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Run validator unit tests
+        working-directory: tools
+        run: uv run --group dev pytest -v
+
+      - name: Lint
+        working-directory: tools
+        run: uv run --group dev ruff check .
+
+      - name: Validate marketplace structure
+        working-directory: tools
+        run: uv run validate-marketplace ..
