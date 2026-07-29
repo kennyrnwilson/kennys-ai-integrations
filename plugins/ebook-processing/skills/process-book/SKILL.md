@@ -130,4 +130,7 @@ Include any error details for failed stages.
 - **Single stage failure**: Log the error, report it, continue with the next stage.
 - **Multiple stage failures**: Report all failures in the final summary. Suggest the user fix the issues and re-run with `--skip` for already-completed stages.
 - **Calibre not available (convert stage)**: Skip conversion, tell the user to install Calibre or provide a pre-converted directory.
-- **Playwright not available (infographic stages)**: Skip infographic generation, note it in the report.
+- **Image generation unavailable**: `generate_image.py` needs `GEMINI_API_KEY`
+  on a funded billing account. A `429 RESOURCE_EXHAUSTED` means the prepaid
+  balance is spent. Report it and skip the infographic stages; do not retry and
+  do not fall back to any browser-based route — none exists.
