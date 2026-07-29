@@ -1,6 +1,6 @@
 {
   "name": "mermaid-diagrams",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Professional dark-mode Mermaid diagram generator for VS Code and local editors",
   "author": {
     "name": "kennyrnwilson"
