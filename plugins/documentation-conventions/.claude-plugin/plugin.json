@@ -1,0 +1,11 @@
+{
+  "name": "documentation-conventions",
+  "version": "1.0.0",
+  "description": "Kenny's documentation authoring conventions — markdown file structure with bidirectional parent/child links, and Mermaid diagram theming",
+  "author": {
+    "name": "kennyrnwilson"
+  },
+  "repository": "https://github.com/kennyrnwilson/kennys-ai-integrations",
+  "license": "MIT",
+  "keywords": ["markdown", "documentation", "conventions", "mermaid", "diagrams", "knowledge-library"]
+}

@@ -8,11 +8,6 @@
   },
   "plugins": [
     {
-      "name": "mermaid-diagrams",
-      "source": "./plugins/mermaid-diagrams",
-      "description": "Professional dark-mode Mermaid diagram generator for VS Code and local editors"
-    },
-    {
       "name": "image-gen",
       "source": "./plugins/image-gen",
       "description": "Generate images using AI chat interfaces via browser automation"
@@ -30,7 +25,12 @@
     {
       "name": "dev-conventions",
       "source": "./plugins/dev-conventions",
-      "description": "Personal authoring conventions as on-demand skills — Python project scaffolding and markdown file conventions"
+      "description": "Professional Python project scaffolding"
+    },
+    {
+      "name": "documentation-conventions",
+      "source": "./plugins/documentation-conventions",
+      "description": "Markdown authoring conventions and Mermaid diagram theming"
     }
   ]
 }
