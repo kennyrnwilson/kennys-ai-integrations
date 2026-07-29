@@ -24,7 +24,7 @@ marketplace and `image-gen` is enabled.
 ## Arguments
 
 - `$0` — The book directory path or book name. Can be:
-  - A full/relative path (e.g., `~/electronic-books/designing-data-intensive-applications/`)
+  - A full/relative path (e.g., `/Users/kenne/code/book-library/designing-data-intensive-applications/`)
   - A bare book name (e.g., `designing-data-intensive-applications`) — resolved against `$EBOOK_LIBRARY_PATH`
   Must contain a `summaries/` subdirectory with at least one summary file.
 - `--force` — Bypass resume check and regenerate infographics even if they already exist.
@@ -47,12 +47,14 @@ Resolve `$0` to a book directory path:
 ### Step 1: Locate Best Summary
 
 1. Use Glob to search `summaries/` in the book directory for available summary files.
-2. Select the best summary using this priority order:
-   - `*_summary_claude_*` (Claude-generated, highest quality)
-   - `*_summary_anthropic_*` (Anthropic API)
-   - `*_summary_openai_*` (OpenAI API)
-   - `*_summary_gemini_*` (Gemini)
-   - Any other `*_summary_*` file
+2. Select the best available summary by this priority:
+
+   1. `*_summary_anthropic_*` — Claude via the Anthropic API (the library's
+      dominant format, 50 files)
+   2. `*_summary_claude_*` — legacy naming, one file only
+   3. `*_summary_openai_*`
+   4. `*_summary_gemini_*` / `*_summary_gemini_web_*`
+   5. any other `*_summary_*`
 3. If no summary is found, tell the user: "No summary found in `{directory}/summaries/`. Please run `summarize-book` first." and stop.
 
 ### Step 2: Resume Check

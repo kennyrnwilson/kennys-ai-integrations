@@ -12,7 +12,7 @@ Generate a comprehensive README index page, action items checklist, and metadata
 ## Arguments
 
 - `$0` — The book directory path or book name. Can be:
-  - A full/relative path (e.g., `~/electronic-books/designing-data-intensive-applications/`)
+  - A full/relative path (e.g., `/Users/kenne/code/book-library/designing-data-intensive-applications/`)
   - A bare book name (e.g., `designing-data-intensive-applications`) — resolved against `$EBOOK_LIBRARY_PATH`
 - `--force` — Bypass resume check and regenerate all index files even if they already exist.
 
@@ -45,7 +45,7 @@ Resolve `$0` to a book directory path:
 ### Step 3: Read Book Content
 
 1. Read the book markdown (from `book-formats/*_book.md`) or the best available summary (from `summaries/`) for title, author extraction and content understanding.
-2. Use the same summary priority as critical-review: `*_summary_claude_*` > `*_summary_anthropic_*` > `*_summary_openai_*` > `*_summary_gemini_*`.
+2. Use the same summary priority as critical-review: `*_summary_anthropic_*` (dominant, 50 files) > `*_summary_claude_*` (legacy, one file) > `*_summary_openai_*` > `*_summary_gemini_*` / `*_summary_gemini_web_*`.
 
 ### Step 4: Generate action-items.md
 
@@ -68,28 +68,50 @@ Write to `README.md` in the book root.
 
 ### Step 6: Generate metadata.yaml
 
-Extract structured metadata and write to `metadata.yaml` in the book root:
+Extract structured metadata and write to `metadata.yaml` in the book root,
+following the library's real schema (verified against
+`designing-data-intensive-applications/metadata.yaml` and
+`atomic-habits/metadata.yaml` in `book-library`):
 
 ```yaml
-title: "[Book Title]"
-author: "[Author Name]"
-isbn: "[ISBN if findable, otherwise omit]"
-publication_year: [Year if known, otherwise omit]
+title: Designing Data-Intensive Applications
+author: Martin Kleppmann
 categories:
-  - "[Category 1]"
-  - "[Category 2]"
+- technology
+- databases
+- distributed-systems
+source_folder: designing-data-intensive-applications
+formats:
+  epub: book-formats/designing-data-intensive-applications_book.epub
+  pdf: book-formats/designing-data-intensive-applications_book.pdf
+  md: book-formats/designing-data-intensive-applications_book.md
+summaries:
+  anthropic: summaries/designing-data-intensive-applications_book_summary_anthropic_opus-4.5.md
+  openai: summaries/designing-data-intensive-applications_book_summary_openai_gpt-5.2.md
+  critical_review: summaries/designing-data-intensive-applications_critical_review.md
+infographics:
+  gemini: designing-data-intensive-applications_book_infographic_gemini.png
 tags:
-  - "[tag1]"
-  - "[tag2]"
-  - "[tag3]"
-processing_date: "[Current date in YYYY-MM-DD format]"
-processed_by: "ebook-processing plugin"
-files:
-  book_formats: [list of files in book-formats/]
-  summaries: [list of files in summaries/]
-  chapter_summaries: [list of files in chapter-summaries/]
-  infographics: [list of infographic files]
+- scalability
+- replication
+- partitioning
+embedding_status: pending
 ```
+
+**Field rules**
+
+- `source_folder` is **required** and must exactly equal the book's directory
+  name in kebab-case. The `book-library` MCP server keys off it; a mismatch
+  makes the book unreachable through search.
+- `formats`, `summaries` and `infographics` are maps of short key → repo-relative
+  path. Only include keys whose file actually exists — do not emit a key with a
+  path to a file you did not find.
+- `summaries` keys are provider tokens: `anthropic`, `openai`, `gemini`,
+  `gemini_web`, `critical_review`.
+- `categories` is broad subject areas; `tags` is specific concepts. Both are
+  kebab-case lists. Aim for 3–6 categories and 8–12 tags.
+- `embedding_status: pending` on every newly created file — a separate pipeline
+  in `book-library` consumes and updates it. Never set it to anything else here.
 
 ### Step 7: Create Stub Folders
 
@@ -126,6 +148,24 @@ Tell the user:
 - Files created (README.md, action-items.md, metadata.yaml, stub folders)
 - Sections included in the README (based on what materials exist)
 - File paths
+
+### Step 11: Update the library catalogue
+
+`book-library/CLAUDE.md` requires `CATALOG.md` to stay in sync when a book is
+added. There is no generation script in that repo — it is maintained by hand.
+
+1. Check whether the book already appears:
+
+```bash
+grep -n "{slug}" "$EBOOK_LIBRARY_PATH/CATALOG.md" || echo "not in catalogue"
+```
+
+2. If absent, add a row matching the surrounding format exactly. Read the
+   neighbouring rows first — do not guess the column layout.
+
+3. Tell the user that `catalog.html` and `CATALOG.pdf` are generated separately
+   and may also need regenerating. Do not attempt to regenerate them; no script
+   exists for this and hand-editing the PDF is not sensible.
 
 ## Index Page Template
 
@@ -200,17 +240,17 @@ Use this template as the output format for README.md. Only include sections for 
 
 [Only include providers whose files actually exist]
 
-### Claude Summary
+### Anthropic Summary
+- [Markdown Version](summaries/{book-name}_summary_anthropic_{model}.md)
+- [PDF Version](summaries/{book-name}_summary_anthropic_{model}.pdf)
+
+### Claude Summary (legacy naming)
 - [Markdown Version](summaries/{book-name}_summary_claude_{model}.md)
 - [PDF Version](summaries/{book-name}_summary_claude_{model}.pdf)
 
 ### OpenAI Summary
 - [Markdown Version](summaries/{book-name}_summary_openai_{model}.md)
 - [PDF Version](summaries/{book-name}_summary_openai_{model}.pdf)
-
-### Anthropic Summary
-- [Markdown Version](summaries/{book-name}_summary_anthropic_{model}.md)
-- [PDF Version](summaries/{book-name}_summary_anthropic_{model}.pdf)
 
 ### Gemini Web Summary
 - [Markdown Version](summaries/{book-name}_summary_gemini_web.md)

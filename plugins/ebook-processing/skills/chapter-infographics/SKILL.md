@@ -24,7 +24,7 @@ marketplace and `image-gen` is enabled.
 ## Arguments
 
 - `$0` — The book directory path or book name. Can be:
-  - A full/relative path (e.g., `~/electronic-books/designing-data-intensive-applications/`)
+  - A full/relative path (e.g., `/Users/kenne/code/book-library/designing-data-intensive-applications/`)
   - A bare book name (e.g., `designing-data-intensive-applications`) — resolved against `$EBOOK_LIBRARY_PATH`
   Must contain a `chapter-summaries/` subdirectory with chapter markdown files.
 - `--force` — Bypass resume checks and regenerate all chapter infographics, even if they already exist.

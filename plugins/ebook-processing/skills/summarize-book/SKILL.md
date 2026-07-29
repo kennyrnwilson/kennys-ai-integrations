@@ -12,7 +12,7 @@ Generate a comprehensive, structured book summary using Claude's native capabili
 ## Arguments
 
 - `$0` — The book directory path or book name. Can be:
-  - A full/relative path (e.g., `~/electronic-books/designing-data-intensive-applications/`)
+  - A full/relative path (e.g., `/Users/kenne/code/book-library/designing-data-intensive-applications/`)
   - A bare book name (e.g., `designing-data-intensive-applications`) — resolved against `$EBOOK_LIBRARY_PATH`
   Must contain a `book-formats/` subdirectory with a `*_book.md` file.
 - `--force` — Bypass resume check and regenerate the summary even if one already exists.
@@ -36,9 +36,11 @@ Resolve `$0` to a book directory path:
 
 ### Step 2: Resume Check
 
-1. Use Glob to check for existing files matching `summaries/*_summary_claude_*.md` in the book directory.
-2. If a matching file is found and `--force` was NOT specified, tell the user: "A Claude summary already exists at `{path}`. Use `--force` to regenerate." and stop.
-3. If `--force` was specified or no existing summary found, continue.
+1. Glob for `summaries/*_summary_anthropic_*.md` **and**
+   `summaries/*_summary_claude_*.md`.
+2. If either matches and `--force` was not given, report the existing path and
+   stop: "A summary already exists at `{path}`. Use `--force` to regenerate."
+3. If `--force` was specified or neither pattern matched, continue.
 
 ### Step 3: Read Book Content
 
@@ -60,7 +62,7 @@ Important style rules:
 
 1. Determine the model short name from the current Claude model. Use `opus-4.6` for Claude Opus 4.6, `sonnet-4.6` for Sonnet 4.6, etc.
 2. Create the `summaries/` directory in the book directory if it doesn't exist.
-3. Write the generated summary to: `summaries/{book-name}_summary_claude_{model-short}.md`
+3. Write the generated summary to: `summaries/{book-name}_summary_anthropic_{model-short}.md`
 
 ### Step 6: Convert to PDF
 

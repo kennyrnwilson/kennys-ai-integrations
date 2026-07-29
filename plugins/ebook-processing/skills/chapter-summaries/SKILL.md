@@ -12,7 +12,7 @@ Extract and summarize individual chapters from a book's markdown, producing a se
 ## Arguments
 
 - `$0` — The book directory path or book name. Can be:
-  - A full/relative path (e.g., `~/electronic-books/designing-data-intensive-applications/`)
+  - A full/relative path (e.g., `/Users/kenne/code/book-library/designing-data-intensive-applications/`)
   - A bare book name (e.g., `designing-data-intensive-applications`) — resolved against `$EBOOK_LIBRARY_PATH`
   Must contain a `book-formats/` subdirectory with a `*_book.md` file.
 - `--force` — Bypass resume checks and regenerate all chapter summaries, even if they already exist.
