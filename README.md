@@ -66,7 +66,7 @@ paths always override.
 | `download-acsm` | Download and unlock ACSM files using Adobe Digital Editions |
 | `convert-book` | Convert ebook files (EPUB, PDF) into multiple formats using Calibre |
 | `summarize-book` | Generate a comprehensive structured summary using Claude |
-| `chapter-summaries` | Extract and summarize individual chapters |
+| `chapter-summaries` | Extract and summarise individual chapters |
 | `critical-review` | Evidence-based critical review of key claims using web research |
 | `book-infographics` | Book-level infographics via the `image-gen` plugin |
 | `chapter-infographics` | Per-chapter infographics via the `image-gen` plugin |
@@ -84,7 +84,10 @@ paths always override.
   (directly, and indirectly for `ebook-processing`'s infographic stages).
 - Calibre CLI (`calibredb`, `ebook-convert`) and WeasyPrint, for
   `ebook-processing`'s conversion and PDF-rendering stages.
-- `pandoc` is deliberately not used anywhere in this marketplace.
+- `pandoc` is not installed on this machine and is not required. Several
+  `ebook-processing` skills reference it as a preferred PDF-conversion route
+  but fall back to WeasyPrint, or skip PDF generation entirely, when it is
+  absent — no new `pandoc` dependency should be introduced.
 
 No MCP servers and no external plugins are required — every plugin here is
 self-contained, calling an API or a local CLI directly.
