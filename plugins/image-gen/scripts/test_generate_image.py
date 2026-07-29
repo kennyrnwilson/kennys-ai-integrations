@@ -15,6 +15,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).parent))
 
 from generate_image import (  # noqa: E402
+    MAX_SOURCE_CHARS,
     VALID_ASPECT_RATIOS,
     ImageGenerationError,
     build_prompt,
@@ -202,12 +203,25 @@ def test_cli_forwards_the_aspect_ratio(tmp_path: Path, monkeypatch):
 
 def test_cli_truncates_very_long_source_files(tmp_path: Path, monkeypatch):
     source = tmp_path / "big.md"
-    source.write_text("A" * 10_000)
+    source.write_text("A" * (MAX_SOURCE_CHARS * 2))
     captured: dict = {}
     _stub(monkeypatch, captured)
 
     main([str(source), "--output", str(tmp_path / "r.png")])
-    assert len(captured["prompt"]) <= 3200
+    assert len(captured["prompt"]) == MAX_SOURCE_CHARS
+
+
+def test_cli_does_not_truncate_a_source_within_the_limit(tmp_path: Path, monkeypatch):
+    # A full README-sized document must survive intact. The old 3000-char cap,
+    # inherited from the retired browser path, silently cut documents mid-sentence.
+    body = "B" * (MAX_SOURCE_CHARS - 1)
+    source = tmp_path / "readme.md"
+    source.write_text(body)
+    captured: dict = {}
+    _stub(monkeypatch, captured)
+
+    main([str(source), "--output", str(tmp_path / "r.png")])
+    assert captured["prompt"] == body
 
 
 def test_cli_defaults_output_beside_a_source_file(tmp_path: Path, monkeypatch):

@@ -138,7 +138,16 @@ def generate(
     )
 
 
-MAX_SOURCE_CHARS = 3000
+# Guard against accidentally passing a whole book as a prompt; it is not an API
+# limit. The previous value of 3000 was inherited from the retired browser path,
+# where the prompt was typed into a web chat textarea and long input was slow and
+# unreliable. The API has no such constraint, so the cap is now generous enough
+# to pass a full README or chapter through intact.
+#
+# Note this is a *safety* ceiling, not a target: very long infographic prompts
+# raise the chance of finish_reason=NO_IMAGE (the model replying in text instead
+# of drawing). For infographics, a focused summary still beats a long document.
+MAX_SOURCE_CHARS = 32_000
 
 
 def _read_source(argument: str) -> str:

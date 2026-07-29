@@ -19,7 +19,9 @@ failure modes as `generate-image`.
 ## Arguments
 
 - `$0` — inline topic text, or a path to a markdown/text file to summarise.
-  Files over 3000 characters are truncated.
+  Files over 32,000 characters are truncated, and the script says so. That is a
+  safety ceiling, not a target — long infographic prompts raise the chance of
+  `NO_IMAGE`, so a focused summary still beats a long document here.
 - `--style` — `modern` (default), `minimal`, `abstract`, `illustrated`, `tech`.
 - `--output` — defaults to `{source_stem}_infographic.png` beside the source
   file, or `infographic.png` in the working directory.

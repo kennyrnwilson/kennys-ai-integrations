@@ -24,7 +24,7 @@ in this plugin any more.
 ## Arguments
 
 - `$0` — inline prompt text, or a path to a text/markdown file to use as the
-  prompt. Files over 3000 characters are truncated, and the script says so.
+  prompt. Files over 32,000 characters are truncated, and the script says so.
 - `--output` — output path. Defaults to `image.png` in the working directory,
   or `{source_stem}_image.png` beside a source file.
 - `--aspect-ratio` — `16:9` (default), `1:1`, `9:16`, `4:3`, `3:4`, `2:3`,
