@@ -13,3 +13,11 @@ __pycache__/
 *.py[cod]
 venv/
 .env
+
+# Playwright MCP browser artefacts
+.playwright-mcp/
+
+# Guard: a literal "~" directory means a tilde leaked into argv somewhere.
+# Tilde is a shell feature and is NOT expanded in .mcp.json args or exec calls.
+# If this ever reappears, find the offending path and make it absolute.
+/~/
