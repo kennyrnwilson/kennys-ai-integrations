@@ -1,6 +1,10 @@
 """Tests for generate_image.py.
 
-Run with:  uv run --with pytest pytest plugins/image-gen/scripts/test_generate_image.py -v
+Run with:  uv run --with pytest --with google-genai pytest plugins/image-gen/scripts/test_generate_image.py -v
+
+(google-genai must be installed alongside pytest: generate() imports
+google.genai.types even when a FakeClient is injected, and the tests
+construct/inspect real google.genai.types objects.)
 """
 
 import sys
@@ -130,3 +134,14 @@ def test_generate_creates_missing_parent_directories(tmp_path: Path):
     out = tmp_path / "nested" / "deeper" / "result.png"
     generate("p", out, client=client)
     assert out.exists()
+
+
+def test_generate_requires_gemini_api_key_when_no_client_is_injected(tmp_path, monkeypatch):
+    # google-genai also reads GOOGLE_API_KEY and prefers it when both are
+    # set, so without GEMINI_API_KEY this must fail fast and by name --
+    # never fall through to a network call using some other ambient key.
+    monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+    out = tmp_path / "should-not-exist.png"
+    with pytest.raises(ImageGenerationError, match="GEMINI_API_KEY"):
+        generate("p", out)
+    assert not out.exists()

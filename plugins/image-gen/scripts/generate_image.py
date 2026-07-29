@@ -94,7 +94,20 @@ def generate(
     if client is None:
         from google import genai
 
-        client = genai.Client()
+        # google-genai also reads GOOGLE_API_KEY and prefers it over
+        # GEMINI_API_KEY when both are set. This script's contract (see the
+        # module docstring) is GEMINI_API_KEY, so the key is bound explicitly
+        # here rather than left to genai.Client()'s own env lookup -- do not
+        # "simplify" this back to a bare genai.Client() call.
+        api_key = os.environ.get("GEMINI_API_KEY")
+        if not api_key:
+            raise ImageGenerationError(
+                "GEMINI_API_KEY is not set. Note that the google-genai SDK "
+                "also reads GOOGLE_API_KEY and prefers it when both are set, "
+                "so this script binds GEMINI_API_KEY explicitly to avoid "
+                "silently picking up a different key."
+            )
+        client = genai.Client(api_key=api_key)
 
     model = model or DEFAULT_MODEL
 
