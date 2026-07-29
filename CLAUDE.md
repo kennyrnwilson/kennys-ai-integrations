@@ -17,8 +17,8 @@ marketplace source.
 
 ## Commands
 - Validate: `cd tools && uv run validate-marketplace ..`
-- Test: `cd tools && uv run --extra dev pytest -v`
-- Lint: `cd tools && uv run --extra dev ruff check .`
+- Test: `cd tools && uv run --group dev pytest -v`
+- Lint: `cd tools && uv run --group dev ruff check .`
 
 Run the validator before every commit. CI runs the same three commands.
 
