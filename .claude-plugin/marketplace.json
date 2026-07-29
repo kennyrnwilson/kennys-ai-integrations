@@ -4,13 +4,13 @@
     "name": "kennyrnwilson"
   },
   "metadata": {
-    "description": "Kenny's Claude Code plugin collection: professional Mermaid diagrams, AI-powered infographics, and more."
+    "description": "Kenny's Claude Code plugin collection: Gemini image and infographic generation, ebook processing, and documentation conventions."
   },
   "plugins": [
     {
       "name": "image-gen",
       "source": "./plugins/image-gen",
-      "description": "Generate images using AI chat interfaces via browser automation"
+      "description": "Generate images and infographics through the Gemini image API"
     },
     {
       "name": "ebook-processing",

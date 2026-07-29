@@ -4,18 +4,13 @@
 
 ## Plugins
 
-- **[mermaid-diagrams](../plugins/mermaid-diagrams/)** — Professional dark-mode Mermaid diagram generator
-  - [mermaid](../plugins/mermaid-diagrams/skills/mermaid/SKILL.md) — Generate Mermaid diagrams
+- **[image-gen](../plugins/image-gen/)** — Generate images and infographics through the Gemini image API
+  - [generate-image](../plugins/image-gen/skills/generate-image/SKILL.md) — Any image, from inline text or a source file
+  - [infographic](../plugins/image-gen/skills/infographic/SKILL.md) — Dark-themed infographic from text or a file
 
-- **[image-gen](../plugins/image-gen/)** — AI-powered image generation via browser automation
-  - [gemini-image](../plugins/image-gen/skills/gemini-image/SKILL.md) — Base Gemini image generation
-  - [infographic-gemini](../plugins/image-gen/skills/infographic-gemini/SKILL.md) — Gemini infographic styling
-  - [chatgpt-image](../plugins/image-gen/skills/chatgpt-image/SKILL.md) — Base ChatGPT image generation
-  - [infographic-chatgpt](../plugins/image-gen/skills/infographic-chatgpt/SKILL.md) — ChatGPT infographic styling
-
-- **[notebooklm](../plugins/notebooklm/)** — Google NotebookLM automation
-  - [notebooklm-create](../plugins/notebooklm/skills/notebooklm-create/SKILL.md) — Create notebook + upload sources
-  - [notebooklm-generate](../plugins/notebooklm/skills/notebooklm-generate/SKILL.md) — Generate outputs (reports, slides, etc.)
+- **[documentation-conventions](../plugins/documentation-conventions/)** — Markdown authoring conventions and Mermaid diagram theming
+  - [markdown-conventions](../plugins/documentation-conventions/skills/markdown-conventions/SKILL.md) — File structure, bidirectional parent/child links, backlinks, relative paths, kebab-case names, and the Related/Tags/dates footer
+  - [mermaid-conventions](../plugins/documentation-conventions/skills/mermaid-conventions/SKILL.md) — Semantic colour palette and dark-theme init blocks for Mermaid diagrams
 
 - **[ebook-processing](../plugins/ebook-processing/)** — AI-enriched book library builder
   - [process-book](../plugins/ebook-processing/skills/process-book/SKILL.md) — Full pipeline orchestrator
@@ -28,11 +23,11 @@
   - [chapter-infographics](../plugins/ebook-processing/skills/chapter-infographics/SKILL.md) — Per-chapter infographics
   - [book-index](../plugins/ebook-processing/skills/book-index/SKILL.md) — README index + metadata
 
-## Design Documents
+## Plans
 
-- [Ebook Processing Plugin Design](plans/2026-03-09-ebook-processing-plugin-design.md)
-- [Ebook Processing Plugin Plan](plans/2026-03-09-ebook-processing-plugin-plan.md)
-- [NotebookLM Plugin Design](plans/2026-03-08-notebooklm-plugin-design.md)
+- [Marketplace Remediation Plan](plans/2026-07-29-marketplace-remediation.md) — the current plan governing this repo's structure
+- [Execution Handoff](plans/2026-07-29-execution-handoff.md)
+- [Archived Design Documents](plans/archive/) — superseded pre-implementation designs, kept for history only
 
 ## Adding New Plugins
 
@@ -44,4 +39,4 @@
 
 ---
 
-*Last Updated: 2026-03-14*
+*Last Updated: 2026-07-29*
