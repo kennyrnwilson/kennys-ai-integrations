@@ -13,7 +13,7 @@ Run the full ebook processing pipeline end-to-end. Orchestrates all stage skills
 
 - `$0` — A book file, book directory path, or bare book name:
   - **Book file** (`.epub`, `.pdf`) — full pipeline starting with conversion
-  - **ACSM file** (`.acsm`) — not processed automatically; reports the DRM notice and stops (see Stage 1 below)
+  - **ACSM file** (`.acsm`) — not processed automatically; reports the DRM notice and stops (see "Before Stage 1: ACSM input" below)
   - **Directory path** (e.g., `/Users/kenne/code/book-library/my-book/`) — enrichment only
   - **Bare book name** (e.g., `designing-data-intensive-applications`) — resolved against `$EBOOK_LIBRARY_PATH`, enrichment only
 - `--force` — Pass through to all stage skills to regenerate everything, bypassing resume checks.
@@ -26,7 +26,7 @@ If no arguments are provided, ask the user for the book file or directory path.
 ### Step 1: Determine Input Type
 
 1. Examine `$0` to determine what it is:
-   - **ACSM file** (ends with `.acsm`): Do not process automatically — see Stage 1 below. Report the DRM notice and stop.
+   - **ACSM file** (ends with `.acsm`): Do not process automatically — see "Before Stage 1: ACSM input" below. Report the DRM notice and stop.
    - **EPUB/PDF file** (ends with `.epub` or `.pdf`): Set mode to **full pipeline**.
    - **Existing directory** (path exists as a directory): Set mode to **enrichment only**.
    - **Bare name** (no path separators, no file extension): Resolve against `$EBOOK_LIBRARY_PATH` (check via Bash: `echo $EBOOK_LIBRARY_PATH`). If set, resolve to `$EBOOK_LIBRARY_PATH/{name}/`. If not set, resolve to `./{name}/`. Set mode to **enrichment only**.
@@ -52,7 +52,7 @@ Execute stages in order. For each stage, invoke the corresponding skill with the
 
 **If a stage fails, log the error and continue with the next stage.** Do not abort the entire pipeline for a single stage failure.
 
-#### Stage 1: ACSM (opt-in only)
+#### Before Stage 1: ACSM input (opt-in only, not a pipeline stage)
 
 **Skipped by default.** ACSM redemption involves DRM and is a decision the user
 makes deliberately per book — see the `download-acsm` skill's "Before Using This
