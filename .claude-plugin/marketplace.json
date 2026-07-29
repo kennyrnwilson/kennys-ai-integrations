@@ -23,11 +23,6 @@
       "description": "Process ebooks into organized, AI-enriched library folders with summaries, chapter breakdowns, infographics, critical reviews, and index pages"
     },
     {
-      "name": "dev-conventions",
-      "source": "./plugins/dev-conventions",
-      "description": "Professional Python project scaffolding"
-    },
-    {
       "name": "documentation-conventions",
       "source": "./plugins/documentation-conventions",
       "description": "Markdown authoring conventions and Mermaid diagram theming"
