@@ -7,6 +7,22 @@ user-invocable: true
 
 # ACSM Downloader
 
+## Before Using This Skill
+
+ACSM files are Adobe DRM licence tokens. This skill uses Adobe Digital Editions
+to redeem one into an EPUB or PDF. If the resulting file is DRM-protected,
+`convert-book` will only succeed when Calibre has a DeDRM plugin installed.
+
+Removing DRM is a licensing question that depends on your jurisdiction and the
+terms you bought the book under, and it is not automatic even for books you own
+outright. This skill is deliberately **not** part of the default `process-book`
+pipeline; invoke it only when you have decided that is appropriate for your own
+purchased content.
+
+If Adobe Digital Editions is not installed or the Adobe ID is not authorised for
+this file, stop and tell the user — do not attempt to work around the DRM by
+other means.
+
 Download and unlock ACSM ebook files using Adobe Digital Editions. ACSM files are DRM license tokens — this skill opens them in Adobe Digital Editions to download the actual book, then locates the resulting EPUB/PDF for use with `convert-book`.
 
 ## Prerequisites

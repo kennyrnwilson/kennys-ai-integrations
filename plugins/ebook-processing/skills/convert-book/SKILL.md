@@ -28,75 +28,26 @@ If no arguments are provided, ask the user for the book file path.
 
 ## Workflow
 
-### Step 1: Validate Input
+Resolve the output directory, then run the script. It handles validation,
+slug derivation, resume, and all four format conversions.
 
-1. Check that the input file (`$0`) exists using Bash `ls`.
-2. Determine the file format from the extension (`.epub`, `.pdf`).
-3. If the file doesn't exist, tell the user: "File not found: `{path}`" and stop.
-4. If the file is `.acsm`, tell the user: "ACSM files need to be downloaded first. Please run `download-acsm` to obtain a DRM-free EPUB/PDF, then pass that file to `convert-book`." and stop.
-5. If the format is unsupported, tell the user: "Unsupported format. Supported formats: .epub, .pdf" and stop.
+1. Resolve the output directory:
+   - If `--output-dir` was given, use it.
+   - Otherwise read `EBOOK_LIBRARY_PATH` (`echo $EBOOK_LIBRARY_PATH`) and use
+     `$EBOOK_LIBRARY_PATH/{slug}/`.
+   - If that variable is unset, use `./{slug}/` and tell the user.
 
-### Step 2: Determine Output Directory
+2. Run:
 
-1. If `--output-dir` was specified, use that directory.
-2. Otherwise, derive the book name from the filename (remove extension, convert to kebab-case):
-   - Check `EBOOK_LIBRARY_PATH` environment variable (via Bash: `echo $EBOOK_LIBRARY_PATH`)
-   - If set, use `$EBOOK_LIBRARY_PATH/{book-name}/`
-   - If not set, create `{book-name}/` under the current working directory
-3. Create the output directory if it doesn't exist.
+```bash
+"${CLAUDE_PLUGIN_ROOT}/scripts/convert_book.sh" "$INPUT_FILE" "$OUTPUT_DIR" $FORCE_FLAG
+```
 
-### Step 3: Resume Check
+3. Report the script's output verbatim, including the slug it derived —
+   downstream skills key off that slug.
 
-1. Check if `book-formats/` exists in the output directory.
-2. Check if it contains `*_book.epub`, `*_book.pdf`, and `*_book.md`.
-3. If all three exist and `--force` was NOT specified, tell the user: "Book formats already exist in `{directory}/book-formats/`. Use `--force` to reconvert." and stop.
-
-### Step 4: Add to Calibre
-
-1. Run via Bash: `calibredb add "{file}" --with-library ~/calibre-library`
-2. This adds the book to the Calibre library. The DeDRM plugin removes DRM automatically during import.
-3. If the command fails, try without `--with-library`: `calibredb add "{file}"`
-4. If Calibre is not available, tell the user: "Calibre command-line tools not found. Please install Calibre first." and stop.
-
-### Step 5: Export Formats
-
-Extract the book name (kebab-case) for output filenames. Use `ebook-convert` to generate each format:
-
-1. **EPUB** (DRM-free):
-   ```bash
-   ebook-convert "{input}" "book-formats/{book-name}_book.epub"
-   ```
-
-2. **PDF**:
-   ```bash
-   ebook-convert "{input}" "book-formats/{book-name}_book.pdf"
-   ```
-
-3. **Markdown** (for AI processing):
-   ```bash
-   ebook-convert "{input}" "book-formats/{book-name}_book.md"
-   ```
-
-4. **AZW3** (Kindle format):
-   ```bash
-   ebook-convert "{input}" "book-formats/{book-name}_book.azw3"
-   ```
-
-If a conversion fails, report the error and continue with remaining formats. The markdown conversion is the most important — if it fails, warn the user that AI processing skills will not work without it.
-
-### Step 6: Organize
-
-1. Create `book-formats/` directory in the output directory if it doesn't exist.
-2. Move all converted files there (they should already be output there from Step 6).
-3. Verify all expected files exist.
-
-### Step 7: Report
-
-Tell the user:
-- Output directory path
-- Files created with sizes (use `ls -lh` via Bash)
-- Any formats that failed conversion
-- Remind them they can now run `summarize-book`, `chapter-summaries`, etc. on this directory
+The script exits non-zero on failure with the reason on stderr. Surface it and
+stop; do not attempt to convert by other means.
 
 ## Error Handling
 
