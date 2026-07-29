@@ -68,6 +68,23 @@ for target in epub pdf md azw3; do
         continue
     fi
     printf '  -> %s ... ' "$target"
+    if [[ "$target" == "md" ]]; then
+        # Calibre has no `md` output plugin; Markdown comes from the TXT
+        # plugin via --txt-output-formatting=markdown. Convert to a throwaway
+        # temp dir (not book-formats/) and move the result into place so a
+        # stray .txt never lands in the published book-formats/ layout.
+        TMP_DIR="$(mktemp -d)"
+        TMP_MD="$TMP_DIR/${SLUG}_book.txt"
+        if ebook-convert "$INPUT" "$TMP_MD" --txt-output-formatting=markdown >/dev/null 2>&1; then
+            mv "$TMP_MD" "$FORMATS_DIR/${SLUG}_book.md"
+            echo "ok"
+        else
+            echo "FAILED"
+            failed+=("$target")
+        fi
+        rm -rf "$TMP_DIR"
+        continue
+    fi
     if ebook-convert "$INPUT" "$FORMATS_DIR/${SLUG}_book.${target}" >/dev/null 2>&1; then
         echo "ok"
     else
