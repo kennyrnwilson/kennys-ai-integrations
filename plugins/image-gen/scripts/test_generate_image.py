@@ -145,3 +145,88 @@ def test_generate_requires_gemini_api_key_when_no_client_is_injected(tmp_path, m
     with pytest.raises(ImageGenerationError, match="GEMINI_API_KEY"):
         generate("p", out)
     assert not out.exists()
+
+
+from generate_image import main  # noqa: E402
+
+
+def _stub(monkeypatch, captured: dict):
+    def fake_generate(prompt, output, **kwargs):
+        captured["prompt"] = prompt
+        captured["output"] = output
+        captured.update(kwargs)
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_bytes(PNG_BYTES)
+        return output
+
+    monkeypatch.setattr("generate_image.generate", fake_generate)
+
+
+def test_cli_reads_a_prompt_from_a_file(tmp_path: Path, monkeypatch):
+    source = tmp_path / "notes.md"
+    source.write_text("# Remote work\n\nSome content about remote work.")
+    out = tmp_path / "result.png"
+    captured: dict = {}
+    _stub(monkeypatch, captured)
+
+    assert main([str(source), "--output", str(out)]) == 0
+    assert out.exists()
+    assert "Remote work" in captured["prompt"]
+
+
+def test_cli_treats_a_non_path_argument_as_inline_text(tmp_path: Path, monkeypatch):
+    captured: dict = {}
+    _stub(monkeypatch, captured)
+
+    assert main(["a dancing dog in a park", "--output", str(tmp_path / "r.png")]) == 0
+    assert captured["prompt"] == "a dancing dog in a park"
+
+
+def test_cli_applies_infographic_styling_when_requested(tmp_path: Path, monkeypatch):
+    captured: dict = {}
+    _stub(monkeypatch, captured)
+
+    main(["remote work", "--kind", "infographic", "--style", "tech",
+          "--output", str(tmp_path / "r.png")])
+    assert "infographic" in captured["prompt"].lower()
+    assert "tech" in captured["prompt"]
+
+
+def test_cli_forwards_the_aspect_ratio(tmp_path: Path, monkeypatch):
+    captured: dict = {}
+    _stub(monkeypatch, captured)
+
+    main(["x", "--aspect-ratio", "1:1", "--output", str(tmp_path / "r.png")])
+    assert captured["aspect_ratio"] == "1:1"
+
+
+def test_cli_truncates_very_long_source_files(tmp_path: Path, monkeypatch):
+    source = tmp_path / "big.md"
+    source.write_text("A" * 10_000)
+    captured: dict = {}
+    _stub(monkeypatch, captured)
+
+    main([str(source), "--output", str(tmp_path / "r.png")])
+    assert len(captured["prompt"]) <= 3200
+
+
+def test_cli_defaults_output_beside_a_source_file(tmp_path: Path, monkeypatch):
+    source = tmp_path / "notes.md"
+    source.write_text("content")
+    captured: dict = {}
+    _stub(monkeypatch, captured)
+
+    main([str(source), "--kind", "infographic"])
+    assert captured["output"] == tmp_path / "notes_infographic.png"
+
+
+def test_cli_returns_nonzero_and_reports_when_generation_fails(
+    tmp_path: Path, monkeypatch, capsys
+):
+    def fake_generate(prompt, output, **kwargs):
+        raise ImageGenerationError("finish_reason=NO_IMAGE")
+
+    monkeypatch.setattr("generate_image.generate", fake_generate)
+
+    assert main(["x", "--output", str(tmp_path / "o.png")]) == 1
+    assert "NO_IMAGE" in capsys.readouterr().err

@@ -136,3 +136,62 @@ def generate(
         f"mean the request was blocked; do not attempt to reword around a "
         f"safety block."
     )
+
+
+MAX_SOURCE_CHARS = 3000
+
+
+def _read_source(argument: str) -> str:
+    """Return prompt text from `argument`, reading it as a file when it is one."""
+    candidate = Path(argument).expanduser()
+    if candidate.is_file():
+        text = candidate.read_text(encoding="utf-8", errors="replace")
+        if len(text) > MAX_SOURCE_CHARS:
+            print(f"Source is {len(text)} chars; using the first {MAX_SOURCE_CHARS}.")
+            text = text[:MAX_SOURCE_CHARS]
+        return text
+    return argument
+
+
+def _default_output(argument: str, kind: str) -> Path:
+    candidate = Path(argument).expanduser()
+    if candidate.is_file():
+        return candidate.parent / f"{candidate.stem}_{kind}.png"
+    return Path.cwd() / f"{kind}.png"
+
+
+def main(argv: list[str] | None = None) -> int:
+    import argparse
+    import sys
+
+    parser = argparse.ArgumentParser(
+        description="Generate an image with the Gemini API from inline text or a file."
+    )
+    parser.add_argument("source", help="Inline prompt text, or a path to a text/markdown file")
+    parser.add_argument("--kind", choices=VALID_KINDS, default="image")
+    parser.add_argument("--style", choices=VALID_STYLES, default="modern")
+    parser.add_argument("--output", type=Path, default=None)
+    parser.add_argument("--aspect-ratio", default="16:9", choices=VALID_ASPECT_RATIOS)
+    parser.add_argument("--model", default=None, help="Override NANOBANANA_MODEL")
+    args = parser.parse_args(argv)
+
+    prompt = build_prompt(_read_source(args.source), kind=args.kind, style=args.style)
+    output = args.output or _default_output(args.source, args.kind)
+
+    try:
+        written = generate(
+            prompt, output, aspect_ratio=args.aspect_ratio, model=args.model
+        )
+    except ImageGenerationError as exc:
+        print(f"Image generation failed: {exc}", file=sys.stderr)
+        return 1
+    except Exception as exc:  # noqa: BLE001 - surface auth/quota errors verbatim
+        print(f"Image generation failed: {type(exc).__name__}: {exc}", file=sys.stderr)
+        return 1
+
+    print(f"Wrote {written} ({written.stat().st_size} bytes)")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
