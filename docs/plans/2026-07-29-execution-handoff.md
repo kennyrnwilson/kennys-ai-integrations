@@ -206,10 +206,46 @@ Each was verified against the real `book-library` repo, not inferred:
    `ebook-processing`. Both ship from this marketplace so they should install as
    siblings, but this was never confirmed against a real installation. If it
    fails at runtime, that is the reason.
-2. **Three of five plugins are enabled locally, none of the retired ones.**
-   `~/.claude/settings.json` enables `image-gen` and `dev-conventions`. After
-   Tasks 10–12 the owner must enable `documentation-conventions` and remove
-   `dev-conventions` and `notebooklm`. Reported by Tasks 10 and 11.
+2. **Plugin config must be updated on BOTH machines, and auto-update makes it
+   urgent rather than optional.**
+
+   `~/.claude/settings.json` on the MacBook Air has:
+
+   ```
+   image-gen@kennys-ai-integrations       = true
+   dev-conventions@kennys-ai-integrations = true
+   autoUpdate = true   (marketplace source: the GitHub repo)
+   ```
+
+   Because `autoUpdate` is on, **pushing this plan's commits propagates the new
+   structure to every machine automatically** — the Air and the Mini both. Three
+   consequences land the moment the work is pushed:
+
+   - `dev-conventions` disappears from the marketplace while still `= true` in
+     settings on both machines: a dangling entry pointing at nothing.
+   - `image-gen` goes to 2.0.0 and its skills are renamed. `gemini-image`,
+     `chatgpt-image`, `infographic-gemini` and `infographic-chatgpt` all vanish,
+     replaced by `generate-image` and `infographic`.
+   - `documentation-conventions` appears but is **not** enabled, so
+     `markdown-conventions` silently stops being available — it changed plugin.
+     This one fails quietly, with no error, just an absence.
+
+   **On each machine**, after the work is pushed, edit `~/.claude/settings.json`:
+
+   ```jsonc
+   "enabledPlugins": {
+     "image-gen@kennys-ai-integrations": true,
+     "documentation-conventions@kennys-ai-integrations": true,   // ADD
+     // REMOVE: "dev-conventions@kennys-ai-integrations"
+     // (notebooklm and mermaid-diagrams were never enabled)
+   }
+   ```
+
+   Or equivalently `/plugin install documentation-conventions@kennys-ai-integrations`
+   and `/plugin uninstall dev-conventions@kennys-ai-integrations`.
+
+   Consider whether to hold the push until the settings change is ready on both
+   machines, so there is no window where `markdown-conventions` is missing.
 3. **The global `~/.claude/CLAUDE.md` will have a dangling reference.**
    Lines 18–19 name `markdown-conventions` and `python-project-setup`; the first
    moves plugin, the second is deleted. Task 11 Step 6 reports the replacement
