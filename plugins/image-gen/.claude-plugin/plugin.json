@@ -1,6 +1,6 @@
 {
   "name": "image-gen",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "Generate images and infographics through the Gemini image API",
   "author": {
     "name": "kennyrnwilson"

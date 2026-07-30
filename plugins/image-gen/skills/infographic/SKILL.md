@@ -18,7 +18,7 @@ failure modes as `generate-image`.
 
 ## Arguments
 
-- `$0` — inline topic text, or a path to a markdown/text file to summarise.
+- **The source argument** — inline topic text, or a path to a markdown/text file to summarise.
   Files over 32,000 characters are truncated, and the script says so. That is a
   safety ceiling, not a target — long infographic prompts raise the chance of
   `NO_IMAGE`, so a focused summary still beats a long document here.
@@ -53,7 +53,7 @@ needed in a loop without sleeping. Any instruction mentioning 45 seconds
 between images or a four-image session limit is stale guidance from the
 removed browser path.
 
-Do tell the user the count and approximate cost (~$0.04 each) before a large
+Do tell the user the count and approximate cost (~USD 0.04 each) before a large
 batch.
 
 ## Error Handling

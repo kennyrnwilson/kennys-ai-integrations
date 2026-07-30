@@ -396,3 +396,43 @@ def test_no_image_is_still_not_retried(tmp_path: Path, no_sleep):
 
     assert len(client.models.calls) == 1
     assert no_sleep == []
+
+
+# --- Long prompts are not paths ----------------------------------------------
+#
+# Path.is_file() raises OSError(errno 63, "File name too long") rather than
+# returning False when a path component exceeds the filesystem limit (255 bytes
+# on macOS/APFS). A detailed image prompt easily exceeds that, so the naive
+# is_file() probe crashed on exactly the prompts users are most likely to write.
+
+from generate_image import _default_output, _read_source  # noqa: E402
+
+LONG_PROMPT = (
+    "A dramatic Scottish Highlands landscape at golden hour: a still loch "
+    "reflecting steep heather-covered mountains, with a weathered stone castle "
+    "on a rocky promontory at the water's edge. Low mist drifting across the "
+    "glen, moody overcast sky breaking into warm light. Photorealistic, wide "
+    "cinematic composition."
+)
+
+
+def test_long_prompt_is_treated_as_inline_text_not_a_path():
+    assert len(LONG_PROMPT) > 255, "fixture must exceed the filesystem name limit"
+    assert _read_source(LONG_PROMPT) == LONG_PROMPT
+
+
+def test_long_prompt_does_not_break_default_output_naming(tmp_path: Path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    assert _default_output(LONG_PROMPT, "image") == tmp_path / "image.png"
+
+
+def test_a_real_file_is_still_read(tmp_path: Path):
+    f = tmp_path / "prompt.txt"
+    f.write_text("contents from the file")
+    assert _read_source(str(f)) == "contents from the file"
+
+
+def test_short_non_path_text_is_still_inline(tmp_path: Path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    assert _read_source("a dancing dog") == "a dancing dog"
+    assert _default_output("a dancing dog", "infographic") == tmp_path / "infographic.png"

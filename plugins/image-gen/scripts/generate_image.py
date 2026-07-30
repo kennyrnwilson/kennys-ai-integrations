@@ -207,10 +207,25 @@ def generate(
 MAX_SOURCE_CHARS = 32_000
 
 
+def _looks_like_a_file(argument: str) -> Path | None:
+    """Return the path if `argument` names an existing file, else None.
+
+    Path.is_file() raises OSError(ENAMETOOLONG) rather than returning False when
+    a path component exceeds the filesystem limit (255 bytes on macOS). A
+    detailed image prompt easily exceeds that, so the probe must not assume the
+    argument is path-shaped.
+    """
+    try:
+        candidate = Path(argument).expanduser()
+        return candidate if candidate.is_file() else None
+    except (OSError, ValueError):
+        return None
+
+
 def _read_source(argument: str) -> str:
     """Return prompt text from `argument`, reading it as a file when it is one."""
-    candidate = Path(argument).expanduser()
-    if candidate.is_file():
+    candidate = _looks_like_a_file(argument)
+    if candidate is not None:
         text = candidate.read_text(encoding="utf-8", errors="replace")
         if len(text) > MAX_SOURCE_CHARS:
             print(f"Source is {len(text)} chars; using the first {MAX_SOURCE_CHARS}.")
@@ -220,8 +235,8 @@ def _read_source(argument: str) -> str:
 
 
 def _default_output(argument: str, kind: str) -> Path:
-    candidate = Path(argument).expanduser()
-    if candidate.is_file():
+    candidate = _looks_like_a_file(argument)
+    if candidate is not None:
         return candidate.parent / f"{candidate.stem}_{kind}.png"
     return Path.cwd() / f"{kind}.png"
 

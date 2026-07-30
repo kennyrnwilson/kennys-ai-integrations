@@ -23,7 +23,7 @@ in this plugin any more.
 
 ## Arguments
 
-- `$0` — inline prompt text, or a path to a text/markdown file to use as the
+- **The prompt argument** — inline prompt text, or a path to a text/markdown file to use as the
   prompt. Files over 32,000 characters are truncated, and the script says so.
 - `--output` — output path. Defaults to `image.png` in the working directory,
   or `{source_stem}_image.png` beside a source file.
@@ -50,7 +50,7 @@ Report the output path and size.
 
 ## Cost
 
-Each image costs roughly $0.04 against a prepaid balance. Billing is prepaid
+Each image costs roughly USD 0.04 against a prepaid balance. Billing is prepaid
 with auto-reload off, so spend cannot exceed the loaded credit. When
 generating many images — a per-chapter batch, say — tell the user the count
 and the approximate cost before starting.
