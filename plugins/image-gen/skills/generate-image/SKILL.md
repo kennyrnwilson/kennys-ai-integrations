@@ -57,12 +57,22 @@ and the approximate cost before starting.
 
 ## Error Handling
 
+The script retries transient failures itself — **503 "experiencing high demand"
+and throttling are retried up to 4 times with exponential backoff** (1s, 2s,
+4s). The pro image models return 503 often enough that a single unretried call
+is close to a coin flip, so do not add your own retry loop on top; if the
+script reports failure, all attempts are already spent.
+
+These are real outcomes, not transient, and fail immediately:
+
 - **`finish_reason=NO_IMAGE`** — the model answered in text instead of drawing.
   Re-run with a more concretely visual prompt. Do not retry unchanged.
 - **`finish_reason=IMAGE_SAFETY` / `IMAGE_PROHIBITED_CONTENT`** — blocked.
   Report it plainly and stop; do not reword around a safety block.
-- **`429 RESOURCE_EXHAUSTED`** — prepaid balance exhausted. Stop and tell the
-  user to top up.
+- **`429` with `limit: 0`** — a hard quota wall, not throttling: the prepaid
+  balance is exhausted, or the key is on the free tier where image generation
+  has zero quota. Stop and tell the user to top up. This is deliberately *not*
+  retried, since waiting cannot help.
 - **Authentication errors** — `GEMINI_API_KEY` is missing or invalid.
 
 No file is written on any failure. A missing file is the correct outcome.

@@ -58,6 +58,6 @@ batch.
 
 ## Error Handling
 
-Same as `generate-image`. Long infographic prompts are refused more often than
+Same as `generate-image`, including its automatic retry of transient 503s. Long infographic prompts are refused more often than
 short ones, so `NO_IMAGE` is more likely here — reword to be more concretely
 visual rather than retrying unchanged.

@@ -244,3 +244,155 @@ def test_cli_returns_nonzero_and_reports_when_generation_fails(
 
     assert main(["x", "--output", str(tmp_path / "o.png")]) == 1
     assert "NO_IMAGE" in capsys.readouterr().err
+
+
+# --- Retry on transient API failures -----------------------------------------
+#
+# gemini-3-pro-image returns 503 "experiencing high demand" often enough that a
+# single unretried call is roughly a coin flip. Without retry, a 20-chapter
+# infographic batch loses several chapters silently.
+
+from generate_image import (  # noqa: E402
+    DEFAULT_MAX_ATTEMPTS,
+    RETRYABLE_STATUS_CODES,
+    _is_retryable,
+)
+
+
+class FakeAPIError(Exception):
+    """Stands in for google.genai.errors.APIError, which carries a .code."""
+
+    def __init__(self, code: int, message: str = ""):
+        super().__init__(f"{code} {message}")
+        self.code = code
+
+
+class FlakyModels:
+    """Raises the queued exceptions in order, then returns the response."""
+
+    def __init__(self, response, failures):
+        self._response = response
+        self._failures = list(failures)
+        self.calls = []
+
+    def generate_content(self, **kwargs):
+        self.calls.append(kwargs)
+        if self._failures:
+            raise self._failures.pop(0)
+        return self._response
+
+
+class FlakyClient:
+    def __init__(self, response, failures):
+        self.models = FlakyModels(response, failures)
+
+
+@pytest.fixture
+def no_sleep(monkeypatch):
+    """Record backoff delays instead of actually waiting."""
+    delays = []
+    monkeypatch.setattr("generate_image._sleep", delays.append)
+    return delays
+
+
+def test_503_is_retryable():
+    assert _is_retryable(FakeAPIError(503, "UNAVAILABLE high demand")) is True
+
+
+def test_throttling_429_is_retryable():
+    assert _is_retryable(FakeAPIError(429, "RESOURCE_EXHAUSTED retry in 33s")) is True
+
+
+def test_quota_wall_429_is_not_retryable():
+    # "limit: 0" is a hard wall (free tier / exhausted balance), not throttling.
+    # Retrying cannot succeed, so it must fail fast.
+    exc = FakeAPIError(429, "RESOURCE_EXHAUSTED ... limit: 0, model: gemini-3-pro-image")
+    assert _is_retryable(exc) is False
+
+
+def test_client_errors_are_not_retryable():
+    assert _is_retryable(FakeAPIError(400, "INVALID_ARGUMENT")) is False
+    assert _is_retryable(FakeAPIError(403, "PERMISSION_DENIED")) is False
+
+
+def test_retryable_codes_cover_the_transient_5xx_range():
+    for code in (500, 502, 503, 504):
+        assert code in RETRYABLE_STATUS_CODES
+
+
+def test_status_code_is_read_from_the_message_when_there_is_no_code_attribute():
+    assert _is_retryable(RuntimeError("ServerError: 503 UNAVAILABLE")) is True
+    assert _is_retryable(RuntimeError("ClientError: 400 INVALID_ARGUMENT")) is False
+
+
+def test_generate_retries_a_503_then_succeeds(tmp_path: Path, no_sleep):
+    client = FlakyClient(
+        FakeResponse(parts=[FakePart(PNG_BYTES)]), [FakeAPIError(503, "UNAVAILABLE")]
+    )
+    out = tmp_path / "r.png"
+
+    assert generate("p", out, client=client) == out
+    assert out.read_bytes() == PNG_BYTES
+    assert len(client.models.calls) == 2
+    assert len(no_sleep) == 1
+
+
+def test_generate_backs_off_exponentially(tmp_path: Path, no_sleep):
+    client = FlakyClient(
+        FakeResponse(parts=[FakePart(PNG_BYTES)]),
+        [FakeAPIError(503), FakeAPIError(503), FakeAPIError(503)],
+    )
+    generate("p", tmp_path / "r.png", client=client)
+    assert no_sleep == sorted(no_sleep), "delays must be non-decreasing"
+    assert no_sleep[-1] > no_sleep[0], "backoff must actually grow"
+
+
+def test_generate_gives_up_after_max_attempts(tmp_path: Path, no_sleep):
+    client = FlakyClient(FakeResponse(), [FakeAPIError(503)] * 10)
+    out = tmp_path / "r.png"
+
+    with pytest.raises(ImageGenerationError, match="503"):
+        generate("p", out, client=client)
+
+    assert len(client.models.calls) == DEFAULT_MAX_ATTEMPTS
+    assert not out.exists(), "no file may be written on failure"
+
+
+def test_generate_does_not_retry_a_non_retryable_error(tmp_path: Path, no_sleep):
+    client = FlakyClient(FakeResponse(), [FakeAPIError(400, "INVALID_ARGUMENT")] * 5)
+
+    with pytest.raises(Exception, match="400"):
+        generate("p", tmp_path / "r.png", client=client)
+
+    assert len(client.models.calls) == 1, "must fail on the first attempt"
+    assert no_sleep == []
+
+
+def test_generate_does_not_retry_a_quota_wall(tmp_path: Path, no_sleep):
+    client = FlakyClient(FakeResponse(), [FakeAPIError(429, "limit: 0, model: x")] * 5)
+
+    with pytest.raises(Exception, match="429"):
+        generate("p", tmp_path / "r.png", client=client)
+
+    assert len(client.models.calls) == 1
+    assert no_sleep == []
+
+
+def test_max_attempts_is_configurable(tmp_path: Path, no_sleep):
+    client = FlakyClient(FakeResponse(), [FakeAPIError(503)] * 10)
+
+    with pytest.raises(ImageGenerationError):
+        generate("p", tmp_path / "r.png", client=client, max_attempts=2)
+
+    assert len(client.models.calls) == 2
+
+
+def test_no_image_is_still_not_retried(tmp_path: Path, no_sleep):
+    # A text answer is a real outcome, not a transient failure.
+    client = FlakyClient(FakeResponse(parts=[], finish_reason="NO_IMAGE"), [])
+
+    with pytest.raises(ImageGenerationError, match="NO_IMAGE"):
+        generate("p", tmp_path / "r.png", client=client)
+
+    assert len(client.models.calls) == 1
+    assert no_sleep == []

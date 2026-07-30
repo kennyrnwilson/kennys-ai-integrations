@@ -1,11 +1,16 @@
 {
   "name": "image-gen",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Generate images and infographics through the Gemini image API",
   "author": {
     "name": "kennyrnwilson"
   },
   "repository": "https://github.com/kennyrnwilson/kennys-ai-integrations",
   "license": "MIT",
-  "keywords": ["image-generation", "infographic", "gemini", "nano-banana"]
+  "keywords": [
+    "image-generation",
+    "infographic",
+    "gemini",
+    "nano-banana"
+  ]
 }

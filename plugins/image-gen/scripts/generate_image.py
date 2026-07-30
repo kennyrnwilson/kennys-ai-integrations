@@ -15,9 +15,40 @@ cannot exceed the loaded balance.
 """
 
 import os
+import re
+import sys
+import time
 from pathlib import Path
 
 DEFAULT_MODEL = os.environ.get("NANOBANANA_MODEL", "gemini-2.5-flash-image")
+
+# The pro image models return 503 "experiencing high demand" often enough that a
+# single unretried call is roughly a coin flip. Without retry a 20-chapter
+# infographic batch loses several chapters silently.
+RETRYABLE_STATUS_CODES = (429, 500, 502, 503, 504)
+DEFAULT_MAX_ATTEMPTS = 4
+BACKOFF_BASE_SECONDS = 2.0
+
+# Seam for tests -- monkeypatched so the suite never actually waits.
+_sleep = time.sleep
+
+
+def _is_retryable(exc: BaseException) -> bool:
+    """True when `exc` is a transient API failure worth retrying.
+
+    Retries throttling and 5xx. Does NOT retry a `limit: 0` quota wall: that
+    means the free tier (or an exhausted prepaid balance) allows zero requests
+    for the model, so no amount of waiting will help and failing fast gives the
+    user an actionable error instead of a slow one.
+    """
+    code = getattr(exc, "code", None)
+    if not isinstance(code, int):
+        match = re.search(r"\b(429|5\d\d)\b", str(exc))
+        code = int(match.group(1)) if match else None
+
+    if code not in RETRYABLE_STATUS_CODES:
+        return False
+    return "limit: 0" not in str(exc)
 
 VALID_KINDS = ("image", "infographic")
 VALID_STYLES = ("modern", "minimal", "abstract", "illustrated", "tech")
@@ -77,8 +108,14 @@ def generate(
     aspect_ratio: str = "16:9",
     model: str | None = None,
     client=None,
+    max_attempts: int = DEFAULT_MAX_ATTEMPTS,
 ) -> Path:
     """Generate one image and write it to `output`.
+
+    Transient API failures (503, throttling) are retried with exponential
+    backoff up to `max_attempts`. A `limit: 0` quota wall, a safety block and a
+    text-instead-of-image answer are all real outcomes, not transient, and fail
+    immediately.
 
     Writes nothing on failure -- a missing file is a correct failure, whereas
     the browser path's habit of saving whatever was on screen silently
@@ -111,14 +148,34 @@ def generate(
 
     model = model or DEFAULT_MODEL
 
-    response = client.models.generate_content(
-        model=model,
-        contents=prompt,
-        config=types.GenerateContentConfig(
-            response_modalities=["IMAGE"],
-            image_config=types.ImageConfig(aspect_ratio=aspect_ratio),
-        ),
+    config = types.GenerateContentConfig(
+        response_modalities=["IMAGE"],
+        image_config=types.ImageConfig(aspect_ratio=aspect_ratio),
     )
+
+    for attempt in range(1, max_attempts + 1):
+        try:
+            response = client.models.generate_content(
+                model=model, contents=prompt, config=config
+            )
+            break
+        # Broad by design: the SDK raises several unrelated exception types for
+        # transient conditions. Anything _is_retryable() does not recognise is
+        # re-raised untouched on the line below.
+        except Exception as exc:
+            if not _is_retryable(exc):
+                raise
+            if attempt == max_attempts:
+                raise ImageGenerationError(
+                    f"{model} still failing after {max_attempts} attempts: {exc}"
+                ) from exc
+            delay = BACKOFF_BASE_SECONDS ** (attempt - 1)
+            print(
+                f"Transient API error on attempt {attempt}/{max_attempts} "
+                f"({exc}); retrying in {delay:.0f}s...",
+                file=sys.stderr,
+            )
+            _sleep(delay)
 
     for part in getattr(response, "parts", None) or []:
         blob = getattr(part, "inline_data", None)
