@@ -1,0 +1,11 @@
+{
+  "name": "operating-context",
+  "version": "1.0.0",
+  "description": "Load my operating manual into every Claude Code session as standing context",
+  "author": {
+    "name": "kennyrnwilson"
+  },
+  "repository": "https://github.com/kennyrnwilson/kennys-ai-integrations",
+  "license": "MIT",
+  "keywords": ["operating-manual", "session-start", "hooks", "context"]
+}

@@ -21,6 +21,11 @@
       "name": "documentation-conventions",
       "source": "./plugins/documentation-conventions",
       "description": "Markdown authoring conventions and Mermaid diagram theming"
+    },
+    {
+      "name": "operating-context",
+      "source": "./plugins/operating-context",
+      "description": "Load Kenny's operating manual into every Claude Code session as standing context"
     }
   ]
 }

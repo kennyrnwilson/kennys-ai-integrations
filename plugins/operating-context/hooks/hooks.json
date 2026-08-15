@@ -1,0 +1,15 @@
+{
+  "description": "Load the operating manual into every session as standing context.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/print-manual.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
