@@ -14,7 +14,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).parent))
 
-from generate_image import (  # noqa: E402
+from generate_image import (
     MAX_SOURCE_CHARS,
     VALID_ASPECT_RATIOS,
     ImageGenerationError,
@@ -148,7 +148,7 @@ def test_generate_requires_gemini_api_key_when_no_client_is_injected(tmp_path, m
     assert not out.exists()
 
 
-from generate_image import main  # noqa: E402
+from generate_image import main
 
 
 def _stub(monkeypatch, captured: dict):
@@ -252,7 +252,7 @@ def test_cli_returns_nonzero_and_reports_when_generation_fails(
 # single unretried call is roughly a coin flip. Without retry, a 20-chapter
 # infographic batch loses several chapters silently.
 
-from generate_image import (  # noqa: E402
+from generate_image import (
     DEFAULT_MAX_ATTEMPTS,
     RETRYABLE_STATUS_CODES,
     _is_retryable,
@@ -405,7 +405,7 @@ def test_no_image_is_still_not_retried(tmp_path: Path, no_sleep):
 # on macOS/APFS). A detailed image prompt easily exceeds that, so the naive
 # is_file() probe crashed on exactly the prompts users are most likely to write.
 
-from generate_image import _default_output, _read_source  # noqa: E402
+from generate_image import _default_output, _read_source
 
 LONG_PROMPT = (
     "A dramatic Scottish Highlands landscape at golden hour: a still loch "

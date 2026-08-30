@@ -10,6 +10,7 @@ def _run(plugin_root: Path) -> subprocess.CompletedProcess:
         env={"CLAUDE_PLUGIN_ROOT": str(plugin_root), "PATH": "/usr/bin:/bin"},
         capture_output=True,
         text=True,
+        check=False,
     )
 
 

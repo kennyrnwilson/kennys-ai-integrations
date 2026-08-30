@@ -84,9 +84,18 @@ Content:
 class ImageGenerationError(RuntimeError):
     """The model did not return an image."""
 
-    def __init__(self, message: str, *, transient_exhaustion: bool = False) -> None:
+    def __init__(
+        self,
+        message: str,
+        *,
+        transient_exhaustion: bool = False,
+        try_next_model: bool = False,
+    ) -> None:
         super().__init__(message)
         self.transient_exhaustion = transient_exhaustion
+        # True for soft failures (NO_IMAGE, IMAGE_OTHER) where a different model
+        # may succeed. False for hard blocks (safety, auth, quota).
+        self.try_next_model = try_next_model
 
 
 def build_prompt(text: str, *, kind: str = "image", style: str = "modern") -> str:
@@ -198,12 +207,14 @@ def generate(
             return output
 
     reason = _finish_reason(response) or "no image part in response"
+    is_safety = any(s in reason for s in ("IMAGE_SAFETY", "IMAGE_PROHIBITED_CONTENT"))
     raise ImageGenerationError(
         f"Gemini returned no image (finish_reason={reason}). "
         f"NO_IMAGE means the model answered in text -- reword the prompt to be "
         f"more concretely visual. IMAGE_SAFETY and IMAGE_PROHIBITED_CONTENT "
         f"mean the request was blocked; do not attempt to reword around a "
-        f"safety block."
+        f"safety block.",
+        try_next_model=not is_safety,
     )
 
 
@@ -215,10 +226,11 @@ def generate_with_fallback(
     models: list[str],
     max_attempts: int = DEFAULT_MAX_ATTEMPTS,
 ) -> Path:
-    """Try each model in order, falling back on transient exhaustion only.
+    """Try each model in order, falling back on transient exhaustion or soft failures.
 
-    Safety blocks and NO_IMAGE are not transient — they propagate immediately
-    without trying the next model. Auth and quota errors also propagate immediately.
+    Falls back when a model exhausts retries with 503 (transient_exhaustion) or
+    returns NO_IMAGE / IMAGE_OTHER (try_next_model). Safety blocks, auth errors,
+    and quota walls propagate immediately without trying the next model.
     """
     for i, model in enumerate(models):
         try:
@@ -229,7 +241,8 @@ def generate_with_fallback(
                 max_attempts=max_attempts,
             )
         except ImageGenerationError as exc:
-            if not exc.transient_exhaustion or i == len(models) - 1:
+            should_fallback = exc.transient_exhaustion or exc.try_next_model
+            if not should_fallback or i == len(models) - 1:
                 raise
             next_model = models[i + 1]
             print(
