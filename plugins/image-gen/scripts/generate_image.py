@@ -21,6 +21,13 @@ import time
 from pathlib import Path
 
 DEFAULT_MODEL = os.environ.get("NANOBANANA_MODEL", "gemini-2.5-flash-image")
+DEFAULT_MODEL_CHAIN = [DEFAULT_MODEL] + [
+    m for m in [
+        os.environ.get("NANOBANANA_MODEL_FALLBACK"),
+        os.environ.get("NANOBANANA_MODEL_FALLBACK2"),
+    ]
+    if m
+]
 
 # The pro image models return 503 "experiencing high demand" often enough that a
 # single unretried call is roughly a coin flip. Without retry a 20-chapter
@@ -76,6 +83,10 @@ Content:
 
 class ImageGenerationError(RuntimeError):
     """The model did not return an image."""
+
+    def __init__(self, message: str, *, transient_exhaustion: bool = False) -> None:
+        super().__init__(message)
+        self.transient_exhaustion = transient_exhaustion
 
 
 def build_prompt(text: str, *, kind: str = "image", style: str = "modern") -> str:
@@ -167,7 +178,8 @@ def generate(
                 raise
             if attempt == max_attempts:
                 raise ImageGenerationError(
-                    f"{model} still failing after {max_attempts} attempts: {exc}"
+                    f"{model} still failing after {max_attempts} attempts: {exc}",
+                    transient_exhaustion=True,
                 ) from exc
             delay = BACKOFF_BASE_SECONDS ** (attempt - 1)
             print(
@@ -193,6 +205,39 @@ def generate(
         f"mean the request was blocked; do not attempt to reword around a "
         f"safety block."
     )
+
+
+def generate_with_fallback(
+    prompt: str,
+    output: Path,
+    *,
+    aspect_ratio: str = "16:9",
+    models: list[str],
+    max_attempts: int = DEFAULT_MAX_ATTEMPTS,
+) -> Path:
+    """Try each model in order, falling back on transient exhaustion only.
+
+    Safety blocks and NO_IMAGE are not transient — they propagate immediately
+    without trying the next model. Auth and quota errors also propagate immediately.
+    """
+    for i, model in enumerate(models):
+        try:
+            return generate(
+                prompt, output,
+                aspect_ratio=aspect_ratio,
+                model=model,
+                max_attempts=max_attempts,
+            )
+        except ImageGenerationError as exc:
+            if not exc.transient_exhaustion or i == len(models) - 1:
+                raise
+            next_model = models[i + 1]
+            print(
+                f"{model} unavailable after {max_attempts} attempts; "
+                f"trying fallback {next_model}...",
+                file=sys.stderr,
+            )
+    raise RuntimeError("unreachable")  # loop always raises or returns
 
 
 # Guard against accidentally passing a whole book as a prompt; it is not an API
@@ -260,9 +305,13 @@ def main(argv: list[str] | None = None) -> int:
     output = args.output or _default_output(args.source, args.kind)
 
     try:
-        written = generate(
-            prompt, output, aspect_ratio=args.aspect_ratio, model=args.model
-        )
+        if args.model:
+            # Explicit override: single model, no fallback chain.
+            written = generate(prompt, output, aspect_ratio=args.aspect_ratio, model=args.model)
+        else:
+            written = generate_with_fallback(
+                prompt, output, aspect_ratio=args.aspect_ratio, models=DEFAULT_MODEL_CHAIN
+            )
     except ImageGenerationError as exc:
         print(f"Image generation failed: {exc}", file=sys.stderr)
         return 1

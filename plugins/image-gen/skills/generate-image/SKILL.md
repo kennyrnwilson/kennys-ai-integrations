@@ -21,6 +21,21 @@ If the key is unset, say so and stop. If a call fails with
 top up in AI Studio. Do not attempt any browser-based workaround; none exists
 in this plugin any more.
 
+## Model chain
+
+The script tries models in order until one succeeds. Configure the chain in
+`~/.zshrc` (not `~/.zshrc.secrets` — these are not secrets):
+
+```
+NANOBANANA_MODEL          # first choice  (default: gemini-2.5-flash-image)
+NANOBANANA_MODEL_FALLBACK # second choice (skipped if unset)
+NANOBANANA_MODEL_FALLBACK2# third choice  (skipped if unset)
+```
+
+Fallback only triggers on transient exhaustion (503 after all retries). Safety
+blocks and `NO_IMAGE` propagate immediately without trying the next model.
+`--model` bypasses the chain entirely and uses a single model with no fallback.
+
 ## Arguments
 
 - **The prompt argument** — inline prompt text, or a path to a text/markdown file to use as the
@@ -29,7 +44,7 @@ in this plugin any more.
   or `{source_stem}_image.png` beside a source file.
 - `--aspect-ratio` — `16:9` (default), `1:1`, `9:16`, `4:3`, `3:4`, `2:3`,
   `3:2`, `4:5`, `5:4`, `21:9`, `1:4`, `4:1`, `1:8`, `8:1`.
-- `--model` — override `NANOBANANA_MODEL` (default `gemini-2.5-flash-image`).
+- `--model` — use a single specific model, bypassing the fallback chain entirely.
 
 If no arguments are given, ask the user what to generate.
 
@@ -79,9 +94,9 @@ and the approximate cost before starting.
 
 The script retries transient failures itself — **503 "experiencing high demand"
 and throttling are retried up to 4 times with exponential backoff** (1s, 2s,
-4s). The pro image models return 503 often enough that a single unretried call
-is close to a coin flip, so do not add your own retry loop on top; if the
-script reports failure, all attempts are already spent.
+4s) per model. If all retries are exhausted, the script automatically tries the
+next model in the chain (see **Model chain** above). Do not add your own retry
+loop on top; if the script reports failure, all models in the chain are spent.
 
 These are real outcomes, not transient, and fail immediately:
 
