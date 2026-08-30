@@ -10,10 +10,10 @@ with GitHub `main` as the single source of truth. The repos are four kinds:
 markdown knowledge-base articles, book libraries, database-backed apps, and the
 portal.
 
-Claude reaches the system two ways. Claude Code — on a Mac or in a cloud session
-— clones and reads/writes the repos directly. For live app state, MCP servers on
-the always-on Mac Mini front the app databases, so Claude on a phone can read and
-write the apps too.
+Claude Code and OpenAI Codex reach the system in two ways. On a Mac or in a cloud
+session, they clone and read or write the repos directly. For live app state, MCP
+servers on the always-on Mac Mini front the app databases. Their mobile remote
+routes therefore let an agent on the Mini read and write the apps from a phone.
 
 The through-line is two operating systems — Longevity OS and Mind OS — carrying
 book action items -> ranked guidance -> live scorecards -> daily protocols across

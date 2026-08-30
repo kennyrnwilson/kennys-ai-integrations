@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Print the bundled operating manual so Claude Code adds it to the session.
+# Print the bundled operating manual so the agent adds it to the session.
 # SessionStart stdout becomes session context. No network; if the file is
 # missing, print nothing and exit cleanly so a session is never blocked.
 set -euo pipefail

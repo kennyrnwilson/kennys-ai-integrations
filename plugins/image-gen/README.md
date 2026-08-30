@@ -2,7 +2,8 @@
 
 ← [Back to Marketplace](../../README.md)
 
-Generate images and infographics through the Gemini image API.
+Generate images and infographics through the Gemini image API. The same plugin
+works in Claude Code and Codex, including Codex tasks started through Remote.
 
 ## Skills
 

@@ -4,7 +4,7 @@
     "name": "kennyrnwilson"
   },
   "metadata": {
-    "description": "Kenny's Claude Code plugin collection: Gemini image and infographic generation, ebook processing, and documentation conventions."
+    "description": "Kenny's AI agent plugin collection: operating context, Gemini image generation, ebook processing, and documentation conventions."
   },
   "plugins": [
     {
@@ -25,7 +25,7 @@
     {
       "name": "operating-context",
       "source": "./plugins/operating-context",
-      "description": "Load Kenny's operating manual into every Claude Code session as standing context"
+      "description": "Load Kenny's operating manual into every Claude Code or Codex session as standing context"
     }
   ]
 }

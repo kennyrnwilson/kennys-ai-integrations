@@ -35,10 +35,30 @@ If no arguments are given, ask the user what to generate.
 
 ## Workflow
 
-Run the generator and report the result. That is the whole skill.
+Run the generator and report the result. That is the whole skill. Resolve the
+plugin root from Claude's compatibility variable when it exists. In Codex,
+resolve it from the installed marketplace entry. Source the private shell
+environment before checking the API key; never print the key.
 
 ```bash
-uv run "${CLAUDE_PLUGIN_ROOT}/scripts/generate_image.py" "$PROMPT_OR_FILE" \
+IMAGE_GEN_PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-}"
+if [[ -z "$IMAGE_GEN_PLUGIN_ROOT" ]] && command -v codex >/dev/null 2>&1; then
+  IMAGE_GEN_PLUGIN_ROOT="$(codex plugin list | awk \
+    '$1 == "image-gen@kennys-ai-integrations" && $2 == "installed," && $3 == "enabled" {print $NF; exit}')"
+fi
+if [[ -z "$IMAGE_GEN_PLUGIN_ROOT" || ! -f "$IMAGE_GEN_PLUGIN_ROOT/scripts/generate_image.py" ]]; then
+  echo "image-gen plugin root could not be resolved" >&2
+  exit 1
+fi
+if [[ -f "$HOME/.zshrc.secrets" ]]; then
+  source "$HOME/.zshrc.secrets"
+fi
+if [[ -z "${GEMINI_API_KEY:-}" ]]; then
+  echo "GEMINI_API_KEY is missing" >&2
+  exit 1
+fi
+
+uv run "$IMAGE_GEN_PLUGIN_ROOT/scripts/generate_image.py" "$PROMPT_OR_FILE" \
   --aspect-ratio "$ASPECT_RATIO" \
   --output "$OUTPUT_PATH"
 ```
