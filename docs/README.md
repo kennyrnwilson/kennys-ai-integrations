@@ -23,6 +23,9 @@
   - [chapter-infographics](../plugins/ebook-processing/skills/chapter-infographics/SKILL.md) — Per-chapter infographics
   - [book-index](../plugins/ebook-processing/skills/book-index/SKILL.md) — README index + metadata
 
+- **[operating-context](../plugins/operating-context/)** — Standing context in every session, via a `SessionStart` hook
+  - No skills. `operating-manual.md` is the document that loads; `scripts/print-manual.sh` prints it
+
 ## Plans
 
 - [Marketplace Remediation Plan](plans/2026-07-29-marketplace-remediation.md) — the current plan governing this repo's structure
@@ -39,4 +42,4 @@
 
 ---
 
-*Last Updated: 2026-07-29*
+*Last Updated: 2026-09-13*

@@ -77,6 +77,23 @@ paths always override.
 /ebook-processing:process-book designing-data-intensive-applications --skip infographics,critical-review
 ```
 
+### `operating-context` — Standing Context in Every Session
+
+One `SessionStart` hook that prints a bundled markdown file, which Claude Code
+folds into the session as context. No skills, no commands to run, and nothing to
+paste: install it and every session — terminal, cloud, or desktop — starts already
+knowing what it needs to.
+
+| Part | Purpose |
+|---|---|
+| `operating-manual.md` | The document that loads. Replace it with your own |
+| `hooks/hooks.json` | Registers the `SessionStart` hook |
+| `scripts/print-manual.sh` | Prints the manual. Exits cleanly if the file is missing, so a session is never blocked |
+
+```bash
+/plugin install operating-context@kennys-ai-integrations
+```
+
 ## Requirements
 
 - `uv` on PATH.
@@ -155,6 +172,15 @@ kennys-ai-integrations/
 │   │       │   └── SKILL.md
 │   │       └── summarize-book/
 │   │           └── SKILL.md
+│   ├── operating-context/
+│   │   ├── .claude-plugin/
+│   │   │   └── plugin.json
+│   │   ├── hooks/
+│   │   │   └── hooks.json
+│   │   ├── scripts/
+│   │   │   ├── print-manual.sh
+│   │   │   └── test_print_manual.py
+│   │   └── operating-manual.md
 │   └── image-gen/
 │       ├── .claude-plugin/
 │       │   └── plugin.json

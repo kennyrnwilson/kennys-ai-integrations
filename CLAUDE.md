@@ -3,7 +3,7 @@
 Working notes for editing THIS repo.
 
 ## Purpose
-A Claude Code plugin marketplace: three plugins, published via
+A Claude Code plugin marketplace: four plugins, published via
 `.claude-plugin/marketplace.json` and consumed by adding this repo as a
 marketplace source.
 
