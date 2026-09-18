@@ -21,6 +21,62 @@ and published URLs, not by preference.
 `personal-portal/docs/superpowers/` uses a third form: no frontmatter,
 `← [Back to plans](./)` or `← [Back to specs](./)`, no footer.
 
+## Which prose style applies
+
+Two kinds of document, two rules. Decide by what the document is for, not by
+which repo it sits in.
+
+| | **Procedures** | **Explanations** |
+|---|---|---|
+| Examples | setup guides, runbooks, deploy steps, `operations.md` | knowledge-library permanent notes, architecture and design docs |
+| Reader's job | follow it, possibly at 3am | understand something from cold |
+| Style | ASD-STE100 Simplified Technical English | stand-alone explanatory prose |
+| Sentences | one instruction each, 20-25 words | as long as the idea needs |
+
+### Procedures — use STE
+
+Use the `ste-writing` skill. The short version: one instruction per sentence,
+active voice, one word for one meaning, no clauses joined by "which" or a
+semicolon, no nominalisations ("test the connection", not "perform a connection
+test").
+
+STE was designed for maintenance manuals, and that is exactly the job here.
+A procedure is read under pressure by someone who must not misparse it.
+
+### Explanations — do not use STE
+
+STE forbids the sentence structures an explanation is made of. An argument
+often lives in the contrast between two clauses, and STE splits them apart.
+Applying it to a permanent note damages the note.
+
+Write these so they stand on their own instead:
+
+- **Assume a capable reader with no background in this particular thing.** No
+  context carried over from the conversation that produced the note.
+- **Use the real term, then define it once, the first time.** Do not avoid the
+  word and do not leave it unexplained.
+- **Say why it matters before how it works.** Any amount of detail is followed
+  once the reader knows what it is for.
+- **Give the reasoning, not only the conclusion.** Show what goes wrong if it
+  were done the other way.
+- **Say when something is contested, uncertain, or a judgement** rather than a
+  fact. Distinguish what a specification permits from what an implementation
+  actually does, and cite which one you checked.
+- **Do not simplify the facts.** Simplify the explanation only. Numbers,
+  commands, paths and code stay exact.
+
+### What is enforced
+
+`personal-portal` runs `tests/docs/ste-sentence-length.test.ts`, which fails the
+build when a listed procedural document has a sentence over 25 words. Add a new
+runbook to the `PROCEDURAL` list in that file.
+
+Only sentence length is machine-checked. It is the one STE rule with no
+judgement in it. Passive voice and nominalisations need a parser to tell "the
+file is tracked by git" from "the transport is deprecated", and a checker that
+cries wolf gets switched off. Everything under *Explanations* is unenforced by
+design — it is caught by reading.
+
 ## The Related / Tags / dates footer
 
 **Required** in `knowledge-library` and `book-library`, where tags and backlinks
