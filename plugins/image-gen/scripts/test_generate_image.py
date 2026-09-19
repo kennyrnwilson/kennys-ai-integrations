@@ -97,6 +97,26 @@ def test_generate_passes_model_and_aspect_ratio(tmp_path: Path):
     assert call["config"].image_config.aspect_ratio == "9:16"
 
 
+def test_the_default_chain_is_three_models_newest_first():
+    """The chain used to be env-only with no defaults, so it was one model long."""
+    from generate_image import model_chain
+
+    assert model_chain({}) == [
+        "gemini-3-pro-image",
+        "gemini-3.1-flash-image",
+        "gemini-2.5-flash-image",
+    ]
+
+
+def test_the_chain_honours_the_environment_and_drops_duplicates():
+    from generate_image import model_chain
+
+    assert model_chain({"NANOBANANA_MODEL": "gemini-3.1-flash-image"}) == [
+        "gemini-3.1-flash-image",
+        "gemini-2.5-flash-image",
+    ]
+
+
 def test_generate_rejects_an_invalid_aspect_ratio(tmp_path: Path):
     client = FakeClient(FakeResponse(parts=[FakePart(PNG_BYTES)]))
     with pytest.raises(ValueError, match="aspect_ratio"):

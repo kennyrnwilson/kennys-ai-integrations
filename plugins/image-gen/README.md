@@ -18,8 +18,12 @@ works in Claude Code and Codex, including Codex tasks started through Remote.
 Dependencies resolve automatically via PEP 723 inline metadata — no install
 step.
 
-Optional: `NANOBANANA_MODEL` overrides the model (default
-`gemini-2.5-flash-image`).
+Optional: `NANOBANANA_MODEL` overrides the first model in the chain. The chain
+defaults to `gemini-3-pro-image`, then `gemini-3.1-flash-image`, then
+`gemini-2.5-flash-image` — newest first, because quality falls at each step and
+a fallback is a rescue rather than a preference. Pro costs roughly USD 0.13 an
+image against 0.04 for 2.5 flash; set `NANOBANANA_MODEL=gemini-3.1-flash-image`
+for a cheaper default.
 
 Billing is prepaid with auto-reload off, so spend cannot exceed the loaded
 balance. When credit runs out, calls return `429 RESOURCE_EXHAUSTED` and no

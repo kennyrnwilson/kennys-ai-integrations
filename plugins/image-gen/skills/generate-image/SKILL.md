@@ -27,10 +27,14 @@ The script tries models in order until one succeeds. Configure the chain in
 `~/.zshrc` (not `~/.zshrc.secrets` — these are not secrets):
 
 ```
-NANOBANANA_MODEL          # first choice  (default: gemini-2.5-flash-image)
-NANOBANANA_MODEL_FALLBACK # second choice (skipped if unset)
-NANOBANANA_MODEL_FALLBACK2# third choice  (skipped if unset)
+NANOBANANA_MODEL          # first choice  (default: gemini-3-pro-image)
+NANOBANANA_MODEL_FALLBACK # second choice (default: gemini-3.1-flash-image)
+NANOBANANA_MODEL_FALLBACK2# third choice  (default: gemini-2.5-flash-image)
 ```
+
+The order is newest first: quality falls at each step, so a fallback is a
+rescue that lets a batch finish, not a cheaper preference. Pro costs roughly
+USD 0.13 an image against 0.04 for 2.5 flash.
 
 Fallback only triggers on transient exhaustion (503 after all retries). Safety
 blocks and `NO_IMAGE` propagate immediately without trying the next model.

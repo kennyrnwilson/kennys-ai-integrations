@@ -20,14 +20,34 @@ import sys
 import time
 from pathlib import Path
 
-DEFAULT_MODEL = os.environ.get("NANOBANANA_MODEL", "gemini-2.5-flash-image")
-DEFAULT_MODEL_CHAIN = [DEFAULT_MODEL] + [
-    m for m in [
-        os.environ.get("NANOBANANA_MODEL_FALLBACK"),
-        os.environ.get("NANOBANANA_MODEL_FALLBACK2"),
-    ]
-    if m
-]
+# Newest first. Nano Banana Pro is what the Gemini app uses and is visibly
+# better at ribbons, small figures and panel depth; 3.1 flash is the cheaper
+# middle; 2.5 flash is the old default, kept last so a batch still finishes when
+# the newer two are busy. Quality falls at each step, so a fallback is a rescue,
+# not a preference.
+#
+# These were env-only before, with no defaults, which quietly made the "chain"
+# one model long on the oldest of the three.
+MODEL_DEFAULTS = (
+    ("NANOBANANA_MODEL", "gemini-3-pro-image"),
+    ("NANOBANANA_MODEL_FALLBACK", "gemini-3.1-flash-image"),
+    ("NANOBANANA_MODEL_FALLBACK2", "gemini-2.5-flash-image"),
+)
+
+
+def model_chain(env: dict[str, str] | None = None) -> list[str]:
+    """The models to try, in order, with duplicates and blanks dropped."""
+    env = os.environ if env is None else env
+    chain: list[str] = []
+    for name, default in MODEL_DEFAULTS:
+        model = env.get(name, default)
+        if model and model not in chain:
+            chain.append(model)
+    return chain
+
+
+DEFAULT_MODEL = model_chain()[0]
+DEFAULT_MODEL_CHAIN = model_chain()
 
 # The pro image models return 503 "experiencing high demand" often enough that a
 # single unretried call is roughly a coin flip. Without retry a 20-chapter
