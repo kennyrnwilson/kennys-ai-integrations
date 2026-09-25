@@ -24,7 +24,7 @@
   - [book-index](../plugins/ebook-processing/skills/book-index/SKILL.md) — README index + metadata
 
 - **[operating-context](../plugins/operating-context/)** — Standing context in every session, via a `SessionStart` hook
-  - No skills. `operating-manual.md` is the document that loads; `scripts/print-manual.sh` prints it
+  - No skills. `standing-instructions.md` (the global rules) and `operating-manual.md` load, in that order; `scripts/print-manual.sh` prints them
 
 ## Plans
 

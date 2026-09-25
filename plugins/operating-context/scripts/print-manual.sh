@@ -1,11 +1,17 @@
 #!/usr/bin/env bash
-# Print the bundled operating manual so the agent adds it to the session.
-# SessionStart stdout becomes session context. No network; if the file is
-# missing, print nothing and exit cleanly so a session is never blocked.
+# Print the standing instructions, then the operating manual, so the agent adds
+# both to the session. SessionStart stdout becomes session context. The
+# instructions come first so they read as instructions, not as background. No
+# network; a missing file prints nothing, so a session is never blocked.
 set -euo pipefail
 
-manual="${CLAUDE_PLUGIN_ROOT:-}/operating-manual.md"
-if [[ -f "$manual" ]]; then
-  cat "$manual"
-fi
+root="${CLAUDE_PLUGIN_ROOT:-}"
+first=1
+for doc in standing-instructions.md operating-manual.md; do
+  if [[ -f "$root/$doc" ]]; then
+    [[ $first -eq 1 ]] || printf '\n---\n\n'
+    cat "$root/$doc"
+    first=0
+  fi
+done
 exit 0

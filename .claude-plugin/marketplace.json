@@ -25,7 +25,7 @@
     {
       "name": "operating-context",
       "source": "./plugins/operating-context",
-      "description": "Load Kenny's operating manual into every Claude Code or Codex session as standing context"
+      "description": "Load Kenny's standing instructions and operating manual into every Claude Code or Codex session"
     }
   ]
 }

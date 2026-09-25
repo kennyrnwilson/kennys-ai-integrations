@@ -1,7 +1,7 @@
 {
   "name": "operating-context",
-  "version": "1.1.1",
-  "description": "Load my operating manual into every Claude Code or Codex session as standing context",
+  "version": "1.2.0",
+  "description": "Load my standing instructions and operating manual into every Claude Code or Codex session",
   "author": {
     "name": "kennyrnwilson"
   },

@@ -79,16 +79,17 @@ paths always override.
 
 ### `operating-context` — Standing Context in Every Session
 
-One `SessionStart` hook that prints a bundled markdown file, which Claude Code
+One `SessionStart` hook that prints two bundled markdown files, which Claude Code
 folds into the session as context. No skills, no commands to run, and nothing to
 paste: install it and every session — terminal, cloud, or desktop — starts already
 knowing what it needs to.
 
 | Part | Purpose |
 |---|---|
-| `operating-manual.md` | The document that loads. Replace it with your own |
+| `standing-instructions.md` | The global rules — response style, cost controls, conventions. Loads first, so it reads as instructions. Replace it with your own |
+| `operating-manual.md` | The system map. Loads second. Replace it with your own |
 | `hooks/hooks.json` | Registers the `SessionStart` hook |
-| `scripts/print-manual.sh` | Prints the manual. Exits cleanly if the file is missing, so a session is never blocked |
+| `scripts/print-manual.sh` | Prints both files. Skips a missing file and exits cleanly, so a session is never blocked |
 
 ```bash
 /plugin install operating-context@kennys-ai-integrations
@@ -180,7 +181,8 @@ kennys-ai-integrations/
 │   │   ├── scripts/
 │   │   │   ├── print-manual.sh
 │   │   │   └── test_print_manual.py
-│   │   └── operating-manual.md
+│   │   ├── operating-manual.md
+│   │   └── standing-instructions.md
 │   └── image-gen/
 │       ├── .claude-plugin/
 │       │   └── plugin.json
