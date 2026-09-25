@@ -66,12 +66,17 @@ Never use HTML+browser screenshots as a substitute.
   task.
 
 On a local macOS machine, the concrete model choices live in each tool's
-config: Claude in
-`~/.claude/settings.json` — **Opus 5 is the default**, with Sonnet 4.6 in the
-`/model` picker to step down for routine work; Codex in `~/.codex/config.toml`
-(`gpt-5.6-sol` at medium by default, the `deep` profile — `codex --profile deep`
-— to escalate). The picker's own `options` list still offers Sonnet 4.6 and
-Opus 4.6 only; add Opus 5 to it if you want to switch back and forth.
+config:
+
+- **Claude:** `~/.claude/settings.json`. **Opus 5 is the default**, with Sonnet
+  4.6 in the `/model` picker to step down for routine work. The picker's own
+  `options` list still offers Sonnet 4.6 and Opus 4.6 only; add Opus 5 to it if
+  you want to switch back and forth.
+- **Codex:** `~/.codex/config.toml`, with `gpt-6-astra` at medium effort by
+  default. Profiles live in their own files: `codex --profile deep`
+  (`~/.codex/deep.config.toml`, high effort) to escalate, and
+  `codex --profile light` (`~/.codex/light.config.toml`, low effort) for
+  mechanical work. `bin/setup-codex.py` in mac-homedir writes all three.
 
 ---
 
