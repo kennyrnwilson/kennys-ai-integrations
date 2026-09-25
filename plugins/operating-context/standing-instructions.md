@@ -68,10 +68,9 @@ Never use HTML+browser screenshots as a substitute.
 On a local macOS machine, the concrete model choices live in each tool's
 config:
 
-- **Claude:** `~/.claude/settings.json`. **Opus 5 is the default**, with Sonnet
-  4.6 in the `/model` picker to step down for routine work. The picker's own
-  `options` list still offers Sonnet 4.6 and Opus 4.6 only; add Opus 5 to it if
-  you want to switch back and forth.
+- **Claude:** `~/.claude/settings.json` sets no model, so Claude Code uses the
+  account default. Switch with `/model`, which shows the built-in lineup: step
+  down to `sonnet` for routine work, and up to `opus` or `fable` to escalate.
 - **Codex:** `~/.codex/config.toml`, with `gpt-6-astra` at medium effort by
   default. Profiles live in their own files: `codex --profile deep`
   (`~/.codex/deep.config.toml`, high effort) to escalate, and
