@@ -61,7 +61,8 @@ from it automatically.
 - Documentation lives in each repo's `docs/`; markdown per the
   documentation-conventions skill.
 - One `AGENTS.md` per repo, read by both makers, with `CLAUDE.md` a pointer to it.
-- Writing: ASD-STE100 Simplified Technical English for technical prose.
+- Writing: ASD-STE100 Simplified Technical English for procedures; explanations
+  are stand-alone prose (the markdown-conventions skill has the rule).
   Python-first for new tooling.
 
 ## A note on access
