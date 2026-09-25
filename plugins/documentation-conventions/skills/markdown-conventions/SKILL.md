@@ -80,8 +80,9 @@ design — it is caught by reading.
 ## The Related / Tags / dates footer
 
 **Required** in `knowledge-library` and `book-library`, where tags and backlinks
-feed Zettelkasten retrieval and the Pagefind index. **Optional** in app repos and
-the portal hub. Do not retrofit it onto existing files.
+feed Zettelkasten retrieval and the Pagefind index. **Optional** everywhere
+else, including app repos and the portal hub. Never retrofit it onto existing
+files.
 
 ## Core Principles
 

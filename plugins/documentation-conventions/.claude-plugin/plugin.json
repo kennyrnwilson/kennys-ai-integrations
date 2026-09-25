@@ -1,6 +1,6 @@
 {
   "name": "documentation-conventions",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Kenny's documentation authoring conventions — markdown file structure with bidirectional parent/child links, and Mermaid diagram theming",
   "author": {
     "name": "kennyrnwilson"
