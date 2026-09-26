@@ -76,7 +76,7 @@ config:
   (`~/.codex/deep.config.toml`, high effort) to escalate, and
   `codex --profile light` (`~/.codex/light.config.toml`, low effort) for
   mechanical work. mac-homedir tracks the two profile files, and its
-  `bin/setup-codex.py` sets the defaults in `config.toml`.
+  `bin/setup-mcp-servers.sh` sets the defaults in `config.toml`.
 
 ---
 
