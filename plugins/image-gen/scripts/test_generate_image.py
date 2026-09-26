@@ -61,7 +61,6 @@ def test_build_prompt_adds_infographic_styling():
     assert "benefits of remote work" in result
     assert "infographic" in result.lower()
     assert "minimal" in result
-    assert "dark navy" in result.lower()
 
 
 def test_build_prompt_forbids_depicting_real_people_in_infographics():
@@ -74,9 +73,18 @@ def test_build_prompt_rejects_an_unknown_kind():
         build_prompt("x", kind="nonsense")
 
 
-def test_build_prompt_rejects_an_unknown_style():
-    with pytest.raises(ValueError, match="style"):
-        build_prompt("x", kind="infographic", style="neon-brutalist")
+def test_build_prompt_accepts_free_form_art_direction():
+    result = build_prompt("x", kind="infographic", style="neon-brutalist")
+    assert "Art direction: neon-brutalist" in result
+
+
+@pytest.mark.parametrize("style", [None, "", "   "])
+def test_infographic_without_style_does_not_force_art_direction(style):
+    result = build_prompt("a warm watercolour map", kind="infographic", style=style)
+    assert "a warm watercolour map" in result
+    assert "Art direction:" not in result
+    assert "dark navy" not in result
+    assert "professional, clean" not in result
 
 
 def test_generate_writes_the_returned_bytes(tmp_path: Path):
@@ -203,14 +211,15 @@ def test_cli_treats_a_non_path_argument_as_inline_text(tmp_path: Path, monkeypat
     assert captured["prompt"] == "a dancing dog in a park"
 
 
-def test_cli_applies_infographic_styling_when_requested(tmp_path: Path, monkeypatch):
+@pytest.mark.parametrize("style", ["tech", "warm watercolour cutaway"])
+def test_cli_applies_infographic_styling_when_requested(tmp_path: Path, monkeypatch, style):
     captured: dict = {}
     _stub(monkeypatch, captured)
 
-    main(["remote work", "--kind", "infographic", "--style", "tech",
+    main(["remote work", "--kind", "infographic", "--style", style,
           "--output", str(tmp_path / "r.png")])
     assert "infographic" in captured["prompt"].lower()
-    assert "tech" in captured["prompt"]
+    assert style in captured["prompt"]
 
 
 def test_cli_forwards_the_aspect_ratio(tmp_path: Path, monkeypatch):

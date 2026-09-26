@@ -78,7 +78,6 @@ def _is_retryable(exc: BaseException) -> bool:
     return "limit: 0" not in str(exc)
 
 VALID_KINDS = ("image", "infographic")
-VALID_STYLES = ("modern", "minimal", "abstract", "illustrated", "tech")
 
 # Verified against the live API error message on 2026-07-29.
 VALID_ASPECT_RATIOS = (
@@ -89,13 +88,12 @@ VALID_ASPECT_RATIOS = (
 INFOGRAPHIC_TEMPLATE = """\
 Create a single infographic image about the following.
 
-Style: {style}, professional, clean.
-Background: dark navy/blue.
-Colours: bright and vibrant, chosen to read well on a dark background.
-Layout: clear sections with icons, strong typographic hierarchy.
-Constraint: do not depict any specific real people or public figures. Use \
-abstract icons, symbols and conceptual imagery to represent all ideas and people.
-
+Choose a distinctive visual language and composition that suit the subject.
+Illustration, depth, expressive lighting and typography are welcome when they
+help communicate the ideas. Follow any requested palette, style or reference.
+Keep text readable and preserve the facts, labels and relationships in the content.
+Use conceptual imagery rather than specific real people or public figures.
+{art_direction}
 Content:
 {text}
 """
@@ -118,19 +116,18 @@ class ImageGenerationError(RuntimeError):
         self.try_next_model = try_next_model
 
 
-def build_prompt(text: str, *, kind: str = "image", style: str = "modern") -> str:
+def build_prompt(text: str, *, kind: str = "image", style: str | None = None) -> str:
     """Build the model prompt.
 
     For kind="image" the caller's text is the prompt, passed through unchanged.
-    For kind="infographic" it is wrapped in the house style.
+    For kind="infographic" add a creative brief and optional free-form art direction.
     """
     if kind not in VALID_KINDS:
         raise ValueError(f"kind must be one of {VALID_KINDS}, got {kind!r}")
     if kind == "image":
         return text
-    if style not in VALID_STYLES:
-        raise ValueError(f"style must be one of {VALID_STYLES}, got {style!r}")
-    return INFOGRAPHIC_TEMPLATE.format(style=style, text=text)
+    art_direction = f"Art direction: {style.strip()}\n" if style and style.strip() else ""
+    return INFOGRAPHIC_TEMPLATE.format(art_direction=art_direction, text=text)
 
 
 def _finish_reason(response) -> str | None:
@@ -328,7 +325,10 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("source", help="Inline prompt text, or a path to a text/markdown file")
     parser.add_argument("--kind", choices=VALID_KINDS, default="image")
-    parser.add_argument("--style", choices=VALID_STYLES, default="modern")
+    parser.add_argument(
+        "--style", default=None,
+        help="Optional free-form infographic art direction; otherwise let the model choose",
+    )
     parser.add_argument("--output", type=Path, default=None)
     parser.add_argument("--aspect-ratio", default="16:9", choices=VALID_ASPECT_RATIOS)
     parser.add_argument("--model", default=None, help="Override NANOBANANA_MODEL")

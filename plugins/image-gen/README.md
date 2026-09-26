@@ -10,7 +10,11 @@ works in Claude Code and Codex, including Codex tasks started through Remote.
 | Skill | Purpose |
 |---|---|
 | `generate-image` | Any image, from inline text or a source file |
-| `infographic` | Dark-themed infographic from text or a file |
+| `infographic` | Infographic with optional free-form art direction |
+
+Omit `--style` to let Gemini choose the infographic art direction, or pass a
+brief such as `--style "illustrated science magazine, luminous depth"`. Existing
+style names still work. The plugin does not impose a palette or layout.
 
 ## Requirements
 

@@ -1,15 +1,15 @@
 ---
 name: infographic
-description: Generate a professional dark-themed infographic image from text or a file using the Gemini image API. Use when the user asks for an infographic or a visual summary of some content.
-argument-hint: <source-file-or-text> [--style modern|minimal|abstract|illustrated|tech] [--output out.png]
+description: Generate an expressive, readable infographic image from text or a file using the Gemini image API. Use when the user asks for an infographic or a visual summary of some content.
+argument-hint: <source-file-or-text> [--style "art direction"] [--output out.png]
 user-invocable: true
 allowed-tools: Read, Glob, Bash
 ---
 
 # Infographic Generator
 
-Generate a dark-themed infographic. Same engine as `generate-image`, with the
-house infographic styling applied to the prompt.
+Generate an infographic with the same Gemini engine as `generate-image`.
+Let the subject and the user's brief determine the visual style.
 
 ## Prerequisites
 
@@ -22,17 +22,26 @@ failure modes as `generate-image`.
   Files over 32,000 characters are truncated, and the script says so. That is a
   safety ceiling, not a target — long infographic prompts raise the chance of
   `NO_IMAGE`, so a focused summary still beats a long document here.
-- `--style` — `modern` (default), `minimal`, `abstract`, `illustrated`, `tech`.
+- `--style` — optional free-form art direction, such as `"illustrated science
+  magazine, luminous depth"` or `"warm watercolour cutaway"`. Omit it to let Gemini
+  choose. Existing values such as `modern`, `minimal`, `abstract`, `illustrated`
+  and `tech` still work; they are suggestions, not a fixed menu.
 - `--output` — defaults to `{source_stem}_infographic.png` beside the source
   file, or `infographic.png` in the working directory.
 - `--aspect-ratio` — `16:9` by default. Use `4:5` or `9:16` for portrait
   infographics, `1:1` for square.
 
-## Applied Styling
+## Art direction
 
-The script wraps the content with: dark navy background, vibrant colours
-chosen for dark backgrounds, clear sections with icons, strong typographic
-hierarchy, and a constraint against depicting real people or public figures.
+Give Gemini the subject, exact labels and relationships, plus any user-selected
+style or reference. Leave composition, illustration, lighting and depth open
+unless a particular arrangement carries meaning, such as an Euler diagram.
+
+Do not impose a dark palette, flat boxes, thin arrows or minimal decoration by
+default. Legibility does not require plainness: allow expressive imagery while
+keeping labels readable and connections accurate. Respect an explicit request
+for minimalism just as you would an illustrated style. Inspect the result for
+missing labels and misleading connections before delivery.
 
 ## Workflow
 
@@ -59,11 +68,11 @@ fi
 
 uv run "$IMAGE_GEN_PLUGIN_ROOT/scripts/generate_image.py" "$SOURCE" \
   --kind infographic \
-  --style "$STYLE" \
   --aspect-ratio "$ASPECT_RATIO" \
   --output "$OUTPUT_PATH"
 ```
 
+Add `--style "your art direction"` only when a style has been chosen.
 Report the output path and size.
 
 ## Batch Generation

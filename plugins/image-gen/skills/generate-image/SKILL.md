@@ -52,6 +52,15 @@ blocks and `NO_IMAGE` propagate immediately without trying the next model.
 
 If no arguments are given, ask the user what to generate.
 
+## Prompting
+
+Describe the intended image and any user-selected style or reference. Let Gemini
+choose composition, illustration, lighting and depth unless the request depends
+on a specific layout. Avoid turning every brief into plain boxes and arrows or
+suppressing decorative detail by default. For diagrams, constrain the facts,
+labels and connections; give the artwork room to be expressive. Check the result
+for legibility and factual accuracy before delivery.
+
 ## Workflow
 
 Run the generator and report the result. That is the whole skill. Resolve the
