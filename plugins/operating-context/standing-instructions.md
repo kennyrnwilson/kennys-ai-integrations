@@ -75,7 +75,8 @@ config:
   default. Profiles live in their own files: `codex --profile deep`
   (`~/.codex/deep.config.toml`, high effort) to escalate, and
   `codex --profile light` (`~/.codex/light.config.toml`, low effort) for
-  mechanical work. `bin/setup-codex.py` in mac-homedir writes all three.
+  mechanical work. mac-homedir tracks the two profile files, and its
+  `bin/setup-codex.py` sets the defaults in `config.toml`.
 
 ---
 
