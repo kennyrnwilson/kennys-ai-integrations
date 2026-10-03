@@ -130,6 +130,37 @@ def build_prompt(text: str, *, kind: str = "image", style: str | None = None) ->
     return INFOGRAPHIC_TEMPLATE.format(art_direction=art_direction, text=text)
 
 
+def image_suffix(data: bytes) -> str | None:
+    """The file extension the bytes' own signature calls for, or None.
+
+    The model chooses the encoding, not the caller: Gemini has returned JPEG
+    for a requested `.png`, and a JPEG named `.png` is served and labelled as
+    the wrong type everywhere downstream.
+    """
+    if data.startswith(b"\x89PNG\r\n\x1a\n"):
+        return ".png"
+    if data.startswith(b"\xff\xd8\xff"):
+        return ".jpg"
+    if data[:4] == b"RIFF" and data[8:12] == b"WEBP":
+        return ".webp"
+    return None
+
+
+def _named_for(output: Path, data: bytes) -> Path:
+    suffix = image_suffix(data)
+    if suffix is None:
+        return output
+    same = {".jpg", ".jpeg"} if suffix == ".jpg" else {suffix}
+    if output.suffix.lower() in same:
+        return output
+    print(
+        f"The model returned {suffix[1:].upper()}, not {output.suffix or 'no extension'}; "
+        f"saving as {output.with_suffix(suffix).name}",
+        file=sys.stderr,
+    )
+    return output.with_suffix(suffix)
+
+
 def _finish_reason(response) -> str | None:
     candidates = getattr(response, "candidates", None) or []
     if not candidates:
@@ -148,6 +179,9 @@ def generate(
     max_attempts: int = DEFAULT_MAX_ATTEMPTS,
 ) -> Path:
     """Generate one image and write it to `output`.
+
+    The extension follows the bytes: if the model returns JPEG for a `.png`
+    name, the file is written as `.jpg` and that path is returned.
 
     Transient API failures (503, throttling) are retried with exponential
     backoff up to `max_attempts`. A `limit: 0` quota wall, a safety block and a
@@ -219,6 +253,7 @@ def generate(
         blob = getattr(part, "inline_data", None)
         data = getattr(blob, "data", None) if blob else None
         if data:
+            output = _named_for(output, data)
             output.parent.mkdir(parents=True, exist_ok=True)
             output.write_bytes(data)
             return output

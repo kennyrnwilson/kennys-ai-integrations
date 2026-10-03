@@ -23,6 +23,8 @@ from generate_image import (
 )
 
 PNG_BYTES = b"\x89PNG\r\n\x1a\n" + b"fake image data"
+JPEG_BYTES = b"\xff\xd8\xff\xe0" + b"fake image data"
+WEBP_BYTES = b"RIFF\x00\x00\x00\x00WEBP" + b"fake image data"
 
 
 class FakePart:
@@ -93,6 +95,37 @@ def test_generate_writes_the_returned_bytes(tmp_path: Path):
 
     assert generate("a prompt", out, client=client) == out
     assert out.read_bytes() == PNG_BYTES
+
+
+def test_generate_names_jpeg_bytes_jpg_even_when_png_was_asked_for(tmp_path: Path):
+    client = FakeClient(FakeResponse(parts=[FakePart(JPEG_BYTES)]))
+    asked = tmp_path / "result.png"
+
+    written = generate("a prompt", asked, client=client)
+
+    assert written == tmp_path / "result.jpg"
+    assert written.read_bytes() == JPEG_BYTES
+    assert not asked.exists()
+
+
+def test_generate_keeps_a_jpeg_extension_the_caller_chose(tmp_path: Path):
+    client = FakeClient(FakeResponse(parts=[FakePart(JPEG_BYTES)]))
+    out = tmp_path / "result.jpeg"
+
+    assert generate("a prompt", out, client=client) == out
+
+
+def test_generate_names_webp_bytes_webp(tmp_path: Path):
+    client = FakeClient(FakeResponse(parts=[FakePart(WEBP_BYTES)]))
+
+    assert generate("a prompt", tmp_path / "r.png", client=client) == tmp_path / "r.webp"
+
+
+def test_generate_keeps_the_asked_name_for_an_unrecognised_format(tmp_path: Path):
+    client = FakeClient(FakeResponse(parts=[FakePart(b"not an image")]))
+    out = tmp_path / "result.png"
+
+    assert generate("a prompt", out, client=client) == out
 
 
 def test_generate_passes_model_and_aspect_ratio(tmp_path: Path):
