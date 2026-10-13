@@ -14,13 +14,14 @@ Claude Code and OpenAI Codex reach the system in three ways:
 
 1. **The repos, directly.** On a Mac or in a cloud session, an agent clones and
    reads or writes them.
-2. **Two MCP servers in a Linux VM on the Mini, for the notes and the books,**
-   HTTP daemons behind Cloudflare Access and a tunnel that dials out. Every
+2. **MCP servers in a Linux VM on the Mini, for the notes, the books and the
+   wellbeing app,** HTTP daemons behind Cloudflare Access and a tunnel that
+   dials out. The wellbeing app and its database run in the VM too. Every
    client uses them through one MCP portal: both Macs, cloud sessions and a
    browser, from anywhere.
-3. **Two MCP servers on the Mini itself, for the app databases,** stdio child
-   processes registered for both makers. The databases never leave the Mini, so
-   these need a session there — started or driven from a phone, or over
+3. **One MCP server on the Mini itself, for the swim database,** a stdio child
+   process registered for both makers. The database never leaves the Mini, so
+   it needs a session there — started or driven from a phone, or over
    Tailscale SSH from the laptop.
 
 The through-line is two operating systems — Longevity OS and Mind OS — carrying
