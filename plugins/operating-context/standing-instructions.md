@@ -88,9 +88,9 @@ config:
 - GitHub `main` is canonical for the personal-portal system repositories.
 - Facts about the personal-portal system live in the personal-portal
   architecture hub; link to them instead of duplicating them.
-- Use ASD-STE100 Simplified Technical English for procedures, such as setup
-  guides and runbooks. Write explanations as stand-alone prose, not STE. The
-  `markdown-conventions` skill has the full rule.
+- Write procedures, such as setup guides and runbooks, by the procedure rules,
+  and explanations as stand-alone prose. The `communicate-clearly` skill has the
+  full rule.
 - Prefer Python for new tooling.
 - Scaffold new Python libraries with `uv init --lib`, or use
   [scientific-python/cookie](https://github.com/scientific-python/cookie) for a

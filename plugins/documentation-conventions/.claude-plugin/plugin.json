@@ -1,7 +1,7 @@
 {
   "name": "documentation-conventions",
-  "version": "1.1.1",
-  "description": "Kenny's documentation authoring conventions — markdown file structure with bidirectional parent/child links, and Mermaid diagram theming",
+  "version": "1.2.0",
+  "description": "Kenny's documentation authoring conventions — the communicate-clearly writing standard, markdown file structure with bidirectional parent/child links, and Mermaid diagram theming",
   "author": {
     "name": "kennyrnwilson"
   },

@@ -20,7 +20,7 @@
     {
       "name": "documentation-conventions",
       "source": "./plugins/documentation-conventions",
-      "description": "Markdown authoring conventions and Mermaid diagram theming"
+      "description": "The communicate-clearly writing standard, markdown authoring conventions and Mermaid diagram theming"
     },
     {
       "name": "operating-context",
