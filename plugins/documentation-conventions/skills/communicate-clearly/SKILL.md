@@ -14,6 +14,9 @@ File form (backlinks, filenames, the footer) is the `markdown-conventions` skill
 Mermaid theming is `mermaid-conventions`. Which repo a page belongs in is the
 personal-portal documentation standard.
 
+The reasons behind these rules are permanent notes in knowledge-library, in the
+[Knowledge and Communication hub](https://github.com/kennyrnwilson/knowledge-library/blob/main/03-permanent-notes/productivity/knowledge-and-communication/README.md).
+
 ## House style
 
 The short form. [`references/write-in-house-style.md`](references/write-in-house-style.md)
@@ -24,9 +27,11 @@ gives each rule's reason and a good and a bad example.
    "initiate".
 3. **Lead with the point.** The first sentence of a page, section or paragraph says
    what it is for.
-4. **Name the actor and the action.** "The runner builds the site", not "the build
-   of the site is performed".
-5. **One thing, one name,** in the prose, the tables and the figures.
+4. **Name the actor and the action.** "The deploy runner builds the site", not "the
+   build of the site is performed".
+5. **One thing, one name,** in the prose, the tables and the figures. Across the
+   system, use the names in the
+   [glossary](https://github.com/kennyrnwilson/personal-portal/blob/main/docs/system-architecture/glossary.md).
 6. **Earn every claim.** State a fact before a sentence relies on it. Mark a
    judgement, an uncertainty or something you did not check as such.
 7. **Say it plainly.** Write captions, headings and summaries as plain statements

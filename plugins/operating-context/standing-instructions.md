@@ -92,6 +92,9 @@ config:
 - GitHub `main` is canonical for the personal-portal system repositories.
 - Facts about the personal-portal system live in the personal-portal
   architecture hub; link to them instead of duplicating them.
+- Use the terms in the hub's glossary
+  (https://github.com/kennyrnwilson/personal-portal/blob/main/docs/system-architecture/glossary.md).
+  If I use a term differently, ask which I mean.
 - Write procedures, such as setup guides and runbooks, by the procedure rules,
   and explanations as stand-alone prose. The `communicate-clearly` skill has the
   full rule.
