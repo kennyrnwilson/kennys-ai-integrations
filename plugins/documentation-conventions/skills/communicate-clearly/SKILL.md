@@ -77,4 +77,8 @@ Load the guide that matches the job before writing.
 |---|---|
 | Any finished prose, when a rule above needs its reason or an example | [`references/write-in-house-style.md`](references/write-in-house-style.md) |
 | A procedure: a runbook, setup guide, protocol or skill | [`references/write-a-procedure.md`](references/write-a-procedure.md) |
+| A note: capturing, filing, a literature or permanent note, guidance, a quote | [`references/keep-notes.md`](references/keep-notes.md) |
+| Software documentation: an architecture page, design doc, app profile, README or plan | [`references/write-a-system-explanation.md`](references/write-a-system-explanation.md) |
+| Reviewing a draft, yours or an AI's | [`references/review-a-draft.md`](references/review-a-draft.md) |
+| Deciding who writes: coach, co-write or draft mode, and briefing an AI | [`references/write-with-ai.md`](references/write-with-ai.md) |
 | An `AGENTS.md`, a skill, or another document an agent reads | the `writing-for-agents` skill, where installed, plus the house style |

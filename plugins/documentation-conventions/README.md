@@ -24,7 +24,8 @@ full package template.
 `communicate-clearly` (1.2.0) holds the writing standard that used to sit in
 `markdown-conventions` ("Which prose style applies"), and replaces the personal
 `ste-writing` skill and the `STE-100` output style. ASD-STE100 was dropped for eight
-procedure rules that need no controlled dictionary.
+procedure rules that need no controlled dictionary. 1.3.0 adds four guides:
+`keep-notes`, `write-a-system-explanation`, `review-a-draft` and `write-with-ai`.
 
 `mermaid-conventions` replaces the retired `mermaid-diagrams` plugin. Beyond
 the move, it fixes a defect: the original mandated a hardcoded dark theme on
