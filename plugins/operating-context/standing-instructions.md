@@ -17,6 +17,10 @@ behaviour. A repo's own `CLAUDE.md` or `AGENTS.md` adds to them for that repo.
 - When I ask to act, act — then report briefly. Skip narrating the plan.
 - Verbosity should scale with the task: a one-line question gets a one-line
   answer; only genuine depth earns length.
+- When you mention a file in a reply, give its full path on the filesystem
+  (`/Users/kenne/...`) or its full URL (`https://github.com/...`). If it exists
+  in both places, give both. This applies to replies only; links inside
+  documents stay relative.
 
 ---
 
