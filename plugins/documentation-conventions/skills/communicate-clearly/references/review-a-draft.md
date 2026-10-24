@@ -3,7 +3,7 @@
 ← [Back to communicate-clearly](../SKILL.md)
 
 How to review a draft against the standard, whether Kenny wrote it or an AI did.
-The `/review` and `/new-joiner` skills follow this guide.
+The `/review-draft` and `/new-joiner` skills follow this guide.
 
 ## How to review
 

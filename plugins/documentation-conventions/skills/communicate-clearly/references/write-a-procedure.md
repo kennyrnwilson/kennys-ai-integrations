@@ -71,7 +71,7 @@ step.
 **The machine check.** personal-portal runs `tests/docs/ste-sentence-length.test.ts`.
 It fails when a listed procedural document has a sentence of more than 25 words. Add
 each new runbook to the `PROCEDURAL` list in that file. It is the only rule checked
-by machine; the others are caught by reading or by `/review`.
+by machine; the others are caught by reading or by `/review-draft`.
 
 ### 7. Say what the reader should see after a step
 
