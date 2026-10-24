@@ -81,4 +81,5 @@ Load the guide that matches the job before writing.
 | Software documentation: an architecture page, design doc, app profile, README or plan | [`references/write-a-system-explanation.md`](references/write-a-system-explanation.md) |
 | Reviewing a draft, yours or an AI's | [`references/review-a-draft.md`](references/review-a-draft.md) |
 | Deciding who writes: coach, co-write or draft mode, and briefing an AI | [`references/write-with-ai.md`](references/write-with-ai.md) |
+| A talk: the message, the arc, slides, speaker notes and the Marp deck | [`references/build-a-talk.md`](references/build-a-talk.md) |
 | An `AGENTS.md`, a skill, or another document an agent reads | the `writing-for-agents` skill, where installed, plus the house style |
