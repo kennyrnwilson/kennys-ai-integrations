@@ -15,7 +15,9 @@ reasons.
 ## Before you build
 
 1. **Name the audience and what they should do afterwards.** "The platform team,
-   who should approve the migration" is an audience. "Engineers" is not.
+   who should approve the migration" is an audience. "Engineers" is not. The
+   audience is the hero of the talk, and the speaker is the mentor who gives them
+   what they need. Cut what is about the speaker and not about them.
 2. **Write the message in one sentence.** It is the sentence the audience should
    be able to repeat the next day. If it takes two sentences, the talk is two
    talks, or the message is not settled yet.
@@ -29,15 +31,17 @@ reasons.
 1. **Open with the promise:** what the audience will know or be able to do by the
    end. Do not open with a joke or an apology.
 2. **Show the gap:** the problem as it is now, then what it could be. Return to
-   this contrast as the talk moves on.
+   this contrast as the talk moves on: it is what makes the audience want the
+   change.
 3. **Give the outline** in one slide, and show where you are in it at each new
    section. This signposting stands in for the headings a reader can see.
 4. **Make each section one point,** with one example or piece of evidence.
 5. **Repeat the message:** in the opening, at a turn in the middle, and at the
    end. Winston calls this cycling. A listener who drifted for a minute gets the
    message back; a reader would have reread it.
-6. **Close with what the audience should do,** and the message once more. End on
-   your contributions or the call to action, not on "Thank you" or "Questions?".
+6. **Close with what the audience should do,** and the message once more. Show
+   what is better once they have done it. End on your contributions or the call to
+   action, not on "Thank you" or "Questions?".
 
 ## Slides
 
@@ -90,9 +94,11 @@ someone without the repo.
   (MIT, 2018): open with an empowerment promise, not a joke; cycle back to the
   message; build a fence around the idea; signpost; too many words on slides; end
   on contributions, not "Thank you".
-- Nancy Duarte, *Resonate*: the contrast between what is and what could be, as
-  the talk's structure; a call to action at the end.
+- Nancy Duarte, [*Resonate*](https://github.com/kennyrnwilson/book-library/tree/main/resonate),
+  in book-library: the audience as hero and the speaker as mentor (chapter 1); the
+  contrast between what is and what could be, the call to action, and the "new
+  bliss" that ends the talk (chapter 2).
 - Garr Reynolds, *Presentation Zen*: slides are not documents; restraint and
   simplicity; a separate handout for the detail.
-- None of these is in book-library yet. Their claims here are stated at the level
-  of each source's main argument, not cited to a page.
+- Winston and Reynolds are not in book-library. Their claims here are stated at
+  the level of each source's main argument, not cited to a page.

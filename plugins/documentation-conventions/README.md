@@ -40,7 +40,7 @@ folder.
 1.6.0 adds the `build-a-talk` guide and the `talk` skill. Marp is the slide tool:
 it exports one self-contained HTML file that the portal publishes as it is.
 1.6.1 states the version in `communicate-clearly`'s `SKILL.md`, for the claude.ai
-copy.
+copy. 1.6.2 cites *Resonate*, which book-library now holds, in `build-a-talk`.
 
 ## claude.ai
 
