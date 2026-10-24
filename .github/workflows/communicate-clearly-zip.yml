@@ -1,0 +1,74 @@
+name: communicate-clearly ZIP
+
+# claude.ai does not install plugins. It takes the communicate-clearly skill as
+# an uploaded ZIP, replaced by hand whenever the version changes. This job
+# builds that ZIP on each documentation-conventions release and attaches it to
+# a GitHub release named communicate-clearly-v<version>. The upload itself is
+# manual; see mac-homedir docs/claude-ai-skills.md.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - plugins/documentation-conventions/**
+      - .github/workflows/communicate-clearly-zip.yml
+  pull_request:
+    paths:
+      - plugins/documentation-conventions/**
+      - .github/workflows/communicate-clearly-zip.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  zip:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read the version
+        id: version
+        run: |
+          version=$(jq -r .version plugins/documentation-conventions/.claude-plugin/plugin.json)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "plugin version: $version"
+
+      - name: Check SKILL.md states the same version
+        # A claude.ai chat can only say which copy it has if SKILL.md says it.
+        run: |
+          skill=plugins/documentation-conventions/skills/communicate-clearly/SKILL.md
+          if ! grep -q "This is version ${{ steps.version.outputs.version }}," "$skill"; then
+            echo "::error file=$skill::SKILL.md must say 'This is version ${{ steps.version.outputs.version }},' to match plugin.json"
+            exit 1
+          fi
+
+      - name: Build the ZIP
+        # The ZIP holds one folder, communicate-clearly/, with SKILL.md and
+        # references/ inside it: the layout claude.ai expects.
+        run: |
+          cd plugins/documentation-conventions/skills
+          zip -r -X "$GITHUB_WORKSPACE/communicate-clearly-${{ steps.version.outputs.version }}.zip" communicate-clearly
+          unzip -l "$GITHUB_WORKSPACE/communicate-clearly-${{ steps.version.outputs.version }}.zip"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: communicate-clearly-${{ steps.version.outputs.version }}
+          path: communicate-clearly-${{ steps.version.outputs.version }}.zip
+
+      - name: Publish the release
+        # One release per version. A push that does not change the version
+        # leaves the existing release alone.
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: communicate-clearly-v${{ steps.version.outputs.version }}
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "$TAG already exists; nothing to publish."
+            exit 0
+          fi
+          gh release create "$TAG" \
+            "communicate-clearly-${{ steps.version.outputs.version }}.zip" \
+            --title "communicate-clearly ${{ steps.version.outputs.version }}" \
+            --notes "Upload this ZIP to claude.ai (Settings → Capabilities → Skills): delete the old communicate-clearly first, then upload. See mac-homedir docs/claude-ai-skills.md."

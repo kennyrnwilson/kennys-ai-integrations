@@ -39,6 +39,18 @@ Pocock's `writing-*` skills: on 2026-10-24 they were still in his `in-progress/`
 folder.
 1.6.0 adds the `build-a-talk` guide and the `talk` skill. Marp is the slide tool:
 it exports one self-contained HTML file that the portal publishes as it is.
+1.6.1 states the version in `communicate-clearly`'s `SKILL.md`, for the claude.ai
+copy.
+
+## claude.ai
+
+claude.ai does not install plugins, so `communicate-clearly` is uploaded to the
+account by hand. The task skills are not uploaded: the standard's router covers
+the same jobs when they are asked for in plain words. On each push that changes
+this plugin, the `communicate-clearly ZIP` workflow checks that `SKILL.md` states
+the version in `plugin.json`, and builds `communicate-clearly-<version>.zip`. On a
+new version it publishes the ZIP as the release `communicate-clearly-v<version>`.
+The upload steps are in mac-homedir `docs/claude-ai-skills.md`.
 
 `mermaid-conventions` replaces the retired `mermaid-diagrams` plugin. Beyond
 the move, it fixes a defect: the original mandated a hardcoded dark theme on
