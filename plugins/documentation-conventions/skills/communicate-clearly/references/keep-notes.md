@@ -47,7 +47,8 @@ Decide first whether the goal is learning or output.
 
 ## Process the inbox
 
-For each fleeting note:
+The `/process-inbox` skill follows these steps: it proposes, and Kenny decides and
+writes. For each fleeting note:
 
 1. Decide its fate: develop it, merge it into an existing note, or archive it to
    `07-archive/`.
