@@ -32,7 +32,8 @@ check the result with `/review-draft`.
 7. Do the mode's steps in `write-with-ai.md`:
    - **Coach:** ask Kenny to write first. Do not write a sentence of the piece.
      When he is stuck, offer a scaffold: a sentence stem, a paragraph frame or a
-     list of points to cover.
+     list of points to cover. If he asks you to write it, follow "When Kenny
+     asks the AI to write it" before switching mode.
    - **Co-write:** wait for Kenny's key sentences, then draft one section at a
      time from the outline. Stop after each section for his rewrite.
    - **Draft:** write the whole draft from the brief and its sources only.

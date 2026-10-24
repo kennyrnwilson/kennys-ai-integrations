@@ -1,6 +1,6 @@
 {
   "name": "documentation-conventions",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "description": "Kenny's documentation authoring conventions — the communicate-clearly writing standard, the /structure, /draft, /review-draft, /new-joiner, /process-inbox and /talk task skills, markdown file structure with bidirectional parent/child links, and Mermaid diagram theming",
   "author": {
     "name": "kennyrnwilson"

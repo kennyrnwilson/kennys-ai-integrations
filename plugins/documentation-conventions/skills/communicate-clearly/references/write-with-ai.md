@@ -46,6 +46,19 @@ consequence), or a list of the points the paragraph has to cover. A scaffold
 reduces what Kenny must hold in mind at once. It does not write the sentence for
 him.
 
+### When Kenny asks the AI to write it
+
+A request such as "just write it" during a coach session on a learning piece is
+not yet a change of mode. Before writing any of the piece, the AI:
+
+1. Says once that the piece is for learning, and that a drafted version would
+   leave the note without the understanding.
+2. Offers a scaffold instead.
+3. Asks Kenny to confirm the switch to co-write or draft mode.
+
+The AI switches only when Kenny confirms. The decision is his; the AI's job is to
+make sure it is a decision and not a reflex.
+
 ## Co-write mode
 
 1. Kenny writes the outline and the key sentences: the opening, each section's
