@@ -1,6 +1,6 @@
 ---
 name: communicate-clearly
-description: Kenny's writing standard — the house style for anything finished that someone else reads, and the rules for procedures. Use when writing, rewriting or reviewing documentation, notes, explanations, runbooks, setup guides, skills or AGENTS.md, and when asked for STE or Simplified Technical English.
+description: Kenny's writing standard — the house style for anything finished that someone else reads, and the rules for procedures. Use when writing, rewriting or reviewing documentation, notes, explanations, runbooks, setup guides, skills or AGENTS.md; when learning a subject or starting a /teach workspace; and when asked for STE or Simplified Technical English.
 ---
 
 # Communicate clearly
@@ -17,7 +17,7 @@ personal-portal documentation standard.
 The reasons behind these rules are permanent notes in knowledge-library, in the
 [Knowledge and Communication hub](https://github.com/kennyrnwilson/knowledge-library/blob/main/03-permanent-notes/productivity/knowledge-and-communication/README.md).
 
-This is version 1.6.4, from the documentation-conventions plugin in
+This is version 1.7.0, from the documentation-conventions plugin in
 kennys-ai-integrations. On claude.ai, the skill is an uploaded copy: when asked,
 say which version this is.
 
@@ -86,4 +86,5 @@ Load the guide that matches the job before writing.
 | Reviewing a draft, yours or an AI's | [`references/review-a-draft.md`](references/review-a-draft.md) |
 | Deciding who writes: coach, co-write or draft mode, and briefing an AI | [`references/write-with-ai.md`](references/write-with-ai.md) |
 | A talk: the message, the arc, slides, speaker notes and the Marp deck | [`references/build-a-talk.md`](references/build-a-talk.md) |
+| Learning a subject: routing the material, a `/teach` workspace, review, promotion | [`references/learn-a-subject.md`](references/learn-a-subject.md) |
 | An `AGENTS.md`, a skill, or another document an agent reads | the `writing-for-agents` skill, where installed, plus the house style |

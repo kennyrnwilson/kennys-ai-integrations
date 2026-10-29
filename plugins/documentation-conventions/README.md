@@ -44,6 +44,11 @@ copy. 1.6.2 cites *Resonate*, which book-library now holds, in `build-a-talk`.
 1.6.3 makes coach mode ask Kenny to confirm before it writes any of a learning
 piece, such as a permanent note, when he asks it to. 1.6.4 has `/talk` list every
 slide with its title, its visual and its speaker notes, even in an outline.
+1.7.0 adds the `learn-a-subject` guide, from the personal-portal Learning plan: how
+to route material, where a `/teach` workspace lives, review on a Todoist schedule,
+promotion, graduation from `explore`, and what Kenny expects of the teacher. It is
+a guide in `communicate-clearly`, not a skill of its own, so it reaches claude.ai in
+the existing ZIP.
 
 ## claude.ai
 
