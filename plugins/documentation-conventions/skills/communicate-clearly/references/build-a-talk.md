@@ -45,6 +45,10 @@ reasons.
 
 ## Slides
 
+- Plan every slide with three things: its title, its visual, and what the speaker
+  says. An outline of the talk lists all three for each slide, not only the
+  sections. A slide with no visual is a page; a slide with no notes has nothing
+  for the speaker to say.
 - A slide supports the speaker. It is not the document on a screen. If the slide
   can be read without the speaker, it is a page, and belongs in the handout.
 - One idea per slide, with its point as the title, written as a statement.

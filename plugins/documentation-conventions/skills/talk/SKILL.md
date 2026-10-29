@@ -25,23 +25,27 @@ rules of its own: the guide is `references/build-a-talk.md` in the
       this subject, draft for a slide scaffold.
 5. Propose the arc, by "The shape of the talk": one line per section, with its
    point, its slide count and its running time. Ask Kenny to accept or change it.
-6. Build the deck in the mode:
+6. List the slides, by "Slides" in the guide: for each one, its title as a
+   statement, its visual (an image, a diagram or one number), and one line of
+   what the speaker says. If Kenny asked for an outline only, stop here.
+7. Build the deck in the mode:
    - **Coach:** Kenny writes the slide titles and the speaker notes. Ask questions
      and point at gaps. Write only the Marp scaffolding.
    - **Draft:** write the slides and the speaker notes from the source document
      only. Mark a claim not in the source as **Unverified**.
-7. Write the deck as `talk.md` next to the source document, in the format in
+8. Write the deck as `talk.md` next to the source document, in the format in
    "Format and where it lives". If the source is not in knowledge-library, ask
    where the deck goes.
-8. For each image a slide needs, name it and its one point. Generate it with the
+9. For each image a slide needs, name it and its one point. Generate it with the
    `image-gen` plugin only after Kenny agrees, and say the cost first (about
    USD 0.04 an image).
-9. Check the deck against "Slides" and "Rehearse" in the guide. Report each slide
-   that is a page and not a visual.
-10. Give Kenny the export command. Do not run it unless he asks.
+10. Check the deck against "Slides" and "Rehearse" in the guide. Report each slide
+    that is a page and not a visual, or that has no speaker notes.
+11. Give Kenny the export command. Do not run it unless he asks.
 
 ## Output
 
 - The arc, in the conversation, for step 5.
+- The slide list, in the conversation, for step 6.
 - The deck, `talk.md`, with speaker notes as comments under each slide.
 - A list of the images to make, and the slides that failed the check.

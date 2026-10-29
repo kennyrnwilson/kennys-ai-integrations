@@ -42,7 +42,8 @@ it exports one self-contained HTML file that the portal publishes as it is.
 1.6.1 states the version in `communicate-clearly`'s `SKILL.md`, for the claude.ai
 copy. 1.6.2 cites *Resonate*, which book-library now holds, in `build-a-talk`.
 1.6.3 makes coach mode ask Kenny to confirm before it writes any of a learning
-piece, such as a permanent note, when he asks it to.
+piece, such as a permanent note, when he asks it to. 1.6.4 has `/talk` list every
+slide with its title, its visual and its speaker notes, even in an outline.
 
 ## claude.ai
 
