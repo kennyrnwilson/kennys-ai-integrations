@@ -109,7 +109,10 @@ Code, it reads `~/code/book-library/<slug>/chapter-summaries/`. See
 1. Open the lesson. It is written for a phone and takes about 10 minutes.
 2. Read the lesson once.
 3. Answer the quiz. You get one tap per question.
-4. Do the Recall section without scrolling up.
+4. Do the Recall section without scrolling up. Type your answer in the box and
+   tap **Check**: learning-app marks it against the model answer, then shows the
+   model answer. Off the tailnet the box does not appear, so open the model
+   answer and compare.
 5. Tell the teacher what you got wrong, or what you doubt.
 6. Do the "At work" box later, at a desk. It is not part of the 10 minutes.
 7. Report the result of the "At work" task to the teacher in the next session.
@@ -185,9 +188,14 @@ What Kenny expects of `/teach` and of a chat running the teach tools, on top of 
   chapter summary and cite the portal page of that summary.
 - Make every quiz answer the same number of words. Vary the position of the right
   answer.
+- Write each Recall model answer as a list of key points, each one checkable, in
+  the order the question asks for them. learning-app marks a typed answer against
+  that list.
+- Load `recall.js` after `quiz.js` in every lesson:
+  `<script src="../assets/recall.js"></script>`.
 - Link each lesson to its reference sheet, and the sheet back to the lesson.
-- Reuse `assets/`. A new workspace may copy another workspace's `course.css` and
-  `quiz.js`.
+- Reuse `assets/`. A new workspace may copy another workspace's `course.css`,
+  `quiz.js` and `recall.js`.
 - Write a learning record only for something Kenny showed, never for material that
   was only covered.
 - Never write Kenny's answers, explanations or permanent notes.

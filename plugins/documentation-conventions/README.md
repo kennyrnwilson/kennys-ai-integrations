@@ -50,6 +50,8 @@ promotion, graduation from `explore`, and what Kenny expects of the teacher. It 
 a guide in `communicate-clearly`, not a skill of its own, so it reaches claude.ai in
 the existing ZIP.
 1.7.1 links the skills and the documentation standard named in `communicate-clearly`.
+1.7.2 has `learn-a-subject` write Recall model answers as checkable key points
+and load `recall.js`, so learning-app can mark a typed answer.
 
 ## claude.ai
 
