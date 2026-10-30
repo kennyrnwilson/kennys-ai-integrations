@@ -5,7 +5,7 @@ The depth lives in a private hub this points into.
 
 ## What this is
 
-An AI-first personal system that turns knowledge into action across eight repos,
+An AI-first personal system that turns knowledge into action across nine repos,
 with GitHub `main` as the single source of truth: knowledge-base articles, book
 libraries, database-backed apps, the portal, and the two that configure the
 machines and the agents themselves.
@@ -41,6 +41,8 @@ start at `pictorial-guide.md` for the shape, `index.md` for the specification.
 - [wellbeing-app](https://github.com/kennyrnwilson/wellbeing-app) — Apple Health data;
   longevity and mind scorecards.
 - [swim-app](https://github.com/kennyrnwilson/swim-app) — swim sessions and drills.
+- [learning-app](https://github.com/kennyrnwilson/learning-app) — marks the Recall
+  answers typed into course lessons, with Claude Haiku.
 - [finances](https://github.com/kennyrnwilson/finances) — self-hosted Actual Budget.
   No MCP server: it is the one part no agent can see.
 - [personal-portal](https://github.com/kennyrnwilson/personal-portal) — the Astro
