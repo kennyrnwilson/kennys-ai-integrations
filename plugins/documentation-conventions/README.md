@@ -49,6 +49,7 @@ to route material, where a `/teach` workspace lives, review on a Todoist schedul
 promotion, graduation from `explore`, and what Kenny expects of the teacher. It is
 a guide in `communicate-clearly`, not a skill of its own, so it reaches claude.ai in
 the existing ZIP.
+1.7.1 links the skills and the documentation standard named in `communicate-clearly`.
 
 ## claude.ai
 

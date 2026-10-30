@@ -10,14 +10,14 @@ AI alike. It applies to everything finished that someone else reads: a person, a
 visitor to the portal, or an AI reading through the MCP. Fleeting notes are raw
 capture and are exempt.
 
-File form (backlinks, filenames, the footer) is the `markdown-conventions` skill;
-Mermaid theming is `mermaid-conventions`. Which repo a page belongs in is the
-personal-portal documentation standard.
+File form (backlinks, filenames, the footer) is the [`markdown-conventions`](../markdown-conventions/SKILL.md) skill;
+Mermaid theming is [`mermaid-conventions`](../mermaid-conventions/SKILL.md). Which repo a page belongs in is the
+personal-portal [documentation standard](https://github.com/kennyrnwilson/personal-portal/blob/main/docs/system-architecture/documentation-standard.md).
 
 The reasons behind these rules are permanent notes in knowledge-library, in the
 [Knowledge and Communication hub](https://github.com/kennyrnwilson/knowledge-library/blob/main/03-permanent-notes/productivity/knowledge-and-communication/README.md).
 
-This is version 1.7.0, from the documentation-conventions plugin in
+This is version 1.7.1, from the documentation-conventions plugin in
 kennys-ai-integrations. On claude.ai, the skill is an uploaded copy: when asked,
 say which version this is.
 
