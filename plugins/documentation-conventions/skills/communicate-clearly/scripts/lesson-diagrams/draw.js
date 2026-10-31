@@ -296,8 +296,26 @@
       if (drawing) setTimeout(drawing.refresh, 50);
     }
 
+    // On a phone, a stroke that starts at the screen's left edge is the
+    // browser's swipe back, which would leave the lesson and lose the drawing.
+    // A history entry of the lesson's own takes that first back: it only
+    // leaves full screen. A second back leaves the lesson as usual.
+    var guarded = false;
+    function guard() {
+      if (guarded || !window.history || !history.pushState) return;
+      guarded = true;
+      history.pushState({ drawIt: fig }, "");
+    }
+    window.addEventListener("popstate", function () {
+      if (!guarded) return;
+      guarded = false;
+      setFull(false);
+      status.textContent = "Back again leaves this lesson, and the drawing with it.";
+    });
+
     onTap(start, function () {
       start.disabled = true;
+      guard();
       figure.hidden = true;
       out.className = "recall-out"; out.textContent = "";
       status.textContent = "Loading the drawing tool…";
@@ -313,7 +331,7 @@
         start.disabled = false;
       });
     });
-    onTap(full, function () { setFull(true); });
+    onTap(full, function () { guard(); status.textContent = ""; setFull(true); });
     onTap(done, function () { setFull(false); });
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape" && area.classList.contains("is-full")) setFull(false);
