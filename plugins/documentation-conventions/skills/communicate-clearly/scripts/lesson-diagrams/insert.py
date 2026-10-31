@@ -12,6 +12,12 @@ lesson's old diagram blocks are removed first.
 
 A diagram block is the figure, given id="fig-N" (N counts the lesson's
 diagrams from 1), followed by its answer as JSON when the layout records one.
+
+Each lesson also gets one Draw it exercise, before its Recall heading: an
+empty <div class="draw-it" data-fig="N"> for the first diagram whose answer
+has at least DRAW_MIN_BOXES boxes, and draw.js loaded after recall.js. The
+course's assets/draw.js and the Draw it part of assets/course.css are copied
+from this folder, so every course runs the same marking.
 """
 import importlib.util
 import json
@@ -23,6 +29,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import diagrams  # noqa: E402
 
 BLOCK = re.compile(r'<!-- diagram -->\n.*?<!-- /diagram -->\n\n', re.S)
+DRAW_BLOCK = re.compile(r'<!-- draw-it -->\n.*?<!-- /draw-it -->\n\n', re.S)
+DRAW_SCRIPT = '<script src="../assets/draw.js"></script>\n'
+RECALL_SCRIPT = '<script src="../assets/recall.js"></script>\n'
+CSS_BLOCK = re.compile(r'\n?/\* Draw it \(assets/draw\.js\).*?/\* /Draw it \*/\n', re.S)
+DRAW_MIN_BOXES = 4
+HERE = Path(__file__).resolve().parent
 
 
 def load_specs(course):
@@ -74,21 +86,47 @@ def main(argv):
         only = argv[argv.index("--only") + 1].split("|") if "--only" in argv else None
         preview(course, figs, argv[argv.index("--preview") + 1], "--dark" in argv, only)
         return
-    files, count = {}, {}
+    files, count, draw = {}, {}, {}
     for f in figs:
         p = course / "teach" / "lessons" / f["lesson"]
         if p not in files:
-            files[p] = BLOCK.sub("", p.read_text())
+            s = BLOCK.sub("", DRAW_BLOCK.sub("", p.read_text()))
+            files[p] = s.replace(DRAW_SCRIPT, "")
         count[p] = count.get(p, 0) + 1
+        answer = build(f)[1]
+        if p not in draw and answer and len(answer["boxes"]) >= DRAW_MIN_BOXES:
+            draw[p] = count[p]
         s = files[p]
         h = f"<h2>{f['h2']}</h2>"
         i = s.index(h)
         j = i + len(h) + 1 if f["where"] == "top" else s.index("<h2", i + len(h))
         files[p] = s[:j] + block(f, count[p]) + s[j:]
+    for p, n in draw.items():
+        files[p] = add_draw_it(files[p], n, p)
     for p, s in files.items():
         p.write_text(s)
+    copy_assets(course)
     answers = sum(1 for f in figs if build(f)[1])
-    print(f"{len(figs)} figures in {len(files)} files, {answers} with an answer")
+    print(f"{len(figs)} figures in {len(files)} files, {answers} with an answer,"
+          f" {len(draw)} with Draw it")
+
+
+def add_draw_it(s, n, p):
+    """Put lesson p's Draw it for figure n before its Recall heading."""
+    if "<h2>Recall</h2>" not in s or RECALL_SCRIPT not in s:
+        print(p.name, "| no Recall heading or recall.js: no Draw it")
+        return s
+    div = f'<!-- draw-it -->\n<div class="draw-it" data-fig="{n}"></div>\n<!-- /draw-it -->\n\n'
+    s = s.replace("<h2>Recall</h2>", div + "<h2>Recall</h2>", 1)
+    return s.replace(RECALL_SCRIPT, RECALL_SCRIPT + DRAW_SCRIPT, 1)
+
+
+def copy_assets(course):
+    assets = course / "teach" / "assets"
+    (assets / "draw.js").write_text((HERE / "draw.js").read_text())
+    css = assets / "course.css"
+    s = CSS_BLOCK.sub("", css.read_text())
+    css.write_text(s.rstrip("\n") + "\n\n" + (HERE / "draw.css").read_text())
 
 
 if __name__ == "__main__":
