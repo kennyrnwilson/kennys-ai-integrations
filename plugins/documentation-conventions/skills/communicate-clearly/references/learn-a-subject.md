@@ -177,6 +177,36 @@ Once a quarter, check whether what Kenny measures should change what he believes
 6. Process the fleeting notes with `/process-inbox`.
 7. Complete the Todoist task.
 
+## Diagrams and Draw it
+
+A lesson diagram is inline SVG, drawn by the scripts in this skill's
+`scripts/lesson-diagrams/`. It is never hand-drawn SVG and never an image. The
+diagram follows the lesson's light and dark mode, and it can be redrawn as an
+exercise.
+
+- Write each diagram as a spec in the course's `teach/diagrams/specs.py`. Register
+  it with `@fig(lesson file, h2 text, "top" or "end", caption)`. The specs for the
+  existing courses are the examples.
+- Run `python3 insert.py <course folder>` to write the diagrams into the lessons.
+  Rerunning it is safe. To look at the diagrams first, add `--preview out.html`,
+  and `--dark` for dark mode.
+- When the point of a diagram is its structure, use a layout that records it:
+  `chain`, `row`, `fan`, `tree`, `nested` or `cycle`. These give the diagram an
+  answer: its boxes, which box is inside which, and its arrows. `columns`,
+  `ladder`, `versus` and hand-placed shapes give no answer.
+- A box's answer name is its first line. In a label written "X, rest", X is the
+  name and the rest is another name the learner may use. For a short name that
+  the words of the label do not hold, add `d.aka({label: [names]})`. A learner
+  writes "VM", not "The ingress VM on the Mini"; a word that only one box uses
+  already matches, so add an aka only where that is not enough.
+
+`insert.py` also gives each lesson one Draw it exercise, before its Recall. It
+uses the lesson's first diagram that has an answer of four boxes or more. The
+learner redraws that diagram from memory in Excalidraw, and `draw.js` marks the
+drawing in the browser against the answer, with no model call. learning-app saves
+each attempt. `insert.py` copies `draw.js` and the Draw it CSS into the course's
+`assets/`, so every course marks the same way.
+
 ## For the teacher
 
 What Kenny expects of `/teach` and of a chat running the teach tools, on top of the
@@ -193,9 +223,12 @@ What Kenny expects of `/teach` and of a chat running the teach tools, on top of 
   that list.
 - Load `recall.js` after `quiz.js` in every lesson:
   `<script src="../assets/recall.js"></script>`.
+- Draw each lesson diagram with `scripts/lesson-diagrams/`, as "Diagrams and Draw
+  it" says. Give a lesson whose point is a structure at least one diagram with an
+  answer of four boxes or more, so it gets a Draw it.
 - Link each lesson to its reference sheet, and the sheet back to the lesson.
 - Reuse `assets/`. A new workspace may copy another workspace's `course.css`,
-  `quiz.js` and `recall.js`.
+  `quiz.js` and `recall.js`. `insert.py` adds `draw.js` and the Draw it CSS.
 - Write a learning record only for something Kenny showed, never for material that
   was only covered.
 - Never write Kenny's answers, explanations or permanent notes.

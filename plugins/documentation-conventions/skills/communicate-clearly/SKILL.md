@@ -17,7 +17,7 @@ personal-portal [documentation standard](https://github.com/kennyrnwilson/person
 The reasons behind these rules are permanent notes in knowledge-library, in the
 [Knowledge and Communication hub](https://github.com/kennyrnwilson/knowledge-library/blob/main/03-permanent-notes/productivity/knowledge-and-communication/README.md).
 
-This is version 1.7.3, from the documentation-conventions plugin in
+This is version 1.7.4, from the documentation-conventions plugin in
 kennys-ai-integrations. On claude.ai, the skill is an uploaded copy: when asked,
 say which version this is.
 

@@ -55,6 +55,9 @@ and load `recall.js`, so learning-app can mark a typed answer.
 1.7.3 adds `communicate-clearly/scripts/lesson-diagrams/`: the engine that draws
 lesson diagrams as inline SVG and records each one's boxes, nesting and arrows as
 the answer for a Draw it exercise.
+1.7.4 adds "Diagrams and Draw it" to `learn-a-subject`: lesson diagrams come
+from `scripts/lesson-diagrams/`, and each lesson with a diagram of four boxes or
+more gets a Draw it, marked in the browser by `draw.js`.
 
 ## claude.ai
 
