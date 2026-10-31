@@ -52,6 +52,9 @@ the existing ZIP.
 1.7.1 links the skills and the documentation standard named in `communicate-clearly`.
 1.7.2 has `learn-a-subject` write Recall model answers as checkable key points
 and load `recall.js`, so learning-app can mark a typed answer.
+1.7.3 adds `communicate-clearly/scripts/lesson-diagrams/`: the engine that draws
+lesson diagrams as inline SVG and records each one's boxes, nesting and arrows as
+the answer for a Draw it exercise.
 
 ## claude.ai
 
