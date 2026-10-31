@@ -85,6 +85,17 @@ const tests = {
     box("nginx", 500, 80, 100, 40);
     assert.deepEqual([...mark(els, walls).bad], ["nginx on :80 should be inside Loopback"]);
   },
+  "a drawing as text, for Design it"() {
+    reset();
+    box("house", 0, 0, 400, 300);
+    const mini = box("Mini", 10, 20, 200, 100);
+    const router = box("router", 250, 20, 100, 40);
+    arrow(mini, router);
+    arrow(router, null);
+    assert.equal(ctx.window.DrawIt.describe(ctx.window.DrawIt.read(els)),
+      "Boxes:\n- house\n- Mini, inside house\n- router, inside house\n" +
+      "Arrows:\n- Mini → router\n- router → nothing");
+  },
 };
 
 let failed = 0;

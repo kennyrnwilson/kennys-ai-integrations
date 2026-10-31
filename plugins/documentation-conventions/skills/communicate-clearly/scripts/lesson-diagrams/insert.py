@@ -18,6 +18,9 @@ empty <div class="draw-it" data-fig="N"> for the first diagram whose answer
 has at least DRAW_MIN_BOXES boxes, and draw.js loaded after recall.js. The
 course's assets/draw.js and the Draw it part of assets/course.css are copied
 from this folder, so every course runs the same marking.
+
+A Design it (<div class="draw-it" data-design="N">, see draw.js) is written
+into the lesson by hand. insert.py leaves it alone, and loads draw.js for it.
 """
 import importlib.util
 import json
@@ -103,6 +106,10 @@ def main(argv):
         files[p] = s[:j] + block(f, count[p]) + s[j:]
     for p, n in draw.items():
         files[p] = add_draw_it(files[p], n, p)
+    for p, s in files.items():
+        # A Design it is written by hand, but needs draw.js all the same.
+        if "data-design" in s and DRAW_SCRIPT not in s and RECALL_SCRIPT in s:
+            files[p] = s.replace(RECALL_SCRIPT, RECALL_SCRIPT + DRAW_SCRIPT, 1)
     for p, s in files.items():
         p.write_text(s)
     copy_assets(course)

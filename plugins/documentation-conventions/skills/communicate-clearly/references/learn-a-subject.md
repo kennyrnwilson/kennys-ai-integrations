@@ -207,6 +207,16 @@ drawing in the browser against the answer, with no model call. learning-app save
 each attempt. `insert.py` copies `draw.js` and the Draw it CSS into the course's
 `assets/`, so every course marks the same way.
 
+A Design it asks the learner to draw a system from a task, not to redraw a
+figure. Write it by hand, before the lesson's Recall, in the form `draw.js`
+describes: `<div class="draw-it" data-design="N">` holding a "Design it"
+heading, the task, and a model answer of key points in a `<details>`. Write
+the key points as for Recall: each one a part, a nesting or an arrow that a
+drawing can show, taken from the lesson's sources. learning-app's judge marks
+the drawing, read as text, against them: one Haiku call per check. Give a
+Design it to a lesson whose point is how parts connect but which has no Draw it,
+or where the task joins up more than one figure.
+
 ## For the teacher
 
 What Kenny expects of `/teach` and of a chat running the teach tools, on top of the

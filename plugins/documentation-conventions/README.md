@@ -58,6 +58,9 @@ the answer for a Draw it exercise.
 1.7.4 adds "Diagrams and Draw it" to `learn-a-subject`: lesson diagrams come
 from `scripts/lesson-diagrams/`, and each lesson with a diagram of four boxes or
 more gets a Draw it, marked in the browser by `draw.js`.
+1.7.5 adds Design it: the learner draws a system from a task, and learning-app's
+judge marks the drawing against key points. `learn-a-subject` says when to write
+one and in what form.
 
 ## claude.ai
 

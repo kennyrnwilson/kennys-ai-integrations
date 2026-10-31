@@ -11,6 +11,10 @@
  *   <div class="draw-it" data-fig="2"></div>     (before the Recall heading)
  *   <script src="../assets/draw.js"></script>
  *
+ * Design it is the other exercise: draw a system from a task, marked by
+ * learning-app's judge (POST /learning-api/drawing/judge) against key points.
+ * See buildDesign for its markup.
+ *
  * The div is empty, so a lesson opened from a file, in Obsidian or on GitHub
  * shows nothing. Over http(s) the script builds the exercise in it. Excalidraw
  * loads only when the learner taps Start drawing.
@@ -216,21 +220,37 @@
     });
   }
 
-  function post(fig, r, elements) {
+  function post(url, body) {
     var ctrl = window.AbortController ? new AbortController() : null;
     var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, TIMEOUT_MS);
-    return fetch("/learning-api/drawing", {
+    return fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        lesson: lessonPath(), fig: fig, verdict: r.verdict,
-        ok: r.ok, bad: r.bad, elements: saved(elements)
-      }),
+      body: JSON.stringify(body),
       signal: ctrl ? ctrl.signal : undefined
     }).then(function (res) {
       clearTimeout(timer);
       if (!res.ok) throw new Error("status " + res.status);
+      return res.json();
     }, function (e) { clearTimeout(timer); throw e; });
+  }
+
+  // A drawing as text, for the judge: its boxes, what is inside what, and
+  // its arrows. Positions and looks are left out, as in the marking above.
+  function describe(got) {
+    var name = {};
+    got.boxes.forEach(function (b) { name[b.id] = b.label || "a box with no label"; });
+    var lines = ["Boxes:"];
+    got.boxes.forEach(function (b) {
+      lines.push("- " + name[b.id] + (b.parent ? ", inside " + name[b.parent] : ""));
+    });
+    if (!got.boxes.length) lines.push("- none");
+    lines.push("Arrows:");
+    got.arrows.forEach(function (a) {
+      lines.push("- " + (a.from ? name[a.from] : "nothing") + " → " + (a.to ? name[a.to] : "nothing"));
+    });
+    if (!got.arrows.length) lines.push("- none");
+    return lines.join("\n");
   }
 
   var loading = null;
@@ -245,23 +265,7 @@
     return loading;
   }
 
-  function build(host) {
-    var fig = host.getAttribute("data-fig");
-    var figure = document.getElementById("fig-" + fig);
-    var data = document.querySelector('script.draw-answer[data-fig="' + fig + '"]');
-    if (!figure || !data) return;
-    var answer = JSON.parse(data.textContent);
-    var caption = figure.querySelector("figcaption");
-
-    host.appendChild(el("h2", null, "Draw it"));
-    // Name the diagram by its section, since a lesson can have several.
-    var head = figure.previousElementSibling;
-    while (head && head.tagName !== "H2") head = head.previousElementSibling;
-    var intro = el("p", null, "Redraw the diagram " +
-      (head ? "under “" + head.textContent.trim() + "” " : "") + "from memory" +
-      (caption ? ": “" + caption.textContent.trim() + "”" : ".") +
-      " Start drawing hides the diagram until you check.");
-    host.appendChild(intro);
+  function howTo(extra) {
     var how = el("details", "box draw-how");
     how.appendChild(el("summary", null, "How to draw it"));
     var ul = el("ul");
@@ -269,30 +273,41 @@
       "Draw a box for each thing, and double-tap the box to type its name. Short names are fine.",
       "To put a box inside another, draw it inside. For a big outer box, write its name as text near its top edge, inside it.",
       "Draw each arrow from one box to the next. Drop each end on a box, so that the box outline lights up.",
-      "Where things sit does not count: only the boxes, their names, what is inside what, and the arrows."
+      extra
     ].forEach(function (t) { ul.appendChild(el("li", null, t)); });
     how.appendChild(ul);
-    host.appendChild(how);
+    return how;
+  }
 
-    var bar = el("div", "draw-bar");
-    var start = button("Start drawing"), full = button("Full screen"), check = button("Check");
-    full.disabled = check.disabled = true;
-    bar.appendChild(start); bar.appendChild(full); bar.appendChild(check);
-    host.appendChild(bar);
-    var status = el("p", "draw-status");
+  function verdictList(out, verdict, bad, ok) {
+    out.className = "recall-out is-" + verdict;
+    out.textContent = "";
+    out.appendChild(el("strong", "recall-verdict", LABELS[verdict] || verdict));
+    var list = el("ul", "recall-points");
+    bad.forEach(function (s) { list.appendChild(el("li", "is-missed", "✗ " + s)); });
+    ok.forEach(function (s) { list.appendChild(el("li", "is-made", "✓ " + s)); });
+    out.appendChild(list);
+  }
+
+  // The drawing tool and its buttons, put into host before anchor (or at its
+  // end). hide is hidden while the learner draws. check(elements, out, done)
+  // marks the drawing into out, and calls done() when it has finished.
+  function canvas(host, anchor, key, hide, check) {
+    function add(n) { host.insertBefore(n, anchor || null); return n; }
+    var bar = add(el("div", "draw-bar"));
+    var start = button("Start drawing"), full = button("Full screen"), checkB = button("Check");
+    full.disabled = checkB.disabled = true;
+    bar.appendChild(start); bar.appendChild(full); bar.appendChild(checkB);
+    var status = add(el("p", "draw-status"));
     status.setAttribute("aria-live", "polite");
-    host.appendChild(status);
-    var area = el("div", "draw-area");
-    host.appendChild(area);
-    var fullBar = el("div", "draw-bar draw-full-bar");
+    var area = add(el("div", "draw-area"));
+    var fullBar = add(el("div", "draw-bar draw-full-bar"));
     var check2 = button("Check"), done = button("Done");
     fullBar.appendChild(check2); fullBar.appendChild(done);
-    host.appendChild(fullBar);
-    var out = el("div", "recall-out");
+    var out = add(el("div", "recall-out"));
     out.setAttribute("aria-live", "polite");
-    host.appendChild(out);
 
-    var drawing = null;
+    var drawing = null, busy = false;
 
     function setFull(on) {
       area.classList.toggle("is-full", on);
@@ -308,7 +323,7 @@
     function guard() {
       if (guarded || !window.history || !history.pushState) return;
       guarded = true;
-      history.pushState({ drawIt: fig }, "");
+      history.pushState({ drawIt: key }, "");
     }
     window.addEventListener("popstate", function () {
       if (!guarded) return;
@@ -320,18 +335,18 @@
     onTap(start, function () {
       start.disabled = true;
       guard();
-      figure.hidden = true;
+      if (hide) hide.hidden = true;
       out.className = "recall-out"; out.textContent = "";
       status.textContent = "Loading the drawing tool…";
       loadExcalidraw().then(function () {
         area.classList.add("is-open");
         drawing = window.LessonDraw.mount(area, function () {
           status.textContent = "";
-          full.disabled = check.disabled = false;
+          full.disabled = checkB.disabled = false;
         });
       }, function () {
         status.textContent = "Could not load the drawing tool. Try again.";
-        figure.hidden = false;
+        if (hide) hide.hidden = false;
         start.disabled = false;
       });
     });
@@ -342,17 +357,43 @@
     });
 
     function runCheck() {
-      if (!drawing) return;
+      if (!drawing || busy) return;
       setFull(false);
-      var elements = drawing.getElements();
+      busy = true;
+      checkB.disabled = check2.disabled = true;
+      check(drawing.getElements(), out, function () {
+        busy = false;
+        checkB.disabled = check2.disabled = false;
+        checkB.textContent = "Check again";
+        out.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
+    onTap(checkB, runCheck);
+    onTap(check2, runCheck);
+  }
+
+  // Draw it: <div class="draw-it" data-fig="N"></div>, built here in full.
+  function buildDraw(host) {
+    var fig = host.getAttribute("data-fig");
+    var figure = document.getElementById("fig-" + fig);
+    var data = document.querySelector('script.draw-answer[data-fig="' + fig + '"]');
+    if (!figure || !data) return;
+    var answer = JSON.parse(data.textContent);
+    var caption = figure.querySelector("figcaption");
+
+    host.appendChild(el("h2", null, "Draw it"));
+    // Name the diagram by its section, since a lesson can have several.
+    var head = figure.previousElementSibling;
+    while (head && head.tagName !== "H2") head = head.previousElementSibling;
+    host.appendChild(el("p", null, "Redraw the diagram " +
+      (head ? "under “" + head.textContent.trim() + "” " : "") + "from memory" +
+      (caption ? ": “" + caption.textContent.trim() + "”" : ".") +
+      " Start drawing hides the diagram until you check."));
+    host.appendChild(howTo("Where things sit does not count: only the boxes, their names, what is inside what, and the arrows."));
+
+    canvas(host, null, fig, figure, function (elements, out, done) {
       var r = mark(elements, answer);
-      out.className = "recall-out is-" + r.verdict;
-      out.textContent = "";
-      out.appendChild(el("strong", "recall-verdict", LABELS[r.verdict]));
-      var list = el("ul", "recall-points");
-      r.bad.forEach(function (s) { list.appendChild(el("li", "is-missed", "✗ " + s)); });
-      r.ok.forEach(function (s) { list.appendChild(el("li", "is-made", "✓ " + s)); });
-      out.appendChild(list);
+      verdictList(out, r.verdict, r.bad, r.ok);
       // The diagram again, beside the mark, to compare.
       var copy = figure.cloneNode(true);
       copy.removeAttribute("id");
@@ -363,25 +404,83 @@
       d.appendChild(copy);
       out.appendChild(d);
       figure.hidden = false;
-      check.textContent = "Check again";
       var note = el("p", "draw-status");
       out.appendChild(note);
-      post(fig, r, elements).then(null, function () {
+      post("/learning-api/drawing", {
+        lesson: lessonPath(), fig: fig, verdict: r.verdict,
+        ok: r.ok, bad: r.bad, elements: saved(elements)
+      }).then(null, function () {
         note.textContent = "This attempt could not be saved. The mark above still stands.";
       });
-      out.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-    onTap(check, runCheck);
-    onTap(check2, runCheck);
+      done();
+    });
+  }
+
+  // Design it: the lesson writes the heading, the task and the model answer,
+  // as for Recall, so the exercise reads well with no script:
+  //   <div class="draw-it" data-design="1">
+  //     <h2>Design it</h2> <p>The task.</p>
+  //     <details class="box"><summary>One good answer</summary> key points </details>
+  //   </div>
+  // The script adds the drawing tool before the model answer, hides the model
+  // answer, and has learning-app's judge mark the drawing against it.
+  function buildDesign(host) {
+    var details = host.querySelector("details");
+    if (!details) return;
+    var task = [];
+    Array.prototype.forEach.call(host.querySelectorAll("p"), function (p) {
+      if (!details.contains(p)) task.push(p.textContent.trim());
+    });
+    var copy = details.cloneNode(true);
+    var summary = copy.querySelector("summary");
+    if (summary) copy.removeChild(summary);
+    var modelAnswer = copy.textContent.split("\n").map(function (l) { return l.trim(); })
+      .filter(Boolean).join("\n");
+    var key = "design-" + host.getAttribute("data-design");
+
+    host.insertBefore(howTo("Name each box plainly, and show what runs inside what. The drawing is read as its boxes, what is inside what, and its arrows, then marked against the key points."), details);
+    details.hidden = true;
+
+    canvas(host, details, key, null, function (elements, out, done) {
+      var got = read(elements);
+      if (!got.boxes.length) {
+        out.className = "recall-out is-error";
+        out.textContent = "Draw at least one box first.";
+        done();
+        return;
+      }
+      out.className = "recall-out";
+      out.textContent = "Checking…";
+      post("/learning-api/drawing/judge", {
+        lesson: lessonPath(), fig: key, question: task.join("\n"),
+        model_answer: modelAnswer, answer: describe(got), elements: saved(elements)
+      }).then(function (data) {
+        var lines = String(data.feedback || "").split("\n").filter(function (l) { return l.trim(); });
+        var strip = function (l) { return l.replace(/^[✓✗]\s*/, ""); };
+        verdictList(out, data.verdict,
+          lines.filter(function (l) { return l.charAt(0) !== "✓"; }).map(strip),
+          lines.filter(function (l) { return l.charAt(0) === "✓"; }).map(strip));
+        details.hidden = false;
+        details.open = true;
+        done();
+      }, function () {
+        out.className = "recall-out is-error";
+        out.textContent = "Could not check your drawing. One good answer is below.";
+        details.hidden = false;
+        details.open = true;
+        done();
+      });
+    });
   }
 
   function mount() {
     if (!/^https?:$/.test(location.protocol)) return;
-    Array.prototype.forEach.call(document.querySelectorAll("div.draw-it[data-fig]"), build);
+    Array.prototype.forEach.call(document.querySelectorAll("div.draw-it[data-fig]"), buildDraw);
+    Array.prototype.forEach.call(document.querySelectorAll("div.draw-it[data-design]"), buildDesign);
   }
 
   // For tests: the marker without the page.
-  window.DrawIt = { read: read, mark: mark };
+  window.DrawIt = { read: read, mark: mark, describe: describe };
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", mount);
