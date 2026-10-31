@@ -254,7 +254,11 @@
     var caption = figure.querySelector("figcaption");
 
     host.appendChild(el("h2", null, "Draw it"));
-    var intro = el("p", null, "Redraw this lesson's diagram from memory" +
+    // Name the diagram by its section, since a lesson can have several.
+    var head = figure.previousElementSibling;
+    while (head && head.tagName !== "H2") head = head.previousElementSibling;
+    var intro = el("p", null, "Redraw the diagram " +
+      (head ? "under “" + head.textContent.trim() + "” " : "") + "from memory" +
       (caption ? ": “" + caption.textContent.trim() + "”" : ".") +
       " Start drawing hides the diagram until you check.");
     host.appendChild(intro);
