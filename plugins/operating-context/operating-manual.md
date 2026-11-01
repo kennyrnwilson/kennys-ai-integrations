@@ -5,10 +5,10 @@ The depth lives in a private hub this points into.
 
 ## What this is
 
-An AI-first personal system that turns knowledge into action across nine repos,
-with GitHub `main` as the single source of truth: knowledge-base articles, book
-libraries, database-backed apps, the portal, and the two that configure the
-machines and the agents themselves.
+An AI-first personal system that turns what I take in into action, learning and
+writing across nine repos, with GitHub `main` as the single source of truth:
+knowledge-base articles, book libraries, database-backed apps, the portal, and
+the two that configure the machines and the agents themselves.
 
 Claude Code and OpenAI Codex reach the system in three ways:
 
@@ -24,9 +24,17 @@ Claude Code and OpenAI Codex reach the system in three ways:
    it needs a session there — started or driven from a phone, or over
    Tailscale SSH from the laptop.
 
-The through-line is two operating systems — Longevity OS and Mind OS — carrying
-book action items -> ranked guidance -> live scorecards -> daily protocols across
-those repos. Full architecture is in the personal-portal hub, under
+The through-line is one chain: take in, make it yours, then use it three ways.
+What I take in is books, articles, web pages and YouTube videos; it becomes
+fleeting notes, then permanent notes in my own words. Then:
+
+- **Do.** Two operating systems, Longevity OS and Mind OS, rank the notes into
+  guidance that sets daily protocols, checked by live scorecards.
+- **Learn.** Courses of short lessons, with quizzes and typed answers marked by
+  a learning app, plus a reading app for books.
+- **Make.** Documentation, posts and talks, written in one house style.
+
+Each use is checked, and the check feeds back into the chain. Full architecture is in the personal-portal hub, under
 `docs/system-architecture`: https://github.com/kennyrnwilson/personal-portal —
 start at `pictorial-guide.md` for the shape, `index.md` for the specification.
 
