@@ -4,8 +4,14 @@
 
 Turn a YouTube video into an illustrated markdown tutorial. The skill reads the
 transcript, picks the steps, looks at contact sheets of the video and chooses
-the frame that best shows each step. The `image-gen` plugin's `--edit` option
-can then annotate or change a frame. Works in Claude Code and Codex.
+the frame that best shows each step. Frames can then be annotated or changed
+with `image-gen`. Works in Claude Code and Codex.
+
+The skill uses the `youtube` MCP server's `get_contact_sheet` and `get_frames`
+tools when the session has them, and `image-gen`'s `edit_image` for edits. That
+route needs no local install and works in cloud sessions and chat. Without the
+tools, or for a video longer than one hour, it falls back to the local script
+below.
 
 ## Skills
 
@@ -25,7 +31,7 @@ can then annotate or change a frame. Works in Claude Code and Codex.
 
 ## Requirements
 
-`uv` and `ffmpeg` on PATH. Python dependencies (`yt-dlp`,
+For the local route only: `uv` and `ffmpeg` on PATH. Python dependencies (`yt-dlp`,
 `youtube-transcript-api`, `pillow`) resolve automatically via PEP 723 inline
 metadata.
 

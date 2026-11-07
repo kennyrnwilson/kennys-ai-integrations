@@ -37,7 +37,8 @@ the prompt describes a change to that image.
 Turn a YouTube video into a markdown tutorial whose images are frames from the
 video. The skill reads the transcript, picks the steps, looks at contact sheets
 and chooses the clearest frame for each step. Frames can then be annotated with
-`image-gen`'s `--edit`. Needs `ffmpeg`.
+`image-gen`. It uses the `youtube` MCP server's frame tools when the session has
+them, and otherwise a local script that needs `ffmpeg`.
 
 | Skill | Purpose |
 |---|---|
@@ -118,7 +119,7 @@ knowing what it needs to.
 - `uv` on PATH.
 - `GEMINI_API_KEY` set on a funded Gemini API billing account, for `image-gen`
   (directly, and indirectly for `ebook-processing`'s infographic stages).
-- `ffmpeg`, for `video-tutorial`.
+- `ffmpeg`, for `video-tutorial`'s local route.
 - Calibre CLI (`ebook-convert`) and WeasyPrint, for `ebook-processing`'s
   conversion and PDF-rendering stages.
 - `pandoc` is not installed on this machine and is not required. Several

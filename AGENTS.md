@@ -49,7 +49,9 @@ installed plugin and that must be deliberate and documented, not accidental.
 
 One deliberate link inside the marketplace: `video-tutorial` optionally calls
 `image-gen`'s script to edit frames. Its skill documents this; the rest of
-`video-tutorial` works without it.
+`video-tutorial` works without it. The skill also prefers two MCP servers
+outside the marketplace, `youtube` and `image-gen`, when the session has them,
+and falls back to its own script when it does not.
 
 ## Gotchas
 - `ebook-processing` writes into `/Users/kenne/code/book-library`, which has its
