@@ -16,6 +16,10 @@ Omit `--style` to let Gemini choose the infographic art direction, or pass a
 brief such as `--style "illustrated science magazine, luminous depth"`. Existing
 style names still work. The plugin does not impose a palette or layout.
 
+To change an existing image, such as a video frame, pass it with `--edit`:
+`generate_image.py "circle the knees; keep everything else" --edit frame.jpg
+--output frame-annotated.png`.
+
 ## Requirements
 
 `uv` on PATH, and `GEMINI_API_KEY` set on a billing account with credit.

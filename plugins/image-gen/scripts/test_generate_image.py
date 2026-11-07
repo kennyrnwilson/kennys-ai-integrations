@@ -498,3 +498,64 @@ def test_short_non_path_text_is_still_inline(tmp_path: Path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     assert _read_source("a dancing dog") == "a dancing dog"
     assert _default_output("a dancing dog", "infographic") == tmp_path / "infographic.png"
+
+
+# --- editing a source image ------------------------------------------------
+
+
+def test_generate_sends_source_images_before_the_prompt(tmp_path: Path):
+    source = tmp_path / "frame.jpg"
+    source.write_bytes(JPEG_BYTES)
+    client = FakeClient(FakeResponse(parts=[FakePart(PNG_BYTES)]))
+
+    generate("circle the knees", tmp_path / "out.png", client=client, images=[source])
+
+    contents = client.models.calls[0]["contents"]
+    assert contents[-1] == "circle the knees"
+    assert contents[0].inline_data.data == JPEG_BYTES
+    assert contents[0].inline_data.mime_type == "image/jpeg"
+
+
+def test_generate_without_images_sends_the_bare_prompt(tmp_path: Path):
+    client = FakeClient(FakeResponse(parts=[FakePart(PNG_BYTES)]))
+    generate("a cat", tmp_path / "out.png", client=client)
+    assert client.models.calls[0]["contents"] == "a cat"
+
+
+def test_generate_rejects_a_source_image_of_unknown_type(tmp_path: Path):
+    source = tmp_path / "frame.gif"
+    source.write_bytes(b"GIF89a")
+    client = FakeClient(FakeResponse(parts=[FakePart(PNG_BYTES)]))
+    with pytest.raises(ValueError, match="PNG, JPEG or WebP"):
+        generate("x", tmp_path / "out.png", client=client, images=[source])
+
+
+def test_generate_with_no_aspect_ratio_leaves_the_shape_to_the_model(tmp_path: Path):
+    client = FakeClient(FakeResponse(parts=[FakePart(PNG_BYTES)]))
+    generate("x", tmp_path / "out.png", client=client, aspect_ratio=None)
+    assert client.models.calls[0]["config"].image_config is None
+
+
+def test_cli_edit_keeps_the_source_shape_by_default(tmp_path: Path, monkeypatch):
+    source = tmp_path / "frame.jpg"
+    source.write_bytes(JPEG_BYTES)
+    captured: dict = {}
+    _stub(monkeypatch, captured)
+
+    assert main(["x", "--edit", str(source), "--output", str(tmp_path / "r.png")]) == 0
+    assert captured["images"] == [source]
+    assert captured["aspect_ratio"] is None
+
+
+def test_cli_without_edit_still_defaults_to_16_9(tmp_path: Path, monkeypatch):
+    captured: dict = {}
+    _stub(monkeypatch, captured)
+    main(["x", "--output", str(tmp_path / "r.png")])
+    assert captured["aspect_ratio"] == "16:9"
+
+
+def test_cli_fails_cleanly_when_an_edit_source_is_missing(tmp_path: Path, monkeypatch):
+    captured: dict = {}
+    _stub(monkeypatch, captured)
+    assert main(["x", "--edit", str(tmp_path / "nope.jpg")]) == 1
+    assert captured == {}

@@ -1,0 +1,16 @@
+{
+  "name": "video-tutorial",
+  "version": "1.0.0",
+  "description": "Turn a YouTube video into an illustrated markdown tutorial, with frames taken from the video",
+  "author": {
+    "name": "kennyrnwilson"
+  },
+  "repository": "https://github.com/kennyrnwilson/kennys-ai-integrations",
+  "license": "MIT",
+  "keywords": [
+    "youtube",
+    "tutorial",
+    "video-frames",
+    "ffmpeg"
+  ]
+}

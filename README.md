@@ -29,6 +29,24 @@ call — no browser, no login, no rate-limit pacing.
 /image-gen:infographic path/to/summary.md --style modern
 ```
 
+`generate_image.py --edit frame.jpg` sends a source image with the prompt, so
+the prompt describes a change to that image.
+
+### `video-tutorial` — Illustrated Tutorials from YouTube Videos
+
+Turn a YouTube video into a markdown tutorial whose images are frames from the
+video. The skill reads the transcript, picks the steps, looks at contact sheets
+and chooses the clearest frame for each step. Frames can then be annotated with
+`image-gen`'s `--edit`. Needs `ffmpeg`.
+
+| Skill | Purpose |
+|---|---|
+| `video-tutorial` | YouTube URL to a markdown tutorial illustrated with frames |
+
+```bash
+/video-tutorial:video-tutorial https://www.youtube.com/watch?v=Se1j7U8EI2o
+```
+
 ### `documentation-conventions` — Documentation Authoring Conventions
 
 Kenny's conventions for authoring documentation: markdown file structure and
@@ -100,6 +118,7 @@ knowing what it needs to.
 - `uv` on PATH.
 - `GEMINI_API_KEY` set on a funded Gemini API billing account, for `image-gen`
   (directly, and indirectly for `ebook-processing`'s infographic stages).
+- `ffmpeg`, for `video-tutorial`.
 - Calibre CLI (`ebook-convert`) and WeasyPrint, for `ebook-processing`'s
   conversion and PDF-rendering stages.
 - `pandoc` is not installed on this machine and is not required. Several
@@ -183,6 +202,16 @@ kennys-ai-integrations/
 │   │   │   └── test_print_manual.py
 │   │   ├── operating-manual.md
 │   │   └── standing-instructions.md
+│   ├── video-tutorial/
+│   │   ├── .claude-plugin/
+│   │   │   └── plugin.json
+│   │   ├── scripts/
+│   │   │   ├── test_video_frames.py
+│   │   │   └── video_frames.py
+│   │   ├── skills/
+│   │   │   └── video-tutorial/
+│   │   │       └── SKILL.md
+│   │   └── README.md
 │   └── image-gen/
 │       ├── .claude-plugin/
 │       │   └── plugin.json

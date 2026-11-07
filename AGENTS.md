@@ -5,7 +5,7 @@ The one agent guide for this repo, read by Claude Code and Codex alike.
 MCP, backups) lives in the personal-portal system docs — link, don't duplicate.
 
 ## Purpose
-A Claude Code plugin marketplace: four plugins, published via
+A Claude Code plugin marketplace: five plugins, published via
 `.claude-plugin/marketplace.json` and consumed by adding this repo as a
 marketplace source.
 
@@ -46,6 +46,10 @@ Run the validator before every commit. CI runs the same three commands.
 validator's `validate_tool_dependencies` rule should report zero warnings — if
 it ever reports one, a skill has picked up a dependency on an externally
 installed plugin and that must be deliberate and documented, not accidental.
+
+One deliberate link inside the marketplace: `video-tutorial` optionally calls
+`image-gen`'s script to edit frames. Its skill documents this; the rest of
+`video-tutorial` works without it.
 
 ## Gotchas
 - `ebook-processing` writes into `/Users/kenne/code/book-library`, which has its

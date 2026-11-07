@@ -1,7 +1,7 @@
 ---
 name: generate-image
 description: Generate an image from a text prompt or a source file using the Gemini image API. Use when the user asks to create any image, picture, or visual. Returns a native-resolution PNG.
-argument-hint: <prompt-text-or-file> [--aspect-ratio 16:9] [--output out.png]
+argument-hint: <prompt-text-or-file> [--edit source.jpg] [--aspect-ratio 16:9] [--output out.png]
 user-invocable: true
 allowed-tools: Read, Glob, Bash
 ---
@@ -49,6 +49,10 @@ blocks and `NO_IMAGE` propagate immediately without trying the next model.
 - `--aspect-ratio` — `16:9` (default), `1:1`, `9:16`, `4:3`, `3:4`, `2:3`,
   `3:2`, `4:5`, `5:4`, `21:9`, `1:4`, `4:1`, `1:8`, `8:1`.
 - `--model` — use a single specific model, bypassing the fallback chain entirely.
+- `--edit IMAGE` — a source image (PNG, JPEG or WebP) to change; repeat for
+  several. The prompt then describes the change: say what to keep as well as
+  what to change. Without `--aspect-ratio`, the result keeps the source's
+  shape. Write the edit to a new file; never overwrite the source.
 
 If no arguments are given, ask the user what to generate.
 

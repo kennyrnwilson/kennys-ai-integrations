@@ -173,12 +173,17 @@ def generate(
     prompt: str,
     output: Path,
     *,
-    aspect_ratio: str = "16:9",
+    aspect_ratio: str | None = "16:9",
     model: str | None = None,
     client=None,
     max_attempts: int = DEFAULT_MAX_ATTEMPTS,
+    images: list[Path] | None = None,
 ) -> Path:
     """Generate one image and write it to `output`.
+
+    `images` are source images sent with the prompt, which makes the call an
+    edit: the prompt says what to change. `aspect_ratio=None` leaves the shape
+    to the model, which keeps the source's shape when editing.
 
     The extension follows the bytes: if the model returns JPEG for a `.png`
     name, the file is written as `.jpg` and that path is returned.
@@ -194,7 +199,7 @@ def generate(
     """
     from google.genai import types
 
-    if aspect_ratio not in VALID_ASPECT_RATIOS:
+    if aspect_ratio is not None and aspect_ratio not in VALID_ASPECT_RATIOS:
         raise ValueError(
             f"aspect_ratio must be one of {VALID_ASPECT_RATIOS}, got {aspect_ratio!r}"
         )
@@ -221,13 +226,16 @@ def generate(
 
     config = types.GenerateContentConfig(
         response_modalities=["IMAGE"],
-        image_config=types.ImageConfig(aspect_ratio=aspect_ratio),
+        image_config=(
+            types.ImageConfig(aspect_ratio=aspect_ratio) if aspect_ratio else None
+        ),
     )
+    contents = build_contents(prompt, images or [], types)
 
     for attempt in range(1, max_attempts + 1):
         try:
             response = client.models.generate_content(
-                model=model, contents=prompt, config=config
+                model=model, contents=contents, config=config
             )
             break
         # Broad by design: the SDK raises several unrelated exception types for
@@ -270,13 +278,36 @@ def generate(
     )
 
 
+IMAGE_MIME_TYPES = {
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".webp": "image/webp",
+}
+
+
+def build_contents(prompt: str, images: list[Path], types):
+    """The request contents: the prompt alone, or the source images then the prompt."""
+    if not images:
+        return prompt
+    parts = []
+    for image in images:
+        mime = IMAGE_MIME_TYPES.get(image.suffix.lower())
+        if mime is None:
+            raise ValueError(f"{image}: source images must be PNG, JPEG or WebP")
+        parts.append(types.Part.from_bytes(data=image.read_bytes(), mime_type=mime))
+    parts.append(prompt)
+    return parts
+
+
 def generate_with_fallback(
     prompt: str,
     output: Path,
     *,
-    aspect_ratio: str = "16:9",
+    aspect_ratio: str | None = "16:9",
     models: list[str],
     max_attempts: int = DEFAULT_MAX_ATTEMPTS,
+    images: list[Path] | None = None,
 ) -> Path:
     """Try each model in order, falling back on transient exhaustion or soft failures.
 
@@ -291,6 +322,7 @@ def generate_with_fallback(
                 aspect_ratio=aspect_ratio,
                 model=model,
                 max_attempts=max_attempts,
+                images=images,
             )
         except ImageGenerationError as exc:
             should_fallback = exc.transient_exhaustion or exc.try_next_model
@@ -365,9 +397,22 @@ def main(argv: list[str] | None = None) -> int:
         help="Optional free-form infographic art direction; otherwise let the model choose",
     )
     parser.add_argument("--output", type=Path, default=None)
-    parser.add_argument("--aspect-ratio", default="16:9", choices=VALID_ASPECT_RATIOS)
+    parser.add_argument(
+        "--aspect-ratio", default=None, choices=VALID_ASPECT_RATIOS,
+        help="Defaults to 16:9, or to the source's shape with --edit",
+    )
+    parser.add_argument(
+        "--edit", dest="images", type=Path, action="append", default=[],
+        metavar="IMAGE",
+        help="Source image to edit (PNG, JPEG or WebP); repeat to send several",
+    )
     parser.add_argument("--model", default=None, help="Override NANOBANANA_MODEL")
     args = parser.parse_args(argv)
+    for image in args.images:
+        if not image.is_file():
+            print(f"Image generation failed: {image} does not exist", file=sys.stderr)
+            return 1
+    aspect_ratio = args.aspect_ratio or (None if args.images else "16:9")
 
     prompt = build_prompt(_read_source(args.source), kind=args.kind, style=args.style)
     output = args.output or _default_output(args.source, args.kind)
@@ -375,10 +420,14 @@ def main(argv: list[str] | None = None) -> int:
     try:
         if args.model:
             # Explicit override: single model, no fallback chain.
-            written = generate(prompt, output, aspect_ratio=args.aspect_ratio, model=args.model)
+            written = generate(
+                prompt, output, aspect_ratio=aspect_ratio, model=args.model,
+                images=args.images,
+            )
         else:
             written = generate_with_fallback(
-                prompt, output, aspect_ratio=args.aspect_ratio, models=DEFAULT_MODEL_CHAIN
+                prompt, output, aspect_ratio=aspect_ratio, models=DEFAULT_MODEL_CHAIN,
+                images=args.images,
             )
     except ImageGenerationError as exc:
         print(f"Image generation failed: {exc}", file=sys.stderr)

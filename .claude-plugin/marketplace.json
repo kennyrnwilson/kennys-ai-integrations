@@ -4,13 +4,18 @@
     "name": "kennyrnwilson"
   },
   "metadata": {
-    "description": "Kenny's AI agent plugin collection: operating context, Gemini image generation, ebook processing, and documentation conventions."
+    "description": "Kenny's AI agent plugin collection: operating context, Gemini image generation, video tutorials, ebook processing, and documentation conventions."
   },
   "plugins": [
     {
       "name": "image-gen",
       "source": "./plugins/image-gen",
       "description": "Generate images and infographics through the Gemini image API"
+    },
+    {
+      "name": "video-tutorial",
+      "source": "./plugins/video-tutorial",
+      "description": "Turn a YouTube video into an illustrated markdown tutorial, with frames taken from the video"
     },
     {
       "name": "ebook-processing",
