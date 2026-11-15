@@ -61,6 +61,8 @@ more gets a Draw it, marked in the browser by `draw.js`.
 1.7.5 adds Design it: the learner draws a system from a task, and learning-app's
 judge marks the drawing against key points. `learn-a-subject` says when to write
 one and in what form.
+1.7.6 has every lesson and reference sheet load `theme.js`, so pressing `t`
+switches between light and dark.
 
 ## claude.ai
 

@@ -231,6 +231,9 @@ What Kenny expects of `/teach` and of a chat running the teach tools, on top of 
 - Write each Recall model answer as a list of key points, each one checkable, in
   the order the question asks for them. learning-app marks a typed answer against
   that list.
+- Load `theme.js` in the `<head>` of every lesson and reference sheet, straight
+  after `course.css`: `<script src="../assets/theme.js"></script>`. The page
+  follows the browser's light or dark setting, and pressing `t` switches it.
 - Load `recall.js` after `quiz.js` in every lesson:
   `<script src="../assets/recall.js"></script>`.
 - Draw each lesson diagram with `scripts/lesson-diagrams/`, as "Diagrams and Draw
@@ -238,7 +241,7 @@ What Kenny expects of `/teach` and of a chat running the teach tools, on top of 
   answer of four boxes or more, so it gets a Draw it.
 - Link each lesson to its reference sheet, and the sheet back to the lesson.
 - Reuse `assets/`. A new workspace may copy another workspace's `course.css`,
-  `quiz.js` and `recall.js`. `insert.py` adds `draw.js` and the Draw it CSS.
+  `quiz.js`, `recall.js` and `theme.js`. `insert.py` adds `draw.js` and the Draw it CSS.
 - Write a learning record only for something Kenny showed, never for material that
   was only covered.
 - Never write Kenny's answers, explanations or permanent notes.
